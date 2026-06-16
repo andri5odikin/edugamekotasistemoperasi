@@ -1,0 +1,2025 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petualangan di Kota Sistem Operasi</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #05070c;
+            color: #f8fafc;
+            user-select: none;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            width: 100vw;
+        }
+        h1, h2, h3, .font-title {
+            font-family: 'Fredoka One', cursive;
+        }
+        /* Penulisan semula fon tersuai khusus untuk tajuk utama */
+        .title-arial-black {
+            font-family: 'Arial Black', 'Arial Bold', Gadget, sans-serif;
+            font-weight: 900;
+        }
+        /* Bar Tatal Tersuai */
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(30, 41, 59, 0.2);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+
+        /* AUTO-RESPONSIVE DYNAMIC 16:9 VIEWPORT CONTAINER */
+        #game-container {
+            position: relative;
+            /* Mengunci aspek rasio 16:9 secara dinamis berdasarkan ukuran layar viewport terendah */
+            width: min(100vw, calc(100vh * 16 / 9));
+            height: min(calc(100vw * 9 / 16), 100vh);
+            background-color: #0b0f19;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border: 1px solid rgba(51, 65, 85, 0.3);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+            transition: all 0.3s ease;
+        }
+
+        /* Gaya API Skrin Penuh (Fullscreen) */
+        #game-container:fullscreen {
+            width: 100vw !important;
+            height: 100vh !important;
+            border: none !important;
+            border-radius: 0px !important;
+        }
+        #game-container:-webkit-full-screen {
+            width: 100vw !important;
+            height: 100vh !important;
+            border: none !important;
+            border-radius: 0px !important;
+        }
+
+        /* Animasi denyutan untuk tahap aktif */
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(22, 197, 94, 0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 16px rgba(22, 197, 94, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(22, 197, 94, 0); }
+        }
+        .active-level-btn {
+            animation: pulse-ring 2s infinite;
+        }
+        /* Animasi Goncangan */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        .shake-effect {
+            animation: shake 0.5s ease-in-out;
+        }
+        /* Animasi Terapung */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+        .float-effect {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* Peningkatan bayangan teks untuk menjadikan tulisan sangat mudah dibaca pada imej latar belakang */
+        .readable-text-glow {
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.95), 0 1px 2px rgba(0, 0, 0, 1);
+        }
+
+        /* Pergeseran 11 langkah ke kanan (11rem / 176px) khusus untuk Kit Catatan Materi */
+        .shift-right-handbook {
+            padding-left: 11rem !important;
+        }
+        @media (max-width: 768px) {
+            .shift-right-handbook {
+                padding-left: 1.5rem !important; /* Supaya tetap ramah di resolusi mobile tanpa meluap */
+            }
+        }
+
+        /* Pergeseran 15 langkah ke kanan (15rem / 240px) khusus teks petunjuk footer Kit Catatan */
+        .shift-right-footer-text {
+            padding-left: 15rem !important;
+        }
+        @media (max-width: 768px) {
+            .shift-right-footer-text {
+                padding-left: 1.5rem !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- BEKAS PERMAINAN UTAMA (Nisbah Aspek 16:9 Pensyaratan Kendiri) -->
+    <div id="game-container" class="rounded-none md:rounded-xl">
+        
+        <!-- ELEMEN AUDIO UNTUK KESAN BUNYI -->
+        <audio id="sound-click" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-84.wav" preload="auto"></audio>
+        <audio id="sound-success" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-84.wav" preload="auto"></audio>
+        <audio id="sound-fail" src="https://assets.mixkit.co/active_storage/sfx/2649/2649-84.wav" preload="auto"></audio>
+        <audio id="sound-level-up" src="https://assets.mixkit.co/active_storage/sfx/2019/2019-84.wav" preload="auto"></audio>
+
+        <!-- ============================================ -->
+        <!-- SKRIN 1: SKRIN PEMUATAN                      -->
+        <!-- ============================================ -->
+        <div id="screen-loading" class="absolute inset-0 z-50 flex flex-col items-center justify-between p-4 md:p-6 bg-cover bg-center transition-all duration-700 ease-in-out" style="background-image: url('https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/bg_loading.jpeg');">
+            
+            <!-- Tajuk & Maskot -->
+            <div class="relative z-10 text-center mt-2 md:mt-4 float-effect">
+                <div class="inline-block bg-slate-900/80 text-yellow-400 border border-yellow-500/30 text-[9px] md:text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider mb-1 md:mb-2 backdrop-blur-md">Edu-Game Interaktif</div>
+                <h1 class="title-arial-black text-xl md:text-3xl lg:text-4xl text-yellow-400 drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)] text-center tracking-wider leading-tight">PETUALANGAN DI KOTA<br><span class="text-cyan-400">SISTEM OPERASI</span></h1>
+                <p class="text-[9px] md:text-xs text-white bg-slate-950/65 px-2 py-1 rounded-md mt-1 max-w-md mx-auto opacity-95 shadow-md">Pelajari cara kerja sistem operasi komputer sambil bertualang dan menyelamatkan kota dari serangan error!</p>
+            </div>
+
+            <!-- Ilustrasi Maskot (Pemberian ukuran responsif agar muat sempurna) -->
+            <div class="relative z-10 flex flex-col items-center my-1">
+                <div class="w-36 h-36 md:w-56 md:h-56 lg:w-64 lg:h-64 mb-1 flex items-center justify-center overflow-hidden drop-shadow-[0_5px_15px_rgba(0,0,0,0.6)]">
+                    <img src="https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/Mascot.png" alt="Mascot OS-Boy" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='https://placehold.co/250x250/0f172a/22d3ee?text=OS-Boy'">
+                </div>
+                <div class="text-cyan-300 font-bold text-[8px] md:text-[10px] tracking-wide bg-slate-955/65 px-2 py-0.5 rounded shadow-sm">Mascot: OS-Boy v1.0</div>
+            </div>
+
+            <!-- Bekas Bar Pemuatan / Butang -->
+            <div class="relative z-10 w-full max-w-xs md:max-w-md mb-2 md:mb-4 flex flex-col items-center">
+                <!-- Info Bar Pemuatan -->
+                <div id="loading-info-container" class="w-full bg-slate-950/65 p-2 rounded-xl shadow-md">
+                    <div class="flex justify-between text-[9px] md:text-xs font-semibold mb-1 text-cyan-300">
+                        <span id="loading-status">Menginisialisasi Kernel...</span>
+                        <span id="loading-percentage">0%</span>
+                    </div>
+                    <div class="w-full bg-slate-900/80 rounded-full h-2 md:h-3 p-0.5 border border-slate-800/60 backdrop-blur-sm overflow-hidden">
+                        <div id="loading-bar" class="bg-gradient-to-r from-cyan-500 to-blue-500 h-full rounded-full transition-all duration-100 ease-out" style="width: 0%;"></div>
+                    </div>
+                </div>
+
+                <!-- Butang Mula -->
+                <button id="btn-start-game" class="hidden w-full py-2 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-slate-955 font-black text-xs md:text-base rounded-xl shadow-lg shadow-yellow-500/20 border-b-4 border-amber-700 active:scale-95 transition-all duration-150 tracking-wider uppercase flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-circle-play text-base md:text-lg"></i> Mulai Petualangan
+                </button>
+            </div>
+        </div>
+
+        <!-- ============================================ -->
+        <!-- HUD BAR GLOBAL (HUD) - Reka Bentuk Kemas     -->
+        <!-- ============================================ -->
+        <div id="game-hud" class="hidden relative z-40 bg-slate-950/40 backdrop-blur-md border-b border-slate-800/20 p-2 md:p-3 flex items-center justify-between gap-2 flex-shrink-0">
+            <!-- Info Profil -->
+            <div class="flex items-center gap-1.5 md:flex-shrink-0">
+                <div class="w-6 h-6 md:w-8 md:h-8 bg-cyan-600/20 rounded-lg flex items-center justify-center text-xs md:text-sm text-cyan-400 border border-cyan-500/30">
+                    <i class="fa-solid fa-user-astronaut"></i>
+                </div>
+                <div>
+                    <div class="text-[8px] text-slate-500 leading-none">Pemain</div>
+                    <div class="text-[10px] md:text-xs font-bold text-white leading-tight">Hero OS</div>
+                </div>
+            </div>
+
+            <!-- Kawalan (Skrin Penuh & Suara) -->
+            <div class="flex gap-1 md:flex-shrink-0">
+                <button onclick="toggleFullScreen()" class="px-1.5 py-0.5 md:px-2 md:py-1 bg-slate-900/60 hover:bg-slate-800/80 border border-slate-800/40 rounded-lg text-[8px] md:text-[10px] font-bold text-slate-300 transition flex items-center gap-1 shadow-md">
+                    <i class="fa-solid fa-expand text-yellow-400"></i> <span id="fullscreen-text">Layar Penuh</span>
+                </button>
+                <button id="btn-sound-toggle" onclick="toggleSound()" class="px-1.5 py-0.5 md:px-2 md:py-1 bg-slate-900/60 hover:bg-slate-800/80 border border-slate-800/40 rounded-lg text-[8px] md:text-[10px] font-bold text-slate-300 transition flex items-center gap-1 shadow-md">
+                    <i class="fa-solid fa-volume-high text-cyan-400" id="sound-icon"></i> <span>Suara: Aktif</span>
+                </button>
+            </div>
+
+            <!-- Penjejak Bar Kemajuan -->
+            <div class="flex-1 max-w-[120px] sm:max-w-xs mx-1 md:mx-2">
+                <div class="flex justify-between text-[8px] md:text-[10px] text-slate-400 mb-0.5">
+                    <span>Progress</span>
+                    <span id="hud-progress-txt">0/7 Area</span>
+                </div>
+                <div class="w-full bg-slate-900/60 h-1 md:h-1.5 rounded-full overflow-hidden">
+                    <div id="hud-progress-bar" class="bg-gradient-to-r from-emerald-500 to-cyan-500 h-full" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- Inventori Kristal & Skor -->
+            <div class="flex items-center gap-1.5">
+                <!-- Kristal -->
+                <div class="flex items-center gap-1 bg-slate-900/60 px-1.5 py-0.5 md:px-2.5 md:py-1 rounded-lg border border-slate-800/40">
+                    <i class="fa-solid fa-gem text-cyan-400 animate-pulse text-[8px] md:text-[10px]"></i>
+                    <span id="hud-crystals" class="font-bold text-[8px] md:text-[10px] text-cyan-300">0/7</span>
+                </div>
+                <!-- Skor -->
+                <div class="flex items-center gap-1 bg-slate-900/60 px-1.5 py-0.5 md:px-2.5 md:py-1 rounded-lg border border-slate-800/40">
+                    <i class="fa-solid fa-star text-yellow-400 text-[8px] md:text-[10px]"></i>
+                    <span id="hud-score" class="font-bold text-[8px] md:text-[10px] text-yellow-300">0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================ -->
+        <!-- SKRIN 2: PETA DUNIA PERMAINAN                -->
+        <!-- ============================================ -->
+        <div id="screen-map" class="hidden absolute inset-0 z-10 flex flex-col justify-between p-3 md:p-6 bg-cover bg-center transition-all duration-700 ease-in-out" style="background-image: url('https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/bg_mapgame.jpeg');">
+
+            <!-- Butang Terapung untuk Kit Catatan OS Global -->
+            <button onclick="showEducationalHelp(0)" class="absolute top-2 right-2 md:top-4 md:right-4 z-30 px-2 py-1 md:px-3 md:py-1.5 bg-cyan-600/20 hover:bg-cyan-500/30 text-[8px] md:text-[10px] font-bold rounded-lg text-cyan-300 shadow-lg border border-cyan-500/30 transition flex items-center gap-1 md:gap-1.5 backdrop-blur-md">
+                <i class="fa-solid fa-book-bookmark animate-pulse"></i> Catatan OS
+            </button>
+
+            <!-- Tajuk Atas -->
+            <div class="relative z-10 text-center mt-1">
+                <h2 class="text-sm md:text-xl text-yellow-400 tracking-wide drop-shadow-[0_2px_4px_rgba(0,0,0,1)] uppercase">PETA KOTA SISTEM OPERASI</h2>
+            </div>
+
+            <!-- SVG Map Connectors Overlay (Menggunakan hijau terang #37f713) -->
+            <svg class="absolute inset-0 w-full h-full z-10 pointer-events-none" id="map-svg-lines">
+                <path id="path-0-1" d="" fill="none" stroke="#37f713" stroke-width="3" stroke-dasharray="6,6" opacity="0.3" class="transition-all duration-500" />
+                <path id="path-1-2" d="" fill="none" stroke="#37f713" stroke-width="3" stroke-dasharray="6,6" opacity="0.3" class="transition-all duration-500" />
+                <path id="path-2-3" d="" fill="none" stroke="#37f713" stroke-width="3" stroke-dasharray="6,6" opacity="0.3" class="transition-all duration-500" />
+                <path id="path-3-4" d="" fill="none" stroke="#37f713" stroke-width="3" stroke-dasharray="6,6" opacity="0.3" class="transition-all duration-500" />
+                <path id="path-4-5" d="" fill="none" stroke="#37f713" stroke-width="3" stroke-dasharray="6,6" opacity="0.3" class="transition-all duration-500" />
+                <path id="path-5-6" d="" fill="none" stroke="#37f713" stroke-width="3" stroke-dasharray="6,6" opacity="0.3" class="transition-all duration-500" />
+            </svg>
+
+            <!-- Map Levels Container (Symmetric 4x2 Snake Path Layout - Alihan Ke Bawah) -->
+            <div class="relative z-20 flex-1 w-full grid grid-cols-4 grid-rows-2 gap-x-2 md:gap-x-6 gap-y-2 items-center justify-items-center pt-8 md:pt-20 pb-1 px-2">
+                
+                <!-- LEVEL 0: NOTE MATERI -->
+                <div id="level-node-0" class="flex flex-col items-center">
+                    <button onclick="enterLevel(0)" id="btn-level-0" class="w-8 h-8 md:w-14 md:h-14 rounded-full bg-amber-700 border-2 border-amber-700 flex items-center justify-center text-white text-xs md:text-base font-bold shadow-lg transition-all duration-200 active-level-btn">
+                        <i class="fa-solid fa-book-open text-xs md:text-2xl text-white"></i>
+                    </button>
+                    <span class="text-[7px] md:text-[10px] font-bold text-center mt-0.5 md:mt-1 bg-slate-950/70 px-1.5 py-0.5 rounded text-white whitespace-nowrap">0. Note Materi</span>
+                </div>
+
+                <!-- LEVEL 1: DESA BOOTING -->
+                <div id="level-node-1" class="flex flex-col items-center">
+                    <button onclick="enterLevel(1)" id="btn-level-1" class="w-8 h-8 md:w-14 md:h-14 rounded-full bg-red-500 border-2 border-white flex items-center justify-center text-white text-xs md:text-base font-bold shadow-none cursor-not-allowed">
+                        <i class="fa-solid fa-lock text-xs md:text-2xl text-white"></i>
+                    </button>
+                    <span class="text-[7px] md:text-[10px] font-bold text-center mt-0.5 md:mt-1 bg-slate-950/40 px-1.5 py-0.5 rounded text-white whitespace-nowrap">1. Desa Booting</span>
+                </div>
+
+                <!-- LEVEL 2: HUTAN PROSES -->
+                <div id="level-node-2" class="flex flex-col items-center">
+                    <button onclick="enterLevel(2)" id="btn-level-2" class="w-8 h-8 md:w-14 md:h-14 rounded-full bg-red-500 border-2 border-white flex items-center justify-center text-white text-xs md:text-base font-bold shadow-none cursor-not-allowed">
+                        <i class="fa-solid fa-lock text-xs md:text-2xl text-white"></i>
+                    </button>
+                    <span class="text-[7px] md:text-[10px] font-bold text-center mt-0.5 md:mt-1 bg-slate-950/40 px-1.5 py-0.5 rounded text-white whitespace-nowrap">2. Hutan Processes</span>
+                </div>
+
+                <!-- LEVEL 3: GUA MEMORI -->
+                <div id="level-node-3" class="flex flex-col items-center">
+                    <button onclick="enterLevel(3)" id="btn-level-3" class="w-8 h-8 md:w-14 md:h-14 rounded-full bg-red-500 border-2 border-white flex items-center justify-center text-white text-xs md:text-base font-bold shadow-none cursor-not-allowed">
+                        <i class="fa-solid fa-lock text-xs md:text-2xl text-white"></i>
+                    </button>
+                    <span class="text-[7px] md:text-[10px] font-bold text-center mt-0.5 md:mt-1 bg-slate-955/40 px-1.5 py-0.5 rounded text-white whitespace-nowrap">3. Gua Memori</span>
+                </div>
+
+                <!-- DECORATION ROUTE TARGET -->
+                <div class="flex flex-col items-center opacity-40">
+                    <div class="w-6 h-6 md:w-9 md:h-9 border border-dashed border-slate-600 rounded-full flex items-center justify-center text-slate-500">
+                        <i class="fa-solid fa-route text-xs md:text-2xl"></i>
+                    </div>
+                    <span class="text-[6px] md:text-[8px] text-slate-500 mt-0.5">Selesai</span>
+                </div>
+
+                <!-- LEVEL 6: KASTIL ANTARMUKA (BOSS) -->
+                <div id="level-node-6" class="flex flex-col items-center">
+                    <button onclick="enterLevel(6)" id="btn-level-6" class="w-8 h-8 md:w-14 md:h-14 rounded-full bg-red-500 border-2 border-white flex items-center justify-center text-white text-xs md:text-base font-bold shadow-none cursor-not-allowed">
+                        <i class="fa-solid fa-lock text-xs md:text-2xl text-white"></i>
+                    </button>
+                    <span class="text-[7px] md:text-[10px] font-bold text-center mt-0.5 md:mt-1 bg-slate-955/40 px-1.5 py-0.5 rounded text-white whitespace-nowrap">6. Kastil Antarmuka</span>
+                </div>
+
+                <!-- LEVEL 5: GUNUNG PERANGKAT KERAS -->
+                <div id="level-node-5" class="flex flex-col items-center">
+                    <button onclick="enterLevel(5)" id="btn-level-5" class="w-8 h-8 md:w-14 md:h-14 rounded-full bg-red-500 border-2 border-white flex items-center justify-center text-white text-xs md:text-base font-bold shadow-none cursor-not-allowed">
+                        <i class="fa-solid fa-lock text-xs md:text-2xl text-white"></i>
+                    </button>
+                    <span class="text-[7px] md:text-[10px] font-bold text-center mt-0.5 md:mt-1 bg-slate-955/40 px-1.5 py-0.5 rounded text-white whitespace-nowrap">5. Gn Hardware</span>
+                </div>
+
+                <!-- LEVEL 4: SUNGAI FILE -->
+                <div id="level-node-4" class="flex flex-col items-center">
+                    <button onclick="enterLevel(4)" id="btn-level-4" class="w-8 h-8 md:w-14 md:h-14 rounded-full bg-red-500 border-2 border-white flex items-center justify-center text-white text-xs md:text-base font-bold shadow-none cursor-not-allowed">
+                        <i class="fa-solid fa-lock text-xs md:text-2xl text-white"></i>
+                    </button>
+                    <span class="text-[7px] md:text-[10px] font-bold text-center mt-0.5 md:mt-1 bg-slate-950/40 px-1.5 py-0.5 rounded text-white whitespace-nowrap">4. Sungai File</span>
+                </div>
+
+            </div>
+
+            <!-- Bottom Instruction Bar (Ukuran dikecilkan agar pas di layar HP rasionya) -->
+            <div class="relative z-20 bg-slate-950/60 backdrop-blur-md p-1.5 md:p-3 rounded-xl flex flex-col items-center justify-center text-center w-11/12 max-w-4xl mx-auto mb-1 border border-slate-800/40 shadow-xl flex-shrink-0">
+                <p id="map-instruction-heading" class="text-[10px] md:text-sm text-cyan-300 font-bold leading-none mb-0.5">
+                    Selesaikan catatan materi untuk membuka area-area berikutnya!
+                </p>
+                <p id="map-instruction-text" class="text-[8px] md:text-xs text-slate-200 font-medium leading-tight">
+                    <!-- Teks diatur lewat JS dinamis -->
+                </p>
+            </div>
+        </div>
+
+        <!-- ============================================ -->
+        <!-- SCREEN 3: GAMEPLAY AREA TEMPLATE & NPC DIALOG -->
+        <!-- ============================================ -->
+        <div id="screen-gameplay" class="hidden absolute inset-0 z-30 flex flex-col justify-between p-2 md:p-4 bg-slate-900 bg-cover bg-center transition-all duration-500">
+            <!-- Top Bar - Sleek & Transparent -->
+            <div id="gameplay-top-bar" class="flex items-center justify-between bg-slate-950/40 p-1 md:p-2 rounded-lg backdrop-blur-md transition-all duration-500 flex-shrink-0">
+                <button onclick="backToMap()" class="px-2.5 py-1 bg-slate-800/80 hover:bg-slate-700 text-[8px] md:text-[10px] font-bold rounded text-slate-300 hover:text-white transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-map"></i> Peta
+                </button>
+                <h3 id="area-title" class="text-[10px] md:text-sm text-cyan-400 uppercase tracking-wider font-bold">Nama Area</h3>
+                <button onclick="showEducationalHelp()" class="w-5 h-5 md:w-7 md:h-7 bg-blue-900/40 hover:bg-blue-800/60 text-[9px] rounded-full text-blue-300 flex items-center justify-center border border-blue-500/30 transition animate-pulse" title="Petunjuk Edukasi">
+                    <i class="fa-solid fa-book-open"></i>
+                </button>
+            </div>
+
+            <!-- Teks Instruksi dipindahkan ke atas & warna diubah ke kuning keemasan #fbbf24 tanpa shadow -->
+            <div id="area-footer-tip" class="bg-slate-955/50 backdrop-blur-md p-1.5 rounded-lg text-[8px] md:text-xs text-center text-[#fbbf24] font-bold max-w-[90%] mx-auto mt-1 transition-all duration-500 shadow-md flex-shrink-0">
+                Gunakan pengetahuanmu tentang sistem operasi komputer untuk menyelesaikan tantangan ini!
+            </div>
+
+            <!-- Middle Container (Gameplay Zone responsif 16:9) -->
+            <div class="flex-1 my-1 md:my-2 flex flex-col items-center justify-center relative overflow-hidden">
+                <!-- NPC DIALOG CONTAINER - Dengan Latar Kotak Hitam Sangat Gelap & Solid (#020617 / Slate-950) -->
+                <div id="npc-dialog-box" onclick="skipDialogue()" class="absolute inset-0 bg-slate-950/80 z-30 flex items-center justify-center p-2 cursor-pointer">
+                    <div class="w-[94%] h-[90%] aspect-video max-h-[92%] p-4 md:p-8 flex flex-col justify-between overflow-hidden bg-slate-950 border border-slate-800 rounded-2xl shadow-2xl animate-fadeIn" onclick="event.stopPropagation()">
+                        <!-- Scanning/Hologram visual light effects in the background -->
+                        <div class="absolute -top-32 -left-32 w-64 h-64 bg-cyan-500/10 rounded-full blur-[80px] pointer-events-none"></div>
+                        
+                        <!-- Main Content Row -->
+                        <div class="flex-grow flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 relative z-10 my-auto">
+                            <!-- NPC Avatar (No border, no bg, no shading, size reduced: w-32 h-32 md:w-52 md:h-52) -->
+                            <div class="flex flex-col items-center flex-shrink-0">
+                                <div id="npc-avatar" class="w-24 h-24 sm:w-32 sm:h-32 md:w-52 md:h-52 flex items-center justify-center float-effect">
+                                    <i class="fa-solid fa-robot text-4xl"></i>
+                                </div>
+                                <span id="npc-name" class="mt-1 md:mt-2 text-[8px] md:text-sm font-black px-3 py-0.5 md:py-1 bg-cyan-955/80 text-cyan-300 rounded-full border border-cyan-800/40 tracking-wider">Nama NPC</span>
+                            </div>
+                            
+                            <!-- NPC Text Info -->
+                            <div class="flex-1 text-center md:text-left space-y-1 md:space-y-3">
+                                <span class="px-2 py-0.5 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-[8px] md:text-xs rounded-full font-bold uppercase tracking-wider animate-pulse inline-block">
+                                    <i class="fa-solid fa-satellite-dish mr-1"></i> Transmisi Masuk
+                                </span>
+                                <h4 class="text-[10px] md:text-lg text-cyan-400 font-black uppercase tracking-wide">Misi Utama Area</h4>
+                                <p id="npc-text" class="text-[10px] sm:text-xs md:text-base lg:text-lg text-slate-100 leading-relaxed font-semibold min-h-[60px] readable-text-glow">
+                                    Halo penjelajah! Kami sedang mengalami kerusakan sistem. Bisakah kamu membantu kami memperbaikinya?
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <!-- Action Buttons Row -->
+                        <div class="flex gap-3 w-full max-w-xs md:max-w-md mx-auto relative z-10 border-t border-slate-800/60 pt-2 md:pt-4" onclick="event.stopPropagation()">
+                            <button id="btn-dialog-action" onclick="startMiniGame()" class="flex-1 py-1.5 md:py-2.5 px-4 font-black text-[9px] md:text-sm rounded-xl active:scale-95 transition-all duration-150 shadow-lg tracking-wider uppercase flex items-center justify-center gap-1 md:gap-2 border-b-4 border-[#5fc9cc] hover:brightness-110" style="background-color: #95f1f4; color: #000000;">
+                                <i class="fa-solid fa-circle-play text-xs md:text-base"></i> Mulai Tugas
+                            </button>
+                            <button onclick="backToMap()" class="flex-1 py-1.5 md:py-2.5 px-4 font-black text-[9px] md:text-sm rounded-xl active:scale-95 transition-all duration-150 shadow-lg tracking-wider uppercase flex items-center justify-center gap-1 md:gap-2 border-b-4 border-[#b48600] hover:brightness-110" style="background-color: #eab308; color: #000000;">
+                                <i class="fa-solid fa-circle-xmark text-xs md:text-base"></i> Nanti Saja
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MINI GAME CONTENT CONTAINER - Seamless 16:9 scaling layout inside -->
+                <div id="mini-game-container" class="w-full h-full flex flex-col items-center justify-center overflow-hidden">
+                    <!-- Dynamic level content will be injected here via Javascript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================ -->
+        <!-- SCREEN 4: KUIS POPUP (Kunci Area / Boss) - 16:9 PROPORTIONAL & TRANSPARENT -->
+        <!-- ============================================ -->
+        <div id="popup-quiz" onclick="skipDialogue()" class="hidden absolute inset-0 z-40 bg-slate-950/85 flex items-center justify-center p-2 md:p-4 cursor-pointer">
+            <div class="w-[94%] h-[90%] aspect-video max-h-[92%] p-3 md:p-6 flex flex-col justify-between overflow-hidden relative" onclick="event.stopPropagation()">
+                <!-- Atmospheric golden scanning light effects inside the transparent overlay panel -->
+                <div class="absolute -top-32 -left-32 w-64 h-64 bg-yellow-500/5 rounded-full blur-[80px] pointer-events-none"></div>
+                <div class="absolute -bottom-32 -right-32 w-64 h-64 bg-cyan-500/5 rounded-full blur-[80px] pointer-events-none"></div>
+
+                <!-- Header -->
+                <div class="text-center relative z-10 pb-1.5 md:pb-3">
+                    <span class="px-2 py-0.5 bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 text-[8px] md:text-[10px] rounded-full font-bold uppercase tracking-wider animate-pulse shadow-md">
+                        <i class="fa-solid fa-shield-halved mr-1"></i> Verifikasi Keamanan Protokol Kota
+                    </span>
+                    <h3 id="quiz-title" class="text-xs md:text-lg text-yellow-400 font-bold mt-1.5 tracking-wide readable-text-glow">Kuis Desa Booting</h3>
+                    <p class="text-[7px] md:text-[10px] text-slate-200 leading-tight readable-text-glow font-semibold">Jawab dengan benar untuk menstabilkan modul dan mengklaim Kristal Energi!</p>
+                </div>
+
+                <!-- Question Box (Floating directly over level background image) -->
+                <div class="my-2 md:my-4 text-center relative z-10 flex-grow flex items-center justify-center px-4 py-3 max-w-3xl mx-auto w-full">
+                    <p id="quiz-question" class="text-[11px] sm:text-sm md:text-lg lg:text-2xl text-white leading-relaxed font-bold readable-text-glow">
+                        Apakah nama tahapan yang memeriksa kelengkapan perangkat keras sesaat setelah tombol power dinyalakan?
+                    </p>
+                </div>
+
+                <!-- Answers List: Beautiful 2x2 Grid Layout for 16:9 proportionality with responsive layout for 5 options -->
+                <div id="quiz-answers" class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 md:gap-3 max-w-3xl mx-auto w-full relative z-10 my-1 md:my-2">
+                    <!-- Buttons will be rendered inside this responsive grid -->
+                </div>
+
+                <!-- Footer (Feedback / Result) -->
+                <div id="quiz-feedback" class="hidden text-center text-[8px] md:text-xs font-bold p-1 rounded-lg mt-1 md:mt-3 relative z-10 border transition-all duration-300">
+                    Jawaban Benar! +100 Skor.
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================ -->
+        <!-- SCREEN 5: EDUCATIONAL HANDBOOK MODAL (16:9)  -->
+        <!-- ============================================ -->
+        <div id="modal-handbook" class="hidden absolute inset-0 z-50 bg-slate-950/90 flex items-center justify-center p-2 md:p-4 backdrop-blur-md">
+            <!-- UKURAN DIUBAH MENJADI LEBIH BESAR: w-[92%] dengan aspect-video dan batas tinggi max-h-[92%] -->
+            <div class="w-[92%] aspect-video max-h-[92%] p-3 md:p-6 flex flex-col justify-between overflow-hidden rounded-xl border border-slate-700/50 shadow-2xl relative"
+                 style="background-image: url('https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/bg_materi1.jpeg'); background-size: cover; background-position: center;">
+                
+                <!-- Header (Ditambahkan kelas shift-right-handbook untuk menggeser judul 11 step ke kanan) -->
+                <div class="flex items-center justify-between border-b border-slate-700/50 pb-1.5 md:pb-2 relative z-10 shift-right-handbook">
+                    <h3 class="text-xs md:text-sm text-cyan-400 font-bold flex items-center gap-1.5 readable-text-glow">
+                        <i class="fa-solid fa-book-open"></i> Kit Catatan Materi Sistem Operasi
+                    </h3>
+                    <button onclick="closeEducationalHelp()" class="text-slate-400 hover:text-white transition">
+                        <i class="fa-solid fa-xmark text-sm md:text-base"></i>
+                    </button>
+                </div>
+
+                <!-- Single Vertically-Stacked Container (Tab Menu di ATAS, Materi di BAWAH) -->
+                <!-- Ditambahkan kelas shift-right-handbook agar Tab Menu dan Isi Materi bergeser 11 step ke kanan -->
+                <div class="flex-1 flex flex-col gap-2 md:gap-3 my-2 md:my-3 overflow-hidden relative z-10 shift-right-handbook">
+                    <!-- TOP SECTION: Horizontal Tab Menu Bar menggunakan Grid 6 Kolom dan padding agar selaras dengan isi materi di bawahnya -->
+                    <div class="grid grid-cols-6 gap-1 md:gap-2 px-1 md:px-3 pb-1.5 md:pb-2 border-b border-slate-800/60 w-full" id="handbook-tabs-nav">
+                        <!-- Generasi dinamis lewat JS -->
+                    </div>
+
+                    <!-- BOTTOM SECTION: Detail Reading View -->
+                    <div class="flex-1 flex flex-col overflow-hidden px-1 md:px-3 py-1 rounded-lg border border-transparent backdrop-blur-xs">
+                        <div id="handbook-content" class="flex-1 overflow-y-auto text-[9px] md:text-xs text-slate-100 space-y-2 md:space-y-3 pr-1 readable-text-glow leading-relaxed">
+                            <!-- Detail materi akan terinjeksi otomatis -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="border-t border-slate-700/50 pt-1.5 md:pt-2 flex justify-between items-center text-[8px] md:text-[9px] text-slate-200 relative z-10 readable-text-glow">
+                    <!-- Ditambahkan kelas shift-right-footer-text untuk menggeser teks ini 15 step ke kanan -->
+                    <span class="shift-right-footer-text">* Baca materi ini untuk memudahkan kuis tiap level</span>
+                    <button onclick="closeEducationalHelp()" class="px-2 py-1 md:px-4 md:py-1.5 bg-cyan-600 hover:bg-cyan-500 text-slate-950 text-[8px] md:text-[10px] font-black rounded-lg transition shadow-md">
+                        Paham, Tutup Catatan
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================ -->
+        <!-- SCREEN 6: VICTORY & GAME OVER SCREENS        -->
+        <!-- ============================================ -->
+        <div id="screen-victory" class="hidden absolute inset-0 z-50 bg-slate-950 flex flex-col items-center justify-center p-4 md:p-6 text-center transition-all duration-300 ease-in-out">
+            <div class="w-full max-w-sm md:max-w-md p-4 relative overflow-hidden">
+                <!-- MEMPERBAIKI BLOKIRAN KLIK: Menambahkan pointer-events-none pada shading pendaran cahaya -->
+                <div class="absolute -inset-10 bg-[radial-gradient(circle_at_center,rgba(234,179,8,0.1)_0%,transparent_70%)] pointer-events-none"></div>
+
+                <!-- Crown -->
+                <div class="text-3xl md:text-5xl text-yellow-400 float-effect mb-2 md:mb-3">
+                    <i class="fa-solid fa-crown"></i>
+                </div>
+
+                <h1 class="text-lg md:text-3xl text-yellow-400 tracking-wider mb-1">KOTA TELAH SELAMAT!</h1>
+                <p class="text-[9px] md:text-xs text-slate-300 leading-relaxed max-w-xs mx-auto mb-3 md:mb-4 opacity-90">
+                    Luar biasa! Kamu telah mengalahkan <span class="text-rose-400 font-black">Raja Error</span> dan merestorasi seluruh modul penting Kota Sistem Operasi.
+                </p>
+
+                <!-- Statistics Card -->
+                <div class="bg-slate-900/40 border border-slate-800/20 rounded-xl p-2.5 md:p-3 mb-3 md:mb-4 grid grid-cols-2 gap-2 text-left">
+                    <div>
+                        <span class="text-[7px] md:text-[8px] text-slate-500 block leading-none">Total Skor</span>
+                        <span id="final-score" class="text-sm md:text-base font-bold text-yellow-400">0</span>
+                    </div>
+                    <div>
+                        <span class="text-[7px] md:text-[8px] text-slate-500 block leading-none">Kristal Terkumpul</span>
+                        <span id="final-crystals" class="text-sm md:text-base font-bold text-cyan-400">7/7</span>
+                    </div>
+                    <div>
+                        <span class="text-[7px] md:text-[8px] text-slate-500 block leading-none">Kecerdasan Sistem</span>
+                        <span class="text-[10px] md:text-xs font-bold text-emerald-400"><i class="fa-solid fa-circle-check"></i> Maksimal</span>
+                    </div>
+                    <div>
+                        <span class="text-[7px] md:text-[8px] text-slate-500 block leading-none">Peringkat Edu-OS</span>
+                        <span class="text-[10px] md:text-xs font-bold text-purple-400">Administrator Utama</span>
+                    </div>
+                </div>
+
+                <!-- Action Button -->
+                <button onclick="resetGame()" class="w-full py-1.5 md:py-2 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-slate-955 font-black text-[10px] md:text-xs rounded-lg border-b-4 border-amber-700 active:scale-95 transition tracking-wider uppercase">
+                    <i class="fa-solid fa-rotate-right"></i> Main Lagi
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const state = {
+            loadingProgress: 0,
+            currentScreen: 'loading',
+            activeLevelIndex: 0,
+            score: 0,
+            crystalsCollected: 0,
+            unlockedLevels: [true, false, false, false, false, false, false],
+            soundEnabled: true,
+            levelStates: {
+                0: { completed: false, miniGameDone: false },
+                1: { completed: false, miniGameDone: false },
+                2: { completed: false, miniGameDone: false },
+                3: { completed: false, miniGameDone: false },
+                4: { completed: false, miniGameDone: false },
+                5: { completed: false, miniGameDone: false },
+                6: { completed: false, miniGameDone: false }
+            }
+        };
+
+        const colorMap = {
+            "cyan-500": "#06b6d4",
+            "amber-500": "#f59e0b",
+            "emerald-500": "#10b981",
+            "purple-500": "#8b5cf6",
+            "sky-500": "#0ea5e9",
+            "pink-500": "#ec4899",
+            "rose-500": "#f43f5e"
+        };
+
+        const levelData = [
+            {
+                name: "Note Materi Utama",
+                icon: "fa-book-open",
+                npc: "Siri (OS Guide Bot)",
+                npcGreeting: "Selamat datang di Kota Sistem Operasi! Sebelum menyelamatkan kota dari serangan error, kamu harus membaca catatan materi dasar di bawah ini untuk mengaktifkan sistem kota. Tekan tombol di bawah untuk mulai belajar!",
+                color: "rose-500",
+                bgImage: "url('https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/bg_materi1.jpeg')"
+            },
+            {
+                name: "Desa Booting",
+                icon: "fa-power-off",
+                npc: "Nobi (Bootloader Robot)",
+                npcGreeting: "Gawat! Urutan proses booting (menyalakan komputer) di desa kami diacak-acak oleh virus! Bantu kami menyeret dan menyusun kembali urutan booting komputer yang benar agar desa kami dapat menyala kembali!",
+                color: "amber-500",
+                bgImage: "url('https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/bg_desabooting.jpeg')",
+                quiz: {
+                    question: "Apakah peran utama BIOS dalam sistem komputer ketika proses booting berjalan?",
+                    options: [
+                        { text: "Mengatur tata letak folder and file di dalam harddisk", correct: false },
+                        { text: "Inisialisasi perangkat keras dasar dan menjalankan Power-On Self Test (POST)", correct: true },
+                        { text: "Mengelola koneksi internet and jaringan lokal", correct: false },
+                        { text: "Menghentikan semua aplikasi berlebih agar baterai awet", correct: false },
+                        { text: "Melakukan enkripsi seluruh berkas data pribadi pengguna secara otomatis", correct: false }
+                    ]
+                }
+            },
+            {
+                name: "Hutan Proses",
+                icon: "fa-microchip",
+                npc: "Procy (CPU Scheduler Gnome)",
+                npcGreeting: "Sst! Hutan kami diserbu oleh proses-proses jahat (Zombie & Orphan) yang menghabiskan daya CPU! Sebagai penjadwal CPU, tugaskan algoritma kita untuk membasmi proses jahat ini dengan cepat! Klik/ketuk proses liar yang memakan beban CPU berlebih!",
+                color: "emerald-500",
+                bgImage: "url('https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/bg_hutan.jpeg')",
+                quiz: {
+                    question: "Algoritma penjadwalan CPU yang mengalokasikan waktu (quantum time) yang sama untuk setiap proses secara bergantian disebut...",
+                    options: [
+                        { text: "First-Come First-Served (FCFS)", correct: false },
+                        { text: "Shortest Job First (SJF)", correct: false },
+                        { text: "Round Robin (RR)", correct: true },
+                        { text: "Priority Scheduling (Berdasarkan Prioritas)", correct: false },
+                        { text: "Multilevel Feedback Queue (Antrean Balik Berlapis)", correct: false }
+                    ]
+                }
+            },
+            {
+                name: "Gua Memori",
+                icon: "fa-memory",
+                npc: "Memoria (RAM Guardian)",
+                npcGreeting: "Gua Memori kehilangan sinkronisasi pengalamatan RAM! Bantu saya memasangkan alamat memori virtual dengan fisik yang sesuai dalam tes memori kartu ini. Temukan kartu berkonsep sama!",
+                color: "purple-500",
+                bgImage: "url('https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/bg_gua.jpeg')",
+                quiz: {
+                    question: "Apakah fungsi utama dari Virtual Memory di dalam sistem operasi komputer?",
+                    options: [
+                        { text: "Menambah kapasitas fisik kepingan RAM secara otomatis", correct: false },
+                        { text: "Memanfaatkan sebagian ruang harddisk sebagai ekstensi memori utama saat RAM penuh", correct: true },
+                        { text: "Mempercepat transfer data koneksi WiFi", correct: false },
+                        { text: "Menyimpan data permanen saat komputer dimatikan", correct: false },
+                        { text: "Melindungi memori RAM dari serangan virus luar", correct: false }
+                    ]
+                }
+            },
+            {
+                name: "Sungai File",
+                icon: "fa-folder-open",
+                npc: "Philo (Sistem File Beaver)",
+                npcGreeting: "Arus Sungai File tersumbat sampah data! Format ekstensi file and direktori berantakan. Tarik file ke dalam keranjang direktori yang tepat sesuai dengan jenis ekstensinya sebelum meluap!",
+                color: "sky-500",
+                bgImage: "url('https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/bg_Sungai.jpeg')",
+                quiz: {
+                    question: "Sistem file yang umum digunakan secara default pada sistem operasi Windows modern adalah...",
+                    options: [
+                        { text: "EXT4", correct: false },
+                        { text: "FAT32", correct: false },
+                        { text: "NTFS", correct: true },
+                        { text: "APFS", correct: false },
+                        { text: "exFAT", correct: false }
+                    ]
+                }
+            },
+            {
+                name: "Gunung Perangkat Keras",
+                icon: "fa-gamepad",
+                npc: "Iron (Driver Golem)",
+                npcGreeting: "Gunung kami berguncang karena miskomunikasi antara Driver and Perangkat Keras! Hubungkan Driver yang sesuai ke Hardware (Input, Output, Storage) agar sinyal komunikasi stabil kembali!",
+                color: "pink-500",
+                bgImage: "url('https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/bg_gunung.jpeg')",
+                quiz: {
+                    question: "Apa kegunaan utama dari perangkat lunak pengontrol bernama Device Driver?",
+                    options: [
+                        { text: "Aplikasi untuk menggambar antarmuka game", correct: false },
+                        { text: "Sistem operasi mandiri untuk ponsel pintar", correct: false },
+                        { text: "Penerjemah komunikasi antara sistem operasi dengan perangkat keras khusus", correct: true },
+                        { text: "Konektor listrik ke sumber daya utama komputer", correct: false },
+                        { text: "Alat untuk membersihkan debu fisik pada motherboard", correct: false }
+                    ]
+                }
+            },
+            {
+                name: "Kastil Antarmuka",
+                icon: "fa-fort-awesome",
+                npc: "Ratu GUI",
+                npcGreeting: "Raja Error mengurungku dan merusak stabilitas Kota Sistem Operasi! Gunakan semua wawasan OS yang telah kamu pelajari untuk menghentikannya! Dia akan menyerangmu dengan rentetan error, kalahkan dia dengan kuis penentu!",
+                color: "rose-500",
+                bgImage: "url('https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/bg_Kastil.jpeg')",
+                quiz: {
+                    question: "Sistem Antarmuka yang memungkinkan interaksi melalui ikon dan grafis visual disebut...",
+                    options: [
+                        { text: "Command Line Interface (CLI)", correct: false },
+                        { text: "Graphical User Interface (GUI)", correct: true },
+                        { text: "Terminal System", correct: false },
+                        { text: "BIOS Setup Utility", correct: false },
+                        { text: "Voice User Interface (VUI)", correct: false }
+                    ]
+                }
+            }
+        ];
+
+        const handbookData = [
+            `<strong>Materi 1: Booting (Penyalaan Sistem)</strong><br><br>
+             Proses booting adalah langkah awal sistem operasi berjalan saat komputer dinyalakan.<br>
+             &bull; <strong>BIOS/UEFI:</strong> Firmware pada motherboard yang pertama kali berjalan untuk mengenali hardware dasar.<br>
+             &bull; <strong>POST (Power-On Self Test):</strong> Pengujian otomatis untuk memeriksa apakah komponen utama (RAM, CPU, Keyboard, GPU) berfungsi normal.<br>
+             &bull; <strong>Master Boot Record / Boot Sector:</strong> Membaca partisi storage untuk mendeteksi lokasi sistem operasi.<br>
+             &bull; <strong>Bootloader (OS Loader):</strong> Menarik file inti sistem operasi (Kernel) ke dalam memori utama RAM.<br>
+             &bull; <strong>Kernel Initialization:</strong> Inti Sistem Operasi mengambil alih kendali penuh komputer dan menampilkan layar masuk (Log In).`,
+            
+            `<strong>Materi 2: Proses (Manajemen Kerja CPU)</strong><br><br>
+             Sistem Operasi bertindak sebagai manajer tugas dari seluruh aplikasi yang sedang berjalan (disebut <strong>Proses</strong>).<br>
+             &bull; <strong>Penjadwalan CPU:</strong> Sistem cerdas untuk mengatur antrean jalannya aplikasi di prosesor.<br>
+             &bull; <strong>Round Robin:</strong> Algoritma pembagian waktu yang sangat adil, membagi slot waktu CPU (Quantum Time) secara bergiliran ke setiap proses.<br>
+             &bull; <strong>Zombie & Orphan Process:</strong> Kondisi error di mana sebuah proses tetap berjalan secara tidak sehat padahal program induknya telah ditutup, memakan beban kerja CPU secara sia-sia.`,
+            
+            `<strong>Materi 3: Memori (RAM & Pengalamatan)</strong><br><br>
+             Manajemen Memori bertugas mengalokasikan ruang pada RAM (Random Access Memory) untuk aplikasi.<br>
+             &bull; <strong>Alamat Memori (Memory Address):</strong> Penanda lokasi data unik di RAM agar informasi tidak tumpang tidur.<br>
+             &bull; <strong>Virtual Memory:</strong> Memanfaatkan sebagian ruang penyimpanan sekunder (seperti Harddisk/SSD) as RAM tambahan darurat saat kapasitas RAM fisik penuh.<br>
+             &bull; <strong>Paging:</strong> Teknik pemecahan memori fisik ke dalam blok-blok kecil (Pages) agar data bisa disimpan secara fleksibel di RAM.`,
+            
+            `<strong>Materi 4: File (Sistem Struktur Data)</strong><br><br>
+             Sistem File bertugas mengatur, menyimpan, and melacak data di dalam drive penyimpanan.<br>
+             &bull; <strong>Direktori (Folder):</strong> Struktur penataan logis berbentuk pohon (tree structure) agar berkas-berkas rapi dan mudah ditemukan.<br>
+             &bull; <strong>Ekstensi File:</strong> Penanda jenis format file agar sistem operasi tahu program apa yang harus membukanya (contoh: .jpg/.png untuk gambar, .exe untuk program aplikasi, .mp3 untuk suara, .docx/.pdf untuk dokumen).<br>
+             &bull; <strong>NTFS & FAT32:</strong> Standar penataan data fisik pada sistem penyimpanan Windows.`,
+            
+            `<strong>Materi 5: Perangkat Keras (Interaksi Hardware)</strong><br><br>
+             Sistem operasi jembatani komunikasi antara software aplikasi dengan sirkuit elektronik fisik.<br>
+             &bull; <strong>Device Driver:</strong> Program penterjemah khusus agar Sistem Operasi mengenali dan dapat mengoperasikan perangkat keras baru (misal: Driver Printer, Driver Kartu Grafis).<br>
+             &bull; <strong>Kategori Perangkat:</strong><br>
+               - <strong>Input (Masukan):</strong> Keyboard, Mouse, Mikrofon.<br>
+               - <strong>Output (Keluaran):</strong> Monitor, Printer, Speaker.<br>
+               - <strong>Storage (Penyimpanan):</strong> SSD, HDD, Flashdisk.`,
+            
+            `<strong>Materi 6: Antarmuka (Interaksi Pengguna)</strong><br><br>
+             Menghubungkan manusia dengan mesin komputer agar perintah dapat dipahami dua arah.<br>
+             &bull; <strong>CLI (Command Line Interface):</strong> Berinteraksi mengetik teks perintah manual di layar hitam terminal. Hemat memori, tetapi butuh hafalan kode perintah yang rumit.<br>
+             &bull; <strong>GUI (Graphical User Interface):</strong> Menggunakan komponen grafis yang indah seperti ikon, kursor mouse, jendela program, dan menu drop-down yang ramah untuk semua kalangan pengguna (contoh: Windows, Android, macOS).`
+        ];
+
+        let processGameInterval = null;
+
+        let typingInterval = null;
+        let currentFullText = "";
+        let isTyping = false;
+        let currentTypewriterTarget = null;
+        let onTypingComplete = null;
+
+        function typeWriter(elementId, text, speed = 20, callback = null) {
+            const el = document.getElementById(elementId);
+            if (!el) return;
+            
+            if (typingInterval) clearInterval(typingInterval);
+            isTyping = true;
+            currentFullText = text;
+            currentTypewriterTarget = elementId;
+            onTypingComplete = callback;
+            el.innerHTML = '';
+            
+            let i = 0;
+            typingInterval = setInterval(() => {
+                if (i < text.length) {
+                    el.innerHTML += text.charAt(i);
+                    i++;
+                    if (state.soundEnabled && i % 4 === 0) {
+                        playSound('click');
+                    }
+                } else {
+                    completeTyping();
+                }
+            }, speed);
+        }
+
+        function completeTyping() {
+            if (!isTyping) return;
+            clearInterval(typingInterval);
+            typingInterval = null;
+            isTyping = false;
+            
+            const el = document.getElementById(currentTypewriterTarget);
+            if (el) {
+                el.innerHTML = currentFullText + ` <span class="inline-block text-cyan-400 animate-pulse ml-1 text-xs">▼</span>`;
+            }
+            if (onTypingComplete) {
+                onTypingComplete();
+                onTypingComplete = null;
+            }
+        }
+
+        window.skipDialogue = function() {
+            if (isTyping && currentTypewriterTarget) {
+                completeTyping();
+            }
+        };
+
+        function playSound(soundId) {
+            if (!state.soundEnabled) return;
+            const audio = document.getElementById('sound-' + soundId);
+            if (audio) {
+                audio.currentTime = 0;
+                audio.play().catch(e => console.log("Audio play blocked: ", e));
+            }
+        }
+
+        window.toggleFullScreen = function() {
+            const container = document.getElementById('game-container');
+            const fsText = document.getElementById('fullscreen-text');
+            const isPseudoFs = container.classList.contains('fixed');
+
+            if (!document.fullscreenElement && !isPseudoFs) {
+                try {
+                    if (container.requestFullscreen) {
+                        container.requestFullscreen().catch(err => {
+                            enablePseudoFullscreen(container, fsText);
+                        });
+                    } else if (container.webkitRequestFullscreen) {
+                        container.webkitRequestFullscreen();
+                    } else {
+                        enablePseudoFullscreen(container, fsText);
+                    }
+                } catch (e) {
+                    enablePseudoFullscreen(container, fsText);
+                }
+            } else {
+                try {
+                    if (document.fullscreenElement || document.webkitFullscreenElement) {
+                        if (document.exitFullscreen) {
+                            document.exitFullscreen();
+                        } else if (document.webkitExitFullscreen) {
+                            document.webkitExitFullscreen();
+                        }
+                    }
+                } catch (e) {}
+                
+                disablePseudoFullscreen(container, fsText);
+            }
+        };
+
+        function enablePseudoFullscreen(container, fsText) {
+            container.classList.add('fixed', 'inset-0', 'w-screen', 'h-screen', 'z-50', 'rounded-none', 'border-none');
+            container.style.width = '100vw';
+            container.style.height = '100vh';
+            container.style.maxWidth = 'none';
+            container.style.maxHeight = 'none';
+            fsText.textContent = "Keluar Layar";
+            handleResizeAndLines();
+        }
+
+        function disablePseudoFullscreen(container, fsText) {
+            container.classList.remove('fixed', 'inset-0', 'w-screen', 'h-screen', 'z-50', 'rounded-none', 'border-none');
+            container.style.width = '';
+            container.style.height = '';
+            container.style.maxWidth = '';
+            container.style.maxHeight = '';
+            fsText.textContent = "Layar Penuh";
+            handleResizeAndLines();
+        }
+
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+        document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+        document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+
+        function handleFullscreenChange() {
+            const container = document.getElementById('game-container');
+            const fsText = document.getElementById('fullscreen-text');
+            if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                if (!container.classList.contains('fixed')) {
+                    fsText.textContent = "Layar Penuh";
+                }
+            } else {
+                fsText.textContent = "Keluar Layar";
+            }
+            handleResizeAndLines();
+        }
+
+        const resizeObserver = new ResizeObserver(entries => {
+            handleResizeAndLines();
+        });
+        resizeObserver.observe(document.getElementById('game-container'));
+
+        function handleResizeAndLines() {
+            if (!document.getElementById('screen-map').classList.contains('hidden')) {
+                updateMapLines();
+            }
+        }
+
+        window.toggleSound = function() {
+            state.soundEnabled = !state.soundEnabled;
+            const icon = document.getElementById('sound-icon');
+            const btnSpan = document.querySelector('#btn-sound-toggle span');
+            if (state.soundEnabled) {
+                icon.className = "fa-solid fa-volume-high text-cyan-400";
+                btnSpan.textContent = "Suara: Aktif";
+            } else {
+                icon.className = "fa-solid fa-volume-xmark text-slate-500";
+                btnSpan.textContent = "Suara: Mati";
+            }
+        };
+
+        window.backToMap = function() {
+            if (processGameInterval) clearInterval(processGameInterval);
+            playSound('click');
+            updateHUD();
+            transitionScreen('screen-gameplay', 'screen-map');
+        };
+
+        window.enterLevel = function(index) {
+            if (!state.unlockedLevels[index]) {
+                playSound('fail');
+                const node = document.getElementById(`level-node-${index}`);
+                node.classList.add('shake-effect');
+                setTimeout(() => node.classList.remove('shake-effect'), 500);
+                return;
+            }
+
+            playSound('click');
+            state.activeLevelIndex = index;
+            
+            const lvl = levelData[index];
+            document.getElementById('area-title').textContent = lvl.name;
+            document.getElementById('screen-gameplay').style.backgroundImage = lvl.bgImage;
+            document.getElementById('screen-gameplay').style.backgroundSize = "cover";
+            document.getElementById('screen-gameplay').style.backgroundPosition = "center";
+
+            document.getElementById('npc-name').textContent = lvl.npc;
+            
+            typeWriter('npc-text', lvl.npcGreeting, 15);
+            
+            const avatarContainer = document.getElementById('npc-avatar');
+            
+            if (index === 0) {
+                avatarContainer.innerHTML = `<i class="fa-solid fa-user-graduate text-cyan-400 animate-pulse text-2xl"></i>`;
+            } else if (index === 1) {
+                avatarContainer.innerHTML = `<img src="https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/L1.png" alt="Nobi" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='https://placehold.co/300x300/0f172a/f59e0b?text=Nobi'">`;
+            } else if (index === 2) {
+                avatarContainer.innerHTML = `<img src="https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/L2.png" alt="Procy" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='https://placehold.co/300x300/0f172a/10b981?text=Procy'">`;
+            } else if (index === 3) {
+                avatarContainer.innerHTML = `<img src="https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/L3.png" alt="Memoria" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='https://placehold.co/300x300/0f172a/8b5cf6?text=Memoria'">`;
+            } else if (index === 4) {
+                avatarContainer.innerHTML = `<img src="https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/L4.png" alt="Philo" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='https://placehold.co/300x300/0f172a/0ea5e9?text=Philo'">`;
+            } else if (index === 5) {
+                avatarContainer.innerHTML = `<img src="https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/L5.png" alt="Iron" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='https://placehold.co/300x300/0f172a/ec4899?text=Iron'">`;
+            } else {
+                avatarContainer.innerHTML = `<img src="https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/L6.png" alt="Ratu GUI" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='https://placehold.co/300x300/0f172a/f43f5e?text=Ratu+GUI'">`;
+            }
+
+            if (state.levelStates[index].miniGameDone) {
+                document.getElementById('btn-dialog-action').textContent = index === 0 ? "Buka Catatan" : "Lanjut ke Kuis";
+            } else {
+                document.getElementById('btn-dialog-action').textContent = index === 0 ? "Mulai Baca" : "Mulai Tugas";
+            }
+
+            const topBar = document.getElementById('gameplay-top-bar');
+            const footerTip = document.getElementById('area-footer-tip');
+            
+            if (index === 0) {
+                topBar.classList.remove('bg-slate-955/40', 'backdrop-blur-md');
+                topBar.classList.add('bg-transparent');
+                footerTip.classList.remove('bg-slate-955/50', 'backdrop-blur-md');
+                footerTip.classList.add('bg-transparent', 'text-transparent', 'select-none');
+
+                document.getElementById('npc-dialog-box').classList.add('hidden');
+                document.getElementById('mini-game-container').innerHTML = '';
+                transitionScreen('screen-map', 'screen-gameplay');
+                setTimeout(() => {
+                    startMiniGame();
+                }, 100);
+            } else {
+                topBar.classList.add('bg-slate-955/40', 'backdrop-blur-md');
+                topBar.classList.remove('bg-transparent');
+                footerTip.classList.add('bg-slate-955/50', 'backdrop-blur-md');
+                footerTip.classList.remove('bg-transparent', 'text-transparent', 'select-none');
+
+                document.getElementById('npc-dialog-box').classList.remove('hidden');
+                document.getElementById('mini-game-container').innerHTML = '';
+                transitionScreen('screen-map', 'screen-gameplay');
+            }
+        };
+
+        window.startMiniGame = function() {
+            playSound('click');
+            document.getElementById('npc-dialog-box').classList.add('hidden');
+            
+            const index = state.activeLevelIndex;
+            const container = document.getElementById('mini-game-container');
+            container.innerHTML = '';
+
+            if (state.levelStates[index].miniGameDone && index !== 0) {
+                openQuiz();
+                return;
+            }
+
+            switch(index) {
+                case 0:
+                    initNoteMateriGame(container);
+                    break;
+                case 1:
+                    initDesaBootingGame(container);
+                    break;
+                case 2:
+                    initHutanProsesGame(container);
+                    break;
+                case 3:
+                    initGuaMemoriGame(container);
+                    break;
+                case 4:
+                    initSungaiFileGame(container);
+                    break;
+                case 5:
+                    initGunungPerangkatKerasGame(container);
+                    break;
+                case 6:
+                    initKastilBossGame(container);
+                    break;
+            }
+        };
+
+        window.showEducationalHelp = function(forcedIdx = null) {
+            playSound('click');
+            
+            let activeTabIdx = 0;
+            if (forcedIdx !== null) {
+                activeTabIdx = forcedIdx;
+            } else {
+                activeTabIdx = state.activeLevelIndex > 0 ? state.activeLevelIndex - 1 : 0;
+            }
+            
+            const tabsNav = document.getElementById('handbook-tabs-nav');
+            tabsNav.innerHTML = '';
+            
+            const shortNames = ["1. Booting", "2. Proses", "3. Memori", "4. File", "5. Hardware", "6. Antarmuka"];
+            const icons = ["fa-power-off", "fa-microchip", "fa-memory", "fa-folder-open", "fa-gamepad", "fa-laptop-code"];
+            
+            shortNames.forEach((name, idx) => {
+                const isCurrentTab = idx === activeTabIdx;
+                const tabBtn = document.createElement('button');
+                tabBtn.className = `flex-1 justify-center px-1 py-1 text-[7px] sm:text-[10px] md:text-xs lg:text-sm font-bold rounded-lg transition flex flex-col sm:flex-row items-center gap-0.5 sm:gap-1.5 border ${
+                    isCurrentTab 
+                    ? 'bg-cyan-500 text-slate-955 border-cyan-400 shadow-md shadow-cyan-500/20' 
+                    : 'bg-slate-955/20 text-slate-200 border-white/5 hover:bg-white/10'
+                }`;
+                tabBtn.innerHTML = `
+                    <i class="fa-solid ${icons[idx]} text-[8px] sm:text-xs"></i> 
+                    <span class="truncate max-w-full text-center leading-none">${name}</span>
+                `;
+                tabBtn.onclick = () => showEducationalHelp(idx);
+                tabsNav.appendChild(tabBtn);
+            });
+
+            document.getElementById('handbook-content').innerHTML = handbookData[activeTabIdx];
+            document.getElementById('modal-handbook').classList.remove('hidden');
+        };
+
+        window.closeEducationalHelp = function() {
+            playSound('click');
+            document.getElementById('modal-handbook').classList.add('hidden');
+        };
+
+        window.resetGame = function() {
+            playSound('click');
+            
+            state.score = 0;
+            state.crystalsCollected = 0;
+            state.activeLevelIndex = 0;
+            state.unlockedLevels = [true, false, false, false, false, false, false];
+            for (let key in state.levelStates) {
+                state.levelStates[key].completed = false;
+                state.levelStates[key].miniGameDone = false;
+            }
+
+            updateHUD();
+            document.getElementById('game-hud').classList.remove('hidden');
+            transitionScreen('screen-victory', 'screen-map');
+        };
+
+        window.addEventListener('load', () => {
+            startLoadingScreen();
+        });
+
+        function startLoadingScreen() {
+            const bar = document.getElementById('loading-bar');
+            const pct = document.getElementById('loading-percentage');
+            const txt = document.getElementById('loading-status');
+            const infoContainer = document.getElementById('loading-info-container');
+            const btnStart = document.getElementById('btn-start-game');
+
+            const loadingMessages = [
+                "Inisialisasi CPU & RAM...",
+                "Memuat Peta Kota Sistem Operasi...",
+                "Melakukan Power-On Self Test (POST)...",
+                "Mempersiapkan Driver Perangkat Keras...",
+                "Mengaktifkan Antarmuka Pengguna (GUI)...",
+                "Koneksi Stabil! Sistem Siap."
+            ];
+
+            const intervalTime = 100;
+            const timer = setInterval(() => {
+                state.loadingProgress += 2;
+                if (state.loadingProgress > 100) state.loadingProgress = 100;
+
+                bar.style.width = state.loadingProgress + '%';
+                pct.textContent = state.loadingProgress + '%';
+
+                if (state.loadingProgress < 20) txt.textContent = loadingMessages[0];
+                else if (state.loadingProgress < 40) txt.textContent = loadingMessages[1];
+                else if (state.loadingProgress < 60) txt.textContent = loadingMessages[2];
+                else if (state.loadingProgress < 80) txt.textContent = loadingMessages[3];
+                else if (state.loadingProgress < 95) txt.textContent = loadingMessages[4];
+                else txt.textContent = loadingMessages[5];
+
+                if (state.loadingProgress >= 100) {
+                    clearInterval(timer);
+                    infoContainer.classList.add('hidden');
+                    btnStart.classList.remove('hidden');
+                    playSound('level-up');
+                }
+            }, intervalTime);
+
+            btnStart.addEventListener('click', () => {
+                playSound('click');
+                updateHUD();
+                transitionScreen('screen-loading', 'screen-map');
+                document.getElementById('game-hud').classList.remove('hidden');
+                setTimeout(updateMapLines, 200);
+            });
+        }
+
+        function transitionScreen(fromId, toId) {
+            const fromEl = document.getElementById(fromId);
+            const textEl = document.getElementById(toId);
+            
+            fromEl.classList.add('opacity-0');
+            setTimeout(() => {
+                fromEl.classList.add('hidden');
+                textEl.classList.remove('hidden');
+                textEl.classList.add('opacity-0');
+                setTimeout(() => {
+                    textEl.classList.remove('opacity-0');
+                    textEl.classList.add('opacity-100');
+                    if (toId === 'screen-map') {
+                        updateMapLines();
+                    }
+                }, 50);
+            }, 300);
+        }
+
+        function updateMapLines() {
+            const svg = document.getElementById('map-svg-lines');
+            const svgRect = svg.getBoundingClientRect();
+
+            for (let i = 0; i < 6; i++) {
+                const nodeStart = document.getElementById(`btn-level-${i}`);
+                const nodeEnd = document.getElementById(`btn-level-${i+1}`);
+                const path = document.getElementById(`path-${i}-${i+1}`);
+
+                if (nodeStart && nodeEnd && path) {
+                    const rectStart = nodeStart.getBoundingClientRect();
+                    const rectEnd = nodeEnd.getBoundingClientRect();
+
+                    const x1 = rectStart.left + rectStart.width/2 - svgRect.left;
+                    const y1 = rectStart.top + rectStart.height/2 - svgRect.top;
+                    const x2 = rectEnd.left + rectEnd.width/2 - svgRect.left;
+                    const y2 = rectEnd.top + rectEnd.height/2 - svgRect.top;
+
+                    path.setAttribute('d', `M ${x1} ${y1} L ${x2} ${y2}`);
+                    
+                    if (state.unlockedLevels[i+1]) {
+                        path.setAttribute('stroke', '#37f713');
+                        path.setAttribute('opacity', '0.9');     
+                        path.setAttribute('stroke-width', '4');  
+                    } else {
+                        path.setAttribute('stroke', '#166534');
+                        path.setAttribute('opacity', '0.35');
+                        path.setAttribute('stroke-width', '3');
+                    }
+                }
+            }
+        }
+
+        function updateHUD() {
+            let completedCount = 0;
+            for (let key in state.levelStates) {
+                if (state.levelStates[key].completed) completedCount++;
+            }
+
+            document.getElementById('hud-progress-txt').textContent = `${completedCount}/7 Area`;
+            document.getElementById('hud-progress-bar').style.width = `${(completedCount / 7) * 100}%`;
+            document.getElementById('hud-crystals').textContent = `${state.crystalsCollected}/7`;
+            document.getElementById('hud-score').textContent = state.score;
+
+            let activeProgressionLevel = 0;
+            for (let i = 0; i < 7; i++) {
+                if (state.unlockedLevels[i] && !state.levelStates[i].completed) {
+                    activeProgressionLevel = i;
+                    break;
+                }
+            }
+            if (state.crystalsCollected >= 7) {
+                activeProgressionLevel = 6; 
+            }
+
+            const instructionMap = {
+                0: "Mulailah dengan mengakses Node 0. Note Materi. Setelah membaca dasar-dasar sistem operasi, area 1. Desa Booting akan terbuka!",
+                1: "Mulailah dengan mengakses 1. Desa Booting. Setelah membaca dasar-dasar sistem operasi, area 2. Hutan Proses akan terbuka!",
+                2: "Mulailah dengan mengakses 2. Hutan Proses. Setelah membaca dasar-dasar sistem operasi, area 3. Gua Memori akan terbuka!",
+                3: "Mulailah dengan mengakses 3. Gua Memori. Setelah membaca dasar-dasar sistem operasi, area 4. Sungai File akan terbuka!",
+                4: "Mulailah dengan mengakses 4. Sungai File. Setelah membaca dasar-dasar sistem operasi, area 5. Gn Perangkat Keras akan terbuka!",
+                5: "Mulailah dengan mengakses 5. Gn Perangkat Keras. Setelah membaca dasar-dasar sistem operasi, area 6. Kastil Antarmuka akan terbuka!",
+                6: "Mulailah dengan mengakses 6. Kastil Antarmuka. Gunakan seluruh pengetahuan Anda untuk mengalahkan Raja Error dan memulihkan kota!"
+            };
+
+            const updatedInstruction = instructionMap[activeProgressionLevel] || instructionMap[0];
+            document.getElementById('map-instruction-text').innerHTML = `<i class="fa-solid fa-circle-info text-yellow-400 animate-pulse mr-1"></i> ${updatedInstruction}`;
+
+            for (let i = 0; i < 7; i++) {
+                const btn = document.getElementById(`btn-level-${i}`);
+                const info = btn.parentElement.querySelector('span');
+
+                if (state.unlockedLevels[i]) {
+                    btn.classList.remove('bg-slate-800', 'border-slate-600', 'cursor-not-allowed', 'bg-red-955/30', 'border-red-900/50', 'text-red-700/80');
+                    
+                    if (state.levelStates[i].completed) {
+                        btn.className = `w-8 h-8 md:w-14 md:h-14 rounded-full bg-emerald-800 border-2 border-emerald-800 flex items-center justify-center text-white text-xs md:text-base font-bold shadow-lg shadow-emerald-500/10 hover:scale-110 transition-all duration-200`;
+                        btn.innerHTML = `<i class="fa-solid fa-circle-check text-xs md:text-2xl text-white"></i>`;
+                        info.className = "text-[7px] md:text-[10px] font-bold text-center mt-0.5 md:mt-1 bg-slate-950/70 px-1.5 py-0.5 rounded text-white whitespace-nowrap";
+                    } else {
+                        btn.className = `w-8 h-8 md:w-14 md:h-14 rounded-full bg-amber-700 border-2 border-amber-700 flex items-center justify-center text-white text-xs md:text-base font-bold shadow-lg shadow-amber-500/20 hover:scale-110 transition-all duration-200 active-level-btn`;
+                        const lvlIcon = i === 0 ? "fa-book-open" : levelData[i].icon;
+                        btn.innerHTML = `<i class="fa-solid ${lvlIcon} text-xs md:text-2xl text-white"></i>`;
+                        info.className = "text-[7px] md:text-[10px] font-bold text-center mt-0.5 md:mt-1 bg-slate-950/70 px-1.5 py-0.5 rounded text-white whitespace-nowrap";
+                    }
+                } else {
+                    btn.className = "w-8 h-8 md:w-14 md:h-14 rounded-full bg-red-500 border-2 border-white flex items-center justify-center text-white text-xs md:text-base font-bold cursor-not-allowed shadow-none";
+                    btn.innerHTML = `<i class="fa-solid fa-lock text-xs md:text-2xl text-white"></i>`;
+                    info.className = "text-[7px] md:text-[10px] font-bold text-center mt-0.5 md:mt-1 bg-slate-950/40 px-1.5 py-0.5 rounded text-white whitespace-nowrap";
+                }
+            }
+        }
+
+        function initNoteMateriGame(container) {
+            container.innerHTML = `
+                <div class="w-full max-w-2xl flex flex-col justify-between h-full py-1 text-left pl-16 md:pl-40 transition-all duration-300">
+                    <div>
+                        <h4 class="text-[10px] md:text-sm font-bold text-cyan-400 mb-0.5 flex items-center gap-1">
+                            <i class="fa-solid fa-graduation-cap"></i> Modul Pengenalan Kota Sistem Operasi
+                        </h4>
+                        <p class="text-[8px] md:text-[10px] text-slate-400">Selamat! Langkah pertama dimulai di sini. Baca teks panduan di bawah ini:</p>
+                    </div>
+
+                    <div class="my-1 overflow-y-auto max-h-[140px] md:max-h-[180px] pr-1">
+                        <p class="text-xs md:text-base lg:text-lg font-bold text-slate-100 leading-relaxed readable-text-glow" id="note-materi-typing"></p>
+                    </div>
+
+                    <div class="flex gap-2 mt-1">
+                        <button onclick="showEducationalHelp(0)" class="flex-1 py-1 bg-blue-600/30 hover:bg-blue-600/50 border border-blue-500/30 text-blue-300 text-[9px] md:text-xs font-bold rounded-lg transition flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-book-open"></i> Buka Kit Catatan
+                        </button>
+                        <button onclick="finishNoteMateri()" class="flex-1 py-1 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-955 font-black text-[9px] md:text-xs rounded-lg transition tracking-wide shadow-lg">
+                            Selesai & Aktifkan Kota <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            const longText = "Sistem Operasi (OS) bertindak as jembatan utama yang mengelola interaksi antara aplikasi software dengan komponen hardware komputer. Di dalam game ini, Anda akan menjelajahi 6 modul utama kota secara interaktif: Booting, Proses, Memori, Sungai File, Perangkat Keras, dan Kastil Antarmuka.";
+            typeWriter('note-materi-typing', longText, 10);
+        }
+
+        window.finishNoteMateri = function() {
+            playSound('success');
+            const idx = 0;
+            state.levelStates[idx].miniGameDone = true;
+            state.levelStates[idx].completed = true;
+            state.score += 100;
+            state.crystalsCollected = 1;
+            state.unlockedLevels[1] = true;
+
+            const container = document.getElementById('mini-game-container');
+            container.innerHTML = `
+                <div class="text-center p-4 md:p-8 max-w-xs md:max-w-sm w-full float-effect bg-slate-955/20 border border-[#07f00f]/30 backdrop-blur-md rounded-2xl shadow-2xl shadow-[#07f00f]/20 animate-fadeIn">
+                    <div class="text-3xl md:text-5xl text-[#07f00f] mb-2 drop-shadow-[0_0_15px_rgba(7,240,15,0.4)]">
+                        <i class="fa-solid fa-circle-check animate-pulse"></i>
+                    </div>
+                    <h3 class="text-xs md:text-base font-bold text-[#07f00f] tracking-wide uppercase">Materi Selesai!</h3>
+                    <p class="text-[9px] md:text-xs text-slate-300 my-2 leading-relaxed">
+                        Kamu telah mendapatkan kristal pertamamu! <span class="text-amber-400 font-bold">1. Desa Booting</span> sekarang telah terbuka di peta.
+                    </p>
+                    <button onclick="backToMap()" class="w-full py-1.5 md:py-2 bg-gradient-to-r from-[#07f00f] to-emerald-600 hover:from-[#06d60e] hover:to-emerald-500 text-slate-955 font-black text-[9px] md:text-xs rounded-xl shadow-lg shadow-[#07f00f]/20 active:scale-95 transition-all duration-150 tracking-wide uppercase">
+                        Kembali ke Peta
+                    </button>
+                </div>
+            `;
+        };
+
+        function initDesaBootingGame(container) {
+            const steps = [
+                { id: 1, text: "BIOS (Inisialisasi Hardware)", desc: "Menghidupkan chip firmware motherboard pertama kali." },
+                { id: 2, text: "POST (Pengujian Hardware)", desc: "Mengecek apakah RAM, CPU, and GPU berfungsi normal." },
+                { id: 3, text: "Membaca Boot Sector (Storage)", desc: "Mencari petunjuk arah lokasi penyimpanan sistem operasi." },
+                { id: 4, text: "Memuat Bootloader (OS Loader)", desc: "Menarik file loader sistem operasi ke memori utama RAM." },
+                { id: 5, text: "Inisialisasi Kernel OS", desc: "Inti Sistem Operasi aktif dan siap menerima perintah." }
+            ];
+
+            let shuffled = [...steps].sort(() => Math.random() - 0.5);
+            let selectedIndex = null;
+
+            const renderSteps = () => {
+                container.innerHTML = `
+                    <div class="w-[94%] h-[92%] aspect-video text-center flex flex-col justify-between p-3 md:p-6 bg-slate-950/30 border border-slate-800/25 rounded-2xl shadow-2xl backdrop-blur-md animate-fadeIn">
+                        <div>
+                            <h4 class="text-xs md:text-lg font-bold text-yellow-400 mb-0.5 drop-shadow-md">Algoritma Booting Rusak!</h4>
+                            <p class="text-[9px] md:text-xs text-slate-200 mb-1 md:mb-2 readable-text-glow">Klik dua blok secara berurutan untuk menukar posisinya hingga urut (1 ke 5)!</p>
+                        </div>
+                        
+                        <div class="space-y-1.5 md:space-y-2 my-1 flex-1 flex flex-col justify-center" id="booting-list"></div>
+
+                        <button id="btn-check-booting" class="w-full max-w-xs md:max-w-md mx-auto py-1 md:py-2 bg-yellow-500 hover:bg-yellow-400 text-slate-955 text-[10px] md:text-sm font-bold rounded-lg mt-1 md:mt-2 transition shadow-lg">
+                            Periksa Struktur
+                        </button>
+                    </div>
+                `;
+
+                const listContainer = document.getElementById('booting-list');
+                shuffled.forEach((step, idx) => {
+                    const isSelected = selectedIndex === idx;
+                    const btn = document.createElement('button');
+                    btn.className = `w-full p-1.5 md:p-3 rounded-lg border text-left transition flex items-center gap-2.5 md:gap-4 ${
+                        isSelected 
+                        ? 'bg-yellow-500/20 border-yellow-400/80 text-yellow-300 shadow-md backdrop-blur-md' 
+                        : 'bg-slate-950/30 hover:bg-slate-800/40 border-slate-800/15 text-slate-300 backdrop-blur-sm'
+                    }`;
+                    btn.innerHTML = `
+                        <span class="w-5 h-5 md:w-7 md:h-7 bg-slate-900/40 rounded-full flex items-center justify-center text-[8px] md:text-xs font-bold text-slate-300">${idx + 1}</span>
+                        <div class="flex-1">
+                            <div class="text-[9px] md:text-sm font-bold readable-text-glow text-white leading-none">${step.text}</div>
+                            <div class="text-[7px] md:text-xs text-slate-300 leading-none mt-0.5 md:mt-1 readable-text-glow">${step.desc}</div>
+                        </div>
+                    `;
+                    btn.onclick = () => {
+                        playSound('click');
+                        if (selectedIndex === null) {
+                            selectedIndex = idx;
+                            renderSteps();
+                        } else {
+                            const temp = shuffled[selectedIndex];
+                            shuffled[selectedIndex] = shuffled[idx];
+                            shuffled[idx] = temp;
+                            selectedIndex = null;
+                            renderSteps();
+                        }
+                    };
+                    listContainer.appendChild(btn);
+                });
+
+                document.getElementById('btn-check-booting').onclick = () => {
+                    const correct = shuffled.every((item, index) => item.id === index + 1);
+                    if (correct) {
+                        finishMiniGame();
+                    } else {
+                        playSound('fail');
+                        const list = document.getElementById('booting-list');
+                        list.classList.add('shake-effect');
+                        setTimeout(() => list.classList.remove('shake-effect'), 500);
+                    }
+                };
+            };
+
+            renderSteps();
+        }
+
+        function initHutanProsesGame(container) {
+            container.innerHTML = `
+                <div class="w-[94%] h-[92%] aspect-video text-center flex flex-col justify-between p-3 md:p-6 bg-slate-950/30 border border-slate-800/25 rounded-2xl shadow-2xl backdrop-blur-md animate-fadeIn">
+                    <div class="flex justify-between items-center mb-1">
+                        <div class="text-left">
+                            <h4 class="text-xs md:text-lg font-bold text-emerald-400">Algoritma Penjadwalan CPU</h4>
+                            <p class="text-[9px] md:text-xs text-slate-400">Hentikan Zombie/Orphan sebelum CPU Overload 100%!</p>
+                        </div>
+                        <div class="bg-slate-900/50 px-3 py-1 md:px-4 md:py-1.5 rounded border border-slate-800/40">
+                            <span class="text-[7px] md:text-[9px] block text-slate-500 leading-none">Beban CPU</span>
+                            <span id="cpu-load" class="text-[10px] md:text-sm font-bold text-emerald-400">0%</span>
+                        </div>
+                    </div>
+
+                    <!-- Arena Grid (Mengadaptasi tinggi baris agar pas di 16:9) -->
+                    <div class="grid grid-cols-3 gap-1.5 md:gap-3 bg-slate-900/10 p-2 md:p-3 flex-1 my-1 md:my-2 items-center justify-center">
+                        <div id="proc-slot-0" class="h-10 md:h-20 bg-slate-955/40 rounded-lg flex items-center justify-center transition border border-slate-800/10 relative cursor-pointer hover:bg-slate-900/30"></div>
+                        <div id="proc-slot-1" class="h-10 md:h-20 bg-slate-955/40 rounded-lg flex items-center justify-center transition border border-slate-800/10 relative cursor-pointer hover:bg-slate-900/30"></div>
+                        <div id="proc-slot-2" class="h-10 md:h-20 bg-slate-955/40 rounded-lg flex items-center justify-center transition border border-slate-800/10 relative cursor-pointer hover:bg-slate-900/30"></div>
+                        <div id="proc-slot-3" class="h-10 md:h-20 bg-slate-955/40 rounded-lg flex items-center justify-center transition border border-slate-800/10 relative cursor-pointer hover:bg-slate-900/30"></div>
+                        <div id="proc-slot-4" class="h-10 md:h-20 bg-slate-955/40 rounded-lg flex items-center justify-center transition border border-slate-800/10 relative cursor-pointer hover:bg-slate-900/30"></div>
+                        <div id="proc-slot-5" class="h-10 md:h-20 bg-slate-955/40 rounded-lg flex items-center justify-center transition border border-slate-800/10 relative cursor-pointer hover:bg-slate-900/30"></div>
+                        <div id="proc-slot-6" class="h-10 md:h-20 bg-slate-955/40 rounded-lg flex items-center justify-center transition border border-slate-800/10 relative cursor-pointer hover:bg-slate-900/30"></div>
+                        <div id="proc-slot-7" class="h-10 md:h-20 bg-slate-955/40 rounded-lg flex items-center justify-center transition border border-slate-800/10 relative cursor-pointer hover:bg-slate-900/30"></div>
+                        <div id="proc-slot-8" class="h-10 md:h-20 bg-slate-955/40 rounded-lg flex items-center justify-center transition border border-slate-800/10 relative cursor-pointer hover:bg-slate-900/30"></div>
+                    </div>
+
+                    <div class="flex justify-between text-[8px] md:text-xs text-slate-500">
+                        <span>Lumpuhkan 10 Proses Error!</span>
+                        <span id="proc-kill-count" class="font-bold text-slate-300">0/10 Terbunuh</span>
+                    </div>
+                </div>
+            `;
+
+            let cpuLoad = 0;
+            let killedCount = 0;
+            const maxKills = 10;
+            const slots = Array.from({length: 9}, (_, i) => document.getElementById(`proc-slot-${i}`));
+            let activeSlots = {};
+
+            if (processGameInterval) clearInterval(processGameInterval);
+
+            processGameInterval = setInterval(() => {
+                let activeCount = Object.keys(activeSlots).length;
+                cpuLoad += activeCount * 4 + 2;
+                if (cpuLoad > 100) cpuLoad = 100;
+                
+                const cpuEl = document.getElementById('cpu-load');
+                if (cpuEl) {
+                    cpuEl.textContent = cpuLoad + '%';
+                    if (cpuLoad > 75) {
+                        cpuEl.className = "text-[10px] md:text-sm font-bold text-rose-500 animate-bounce";
+                    } else if (cpuLoad > 40) {
+                        cpuEl.className = "text-[10px] md:text-sm font-bold text-amber-500";
+                    } else {
+                        cpuEl.className = "text-[10px] md:text-sm font-bold text-emerald-400";
+                    }
+                }
+
+                if (cpuLoad >= 100) {
+                    clearInterval(processGameInterval);
+                    playSound('fail');
+                    container.innerHTML = `
+                        <div class="text-center p-6 md:p-8 max-w-[280px] md:max-w-sm w-full float-effect bg-slate-955/20 border border-rose-500/30 backdrop-blur-md rounded-2xl shadow-2xl shadow-rose-500/20 animate-fadeIn">
+                            <div class="text-4xl text-rose-500 mb-3"><i class="fa-solid fa-triangle-exclamation animate-pulse"></i></div>
+                            <h3 class="text-sm md:text-base font-bold text-rose-500">CPU Overload!</h3>
+                            <p class="text-[11px] md:text-xs text-slate-300 my-3 leading-relaxed">Sistem terlalu panas karena menampung terlalu banyak Zombie. Coba lagi!</p>
+                            <button onclick="startMiniGame()" class="w-full py-2 bg-rose-500 hover:bg-rose-400 text-slate-955 font-bold text-xs rounded-lg transition">
+                                Coba Lagi
+                            </button>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const emptyIndices = slots.map((_, i) => i).filter(i => !activeSlots[i]);
+                if (emptyIndices.length > 0 && Math.random() < 0.7) {
+                    const randIndex = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
+                    const isZombie = Math.random() > 0.4;
+                    const procType = isZombie ? { name: "ZOMBIE", icon: "fa-skull-crossbones", color: "text-rose-500 border-rose-500/50" } : { name: "ORPHAN", icon: "fa-ghost", color: "text-amber-500 border-amber-500/50" };
+                    
+                    activeSlots[randIndex] = procType;
+                    const slot = slots[randIndex];
+                    slot.className = `h-10 md:h-20 bg-slate-955/80 rounded-lg flex flex-col items-center justify-center transition border-2 ${procType.color} relative cursor-pointer float-effect`;
+                    slot.innerHTML = `
+                        <i class="fa-solid ${procType.icon} text-xs md:text-2xl"></i>
+                        <span class="text-[6px] md:text-[10px] font-bold mt-0.5 tracking-wider leading-none">${procType.name}</span>
+                    `;
+                    
+                    slot.onclick = () => {
+                        playSound('click');
+                        delete activeSlots[randIndex];
+                        slot.className = "h-10 md:h-20 bg-slate-955/40 rounded-lg flex items-center justify-center transition border border-slate-800/10 relative cursor-pointer hover:bg-slate-900/30";
+                        slot.innerHTML = '';
+                        slot.onclick = null;
+                        
+                        killedCount++;
+                        const killedEl = document.getElementById('proc-kill-count');
+                        if (killedEl) killedEl.textContent = `${killedCount}/${maxKills} Terbunuh`;
+
+                        cpuLoad = Math.max(0, cpuLoad - 15);
+
+                        if (killedCount >= maxKills) {
+                            clearInterval(processGameInterval);
+                            finishMiniGame();
+                        }
+                    };
+                }
+            }, 800);
+        }
+
+        function initGuaMemoriGame(container) {
+            const concepts = [
+                { id: 1, text: "RAM", pairId: 101 },
+                { id: 101, text: "Memori Utama", pairId: 1 },
+                { id: 2, text: "Virtual Memory", pairId: 102 },
+                { id: 102, text: "Harddisk Eksternal", pairId: 2 },
+                { id: 3, text: "Alamat Fisik", pairId: 103 },
+                { id: 103, text: "Posisi Asli RAM", pairId: 3 },
+                { id: 4, text: "Paging", pairId: 104 },
+                { id: 104, text: "Blok Memori", pairId: 4 }
+            ];
+
+            let cards = [...concepts].sort(() => Math.random() - 0.5);
+            let openedCards = [];
+            let matchedIds = [];
+
+            container.innerHTML = `
+                <div class="w-[94%] h-[92%] aspect-video text-center flex flex-col justify-between p-3 md:p-6 bg-slate-950/30 border border-slate-800/25 rounded-2xl shadow-2xl backdrop-blur-md animate-fadeIn">
+                    <div>
+                        <h4 class="text-xs md:text-lg font-bold text-purple-400">Manajemen Pengalamatan RAM</h4>
+                        <p class="text-[9px] md:text-xs text-slate-400 mb-1 md:mb-2">Temukan pasangan kartu konsep manajemen memori yang sama!</p>
+                    </div>
+
+                    <div class="grid grid-cols-4 gap-1.5 md:gap-3 flex-1 my-1 md:my-2 items-center justify-center" id="memory-grid"></div>
+
+                    <div class="flex justify-between text-[9px] md:text-xs text-slate-500">
+                        <span>Kecocokan Kartu</span>
+                        <span id="matched-progress" class="font-bold text-slate-300">0/4 Pasang</span>
+                    </div>
+                </div>
+            `;
+
+            const grid = document.getElementById('memory-grid');
+
+            const renderCards = () => {
+                grid.innerHTML = '';
+                cards.forEach((card, idx) => {
+                    const isMatched = matchedIds.includes(card.id);
+                    const isOpen = openedCards.includes(idx) || isMatched;
+
+                    const cardBtn = document.createElement('button');
+                    cardBtn.className = `h-10 sm:h-14 md:h-20 rounded-xl text-[7px] sm:text-[10px] md:text-sm font-bold transition flex items-center justify-center p-1 border ${
+                        isMatched 
+                        ? 'bg-purple-955/20 border-purple-800/40 text-purple-400/80'
+                        : isOpen 
+                            ? 'bg-purple-600/90 border-purple-400 text-white font-extrabold shadow-lg' 
+                            : 'bg-slate-900/60 border-slate-800/30 text-slate-400 hover:bg-slate-800/60 shadow animate-fadeIn'
+                    }`;
+
+                    if (isOpen) {
+                        cardBtn.textContent = card.text;
+                    } else {
+                        cardBtn.innerHTML = `<i class="fa-solid fa-microchip text-xs md:text-base"></i>`;
+                    }
+
+                    cardBtn.onclick = () => {
+                        if (isOpen || openedCards.length >= 2 || isMatched) return;
+                        
+                        playSound('click');
+                        openedCards.push(idx);
+                        renderCards();
+
+                        if (openedCards.length === 2) {
+                            const firstCard = cards[openedCards[0]];
+                            const secondCard = cards[openedCards[1]];
+
+                            if (firstCard.pairId === secondCard.id) {
+                                setTimeout(() => {
+                                    playSound('success');
+                                    matchedIds.push(firstCard.id, secondCard.id);
+                                    openedCards = [];
+                                    renderCards();
+                                    
+                                    const pairsCount = matchedIds.length / 2;
+                                    const progressEl = document.getElementById('matched-progress');
+                                    if (progressEl) progressEl.textContent = `${pairsCount}/4 Pasang`;
+
+                                    if (pairsCount === 4) {
+                                        finishMiniGame();
+                                    }
+                                }, 500);
+                            } else {
+                                setTimeout(() => {
+                                    playSound('fail');
+                                    openedCards = [];
+                                    renderCards();
+                                }, 1200);
+                            }
+                        }
+                    };
+
+                    grid.appendChild(cardBtn);
+                });
+            };
+
+            renderCards();
+        }
+
+        function initSungaiFileGame(container) {
+            const files = [
+                { name: "foto_liburan.jpg", category: "image", icon: "fa-file-image" },
+                { name: "laporan_os.pdf", category: "document", icon: "fa-file-pdf" },
+                { name: "game_ular.exe", category: "executable", icon: "fa-file-code" },
+                { name: "lagu_hits.mp3", category: "audio", icon: "fa-file-audio" },
+                { name: "wallpaper.png", category: "image", icon: "fa-file-image" },
+                { name: "tugas_sekolah.docx", category: "document", icon: "fa-file-lines" }
+            ];
+
+            let activeFileIndex = 0;
+            let sortedCount = 0;
+
+            const drawFileSort = () => {
+                if (activeFileIndex >= files.length) {
+                    finishMiniGame();
+                    return;
+                }
+
+                const currentFile = files[activeFileIndex];
+
+                container.innerHTML = `
+                    <div class="w-[94%] h-[92%] aspect-video text-center flex flex-col justify-between p-3 md:p-6 bg-slate-955/30 border border-slate-800/25 rounded-2xl shadow-2xl backdrop-blur-md animate-fadeIn">
+                        <div>
+                            <h4 class="text-xs md:text-lg font-bold text-sky-400">Sortir Ekstensi Sungai File</h4>
+                            <p class="text-[9px] md:text-xs text-slate-400">Tugaskan file yang melayang ke folder direktori yang sesuai!</p>
+                        </div>
+
+                        <!-- Floating current file -->
+                        <div class="bg-slate-900/30 border border-dashed border-sky-500/30 p-2 md:p-4 rounded-xl my-1 md:my-3 max-w-[200px] md:max-w-sm mx-auto w-full flex flex-col items-center justify-center float-effect">
+                            <i class="fa-solid ${currentFile.icon} text-xl md:text-4xl text-sky-400 mb-1"></i>
+                            <span class="text-[9px] md:text-sm font-bold text-white tracking-wide">${currentFile.name}</span>
+                        </div>
+
+                        <!-- Seamless Targets Grid -->
+                        <div class="grid grid-cols-2 gap-1.5 md:gap-3 my-1 md:my-2 max-w-lg mx-auto w-full">
+                            <button onclick="sortFile('image')" class="py-1.5 md:py-3.5 bg-slate-900/60 hover:bg-slate-800/80 text-[8px] md:text-sm font-bold text-slate-300 rounded-lg border border-slate-800/40 hover:border-sky-500/50 transition flex items-center justify-center gap-1 shadow-lg">
+                                <i class="fa-solid fa-folder text-yellow-500 text-xs md:text-lg"></i> Gambar
+                            </button>
+                            <button onclick="sortFile('document')" class="py-1.5 md:py-3.5 bg-slate-900/60 hover:bg-slate-800/80 text-[8px] md:text-sm font-bold text-slate-300 rounded-lg border border-slate-800/40 hover:border-sky-500/50 transition flex items-center justify-center gap-1 shadow-lg">
+                                <i class="fa-solid fa-folder text-blue-500 text-xs md:text-lg"></i> Dokumen
+                            </button>
+                            <button onclick="sortFile('executable')" class="py-1.5 md:py-3.5 bg-slate-900/60 hover:bg-slate-800/80 text-[8px] md:text-sm font-bold text-slate-300 rounded-lg border border-slate-800/40 hover:border-sky-500/50 transition flex items-center justify-center gap-1 shadow-lg">
+                                <i class="fa-solid fa-folder text-emerald-500 text-xs md:text-lg"></i> Program
+                            </button>
+                            <button onclick="sortFile('audio')" class="py-1.5 md:py-3.5 bg-slate-900/60 hover:bg-slate-800/80 text-[8px] md:text-sm font-bold text-slate-300 rounded-lg border border-slate-800/40 hover:border-sky-500/50 transition flex items-center justify-center gap-1 shadow-lg">
+                                <i class="fa-solid fa-folder text-purple-500 text-xs md:text-lg"></i> Musik
+                            </button>
+                        </div>
+
+                        <div class="flex justify-between text-[9px] md:text-xs text-slate-500 mt-1">
+                            <span>Sistem Direktori</span>
+                            <span class="font-bold text-slate-300">${sortedCount}/${files.length} Tersortir</span>
+                        </div>
+                    </div>
+                `;
+            };
+
+            window.sortFile = function(category) {
+                const currentFile = files[activeFileIndex];
+                if (currentFile.category === category) {
+                    playSound('success');
+                    sortedCount++;
+                    activeFileIndex++;
+                    drawFileSort();
+                } else {
+                    playSound('fail');
+                    const box = container.firstElementChild;
+                    box.classList.add('shake-effect');
+                    setTimeout(() => box.classList.remove('shake-effect'), 500);
+                }
+            };
+
+            drawFileSort();
+        }
+
+        function initGunungPerangkatKerasGame(container) {
+            const pairings = [
+                { id: 1, hardware: "Printer (Output)", driver: "Driver Printer laserjet" },
+                { id: 2, hardware: "Keyboard (Input)", driver: "HID Keyboard Controller" },
+                { id: 3, hardware: "Kartu Grafis (GPU)", driver: "NVIDIA Display Driver" },
+                { id: 4, hardware: "External SSD (Storage)", driver: "Mass Storage Driver" }
+            ];
+
+            let selectedHW = null;
+            let selectedDR = null;
+            let matchedPairIds = [];
+
+            let hwList = [...pairings].sort(() => Math.random() - 0.5);
+            let drList = [...pairings].sort(() => Math.random() - 0.5);
+
+            const renderConnections = () => {
+                container.innerHTML = `
+                    <div class="w-[94%] h-[92%] aspect-video text-center flex flex-col justify-between p-3 md:p-6 bg-slate-955/30 border border-slate-800/25 rounded-2xl shadow-2xl backdrop-blur-md animate-fadeIn">
+                        <div>
+                            <h4 class="text-xs md:text-lg font-bold text-pink-400">Jembatan Driver Hardware</h4>
+                            <p class="text-[9px] md:text-xs text-slate-400 mb-1 md:mb-2">Pasangkan nama Hardware fisik di sebelah kiri dengan Driver yang sesuai di sebelah kanan!</p>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3 md:gap-6 my-1 md:my-2 flex-1 items-center">
+                            <div class="space-y-1.5 md:space-y-3" id="hw-column"></div>
+                            <div class="space-y-1.5 md:space-y-3" id="dr-column"></div>
+                        </div>
+
+                        <div class="flex justify-between text-[9px] md:text-xs text-slate-500">
+                            <span>Sinyal Hardware</span>
+                            <span id="hw-progress" class="font-bold text-slate-300">0/4 Terhubung</span>
+                        </div>
+                    </div>
+                `;
+
+                const hwCol = document.getElementById('hw-column');
+                const drCol = document.getElementById('dr-column');
+
+                hwList.forEach(item => {
+                    const isMatched = matchedPairIds.includes(item.id);
+                    const isSelected = selectedHW === item.id;
+                    const btn = document.createElement('button');
+                    btn.disabled = isMatched;
+                    btn.className = `w-full p-1.5 md:p-3.5 rounded-lg text-[9px] md:text-sm font-bold text-left border transition ${
+                        isMatched
+                        ? 'bg-pink-955/20 border-pink-900/30 text-pink-400/60 cursor-not-allowed opacity-40 shadow-inner'
+                        : isSelected
+                            ? 'bg-pink-500/15 border-pink-400 text-pink-300 shadow-md'
+                            : 'bg-slate-900/60 hover:bg-slate-800/80 border-slate-800/40 text-slate-300 shadow animate-fadeIn'
+                    }`;
+                    btn.textContent = item.hardware;
+                    btn.onclick = () => {
+                        playSound('click');
+                        selectedHW = item.id;
+                        checkHWDRMatch();
+                        renderConnections();
+                    };
+                    hwCol.appendChild(btn);
+                });
+
+                drList.forEach(item => {
+                    const isMatched = matchedPairIds.includes(item.id);
+                    const isSelected = selectedDR === item.id;
+                    const btn = document.createElement('button');
+                    btn.disabled = isMatched;
+                    btn.className = `w-full p-1.5 md:p-3.5 rounded-lg text-[9px] md:text-sm font-bold text-left border transition ${
+                        isMatched
+                        ? 'bg-pink-955/20 border-pink-900/30 text-pink-400/60 cursor-not-allowed opacity-40 shadow-inner'
+                        : isSelected
+                            ? 'bg-pink-500/15 border-pink-400 text-pink-300 shadow-md'
+                            : 'bg-slate-900/60 hover:bg-slate-800/80 border-slate-800/40 text-slate-300 shadow animate-fadeIn'
+                    }`;
+                    btn.textContent = item.driver;
+                    btn.onclick = () => {
+                        playSound('click');
+                        selectedDR = item.id;
+                        checkHWDRMatch();
+                        renderConnections();
+                    };
+                    drCol.appendChild(btn);
+                });
+            };
+
+            const checkHWDRMatch = () => {
+                if (selectedHW !== null && selectedDR !== null) {
+                    if (selectedHW === selectedDR) {
+                        playSound('success');
+                        matchedPairIds.push(selectedHW);
+                        selectedHW = null;
+                        selectedDR = null;
+                        
+                        setTimeout(() => {
+                            const progEl = document.getElementById('hw-progress');
+                            if (progEl) progEl.textContent = `${matchedPairIds.length}/4 Terhubung`;
+
+                            if (matchedPairIds.length === 4) {
+                                finishMiniGame();
+                            }
+                        }, 50);
+                    } else {
+                        playSound('fail');
+                        selectedHW = null;
+                        selectedDR = null;
+                        setTimeout(() => {
+                            const box = container.firstElementChild;
+                            if (box) {
+                                box.classList.add('shake-effect');
+                                setTimeout(() => box.classList.remove('shake-effect'), 500);
+                            }
+                        }, 100);
+                    }
+                }
+            };
+
+            renderConnections();
+        }
+
+        function initKastilBossGame(container) {
+            const bossQuestions = [
+                {
+                    q: "Bagian Sistem Operasi yang bertanggung jawab langsung berinteraksi dengan hardware komputer disebut...",
+                    options: [
+                        { text: "Shell", correct: false },
+                        { text: "Kernel", correct: true },
+                        { text: "User Interface", correct: false },
+                        { text: "Application", correct: false },
+                        { text: "Web Browser", correct: false }
+                    ]
+                },
+                {
+                    q: "Sistem Operasi mengizinkan beberapa aplikasi berjalan bersamaan di layar, kemampuan ini disebut...",
+                    options: [
+                        { text: "Multi-threading", correct: false },
+                        { text: "Multi-user", correct: false },
+                        { text: "Multi-tasking", correct: true },
+                        { text: "Multi-processing", correct: false },
+                        { text: "Multi-channel", correct: false }
+                    ]
+                },
+                {
+                    q: "Berikut ini yang merupakan sistem operasi open-source (kode sumber terbuka) gratis adalah...",
+                    options: [
+                        { text: "Linux", correct: true },
+                        { text: "Microsoft Windows", correct: false },
+                        { text: "macOS", correct: false },
+                        { text: "iOS", correct: false },
+                        { text: "Windows Server", correct: false }
+                    ]
+                }
+            ];
+
+            let activeBossQIdx = 0;
+            let bossHealth = 100;
+            let playerHealth = 100;
+
+            const renderBossFight = () => {
+                if (bossHealth <= 0) {
+                    finishMiniGame();
+                    return;
+                }
+
+                if (playerHealth <= 0) {
+                    playSound('fail');
+                    container.innerHTML = `
+                        <div class="text-center p-6 md:p-8 max-w-[280px] md:max-w-sm w-full float-effect bg-slate-955/20 border border-rose-500/30 backdrop-blur-md rounded-2xl shadow-2xl shadow-rose-500/20 animate-fadeIn">
+                            <div class="text-5xl text-rose-500 mb-3 drop-shadow-[0_0_15px_rgba(239,68,68,0.4)]">
+                                <i class="fa-solid fa-bug animate-bounce"></i>
+                            </div>
+                            <h3 class="text-sm md:text-base font-bold text-rose-500 tracking-wide uppercase">Sistem Hancur!</h3>
+                            <p class="text-[11px] md:text-xs text-slate-300 my-3 leading-relaxed">
+                                Raja Error menembakkan serangan 'Blue Screen of Death'! Mulai ulang pertempuran dan gunakan pertahanan jawabanmu.
+                            </p>
+                            <button onclick="startMiniGame()" class="w-full py-2 bg-gradient-to-r from-rose-500 to-red-600 hover:from-rose-400 hover:to-red-500 text-slate-955 font-black text-xs rounded-xl shadow-lg shadow-rose-500/20 active:scale-95 transition-all duration-150 tracking-wide uppercase">
+                                Lawan Kembali
+                            </button>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const currentQ = bossQuestions[activeBossQIdx];
+
+                container.innerHTML = `
+                    <div class="w-[94%] h-[92%] aspect-video text-center flex flex-col justify-between p-3 md:p-6 bg-slate-950/30 border border-slate-800/25 rounded-2xl shadow-2xl backdrop-blur-md animate-fadeIn" onclick="skipDialogue()">
+                        <!-- Boss HP status layout -->
+                        <div class="flex items-center justify-between gap-4 py-1" onclick="event.stopPropagation()">
+                            <div class="text-left flex-1 max-w-[35%]">
+                                <span class="text-[8px] md:text-xs text-slate-500 block leading-none mb-1">Kekuatan Hero</span>
+                                <div class="w-full bg-slate-800/60 h-2 rounded-full overflow-hidden">
+                                    <div class="bg-emerald-500 h-full transition-all duration-300" style="width: ${playerHealth}%"></div>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-col items-center">
+                                <div class="w-8 h-8 md:w-14 md:h-14 rounded-full bg-rose-955/50 border border-rose-500/30 flex items-center justify-center text-rose-400 text-sm md:text-2xl animate-pulse shadow-lg shadow-rose-500/10">
+                                    <i class="fa-solid fa-bug"></i>
+                                </div>
+                                <span class="text-[7px] md:text-xs font-bold text-rose-400 mt-1">RAJA ERROR</span>
+                            </div>
+
+                            <div class="text-right flex-1 max-w-[35%]">
+                                <span class="text-[8px] md:text-xs text-slate-500 block leading-none mb-1">Sistem Error</span>
+                                <div class="w-full bg-slate-800/60 h-2 rounded-full overflow-hidden">
+                                    <div class="bg-rose-600 h-full transition-all duration-300" style="width: ${bossHealth}%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Question Box -->
+                        <div class="my-1 text-center" onclick="event.stopPropagation()">
+                            <span class="text-[8px] md:text-[10px] bg-rose-500/10 text-rose-400 border border-rose-500/20 px-2 py-0.5 md:py-1 rounded-full font-bold uppercase mb-1 inline-block">Serangan Pertanyaan Bos</span>
+                            <p id="boss-question-text" class="text-[9px] md:text-base text-slate-200 leading-relaxed font-semibold max-w-xl mx-auto min-h-[45px]"></p>
+                        </div>
+
+                        <!-- Answers Options (Styled as responsive grid for 5 options) -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 md:gap-3 max-w-2xl mx-auto w-full" onclick="event.stopPropagation()">
+                            ${currentQ.options.map((opt, oIdx) => `
+                                <button onclick="answerBoss(${oIdx})" class="w-full p-1.5 md:p-3.5 bg-slate-900/60 hover:bg-slate-800/80 text-left text-[9px] md:text-sm rounded-lg border border-slate-800/40 hover:border-rose-500/50 transition flex items-center gap-2 shadow-lg ${oIdx === 4 ? 'sm:col-span-2' : ''}">
+                                    <span class="w-5 h-5 md:w-7 md:h-7 bg-slate-800 rounded-full flex items-center justify-center font-bold text-slate-400 text-[8px] md:text-xs">${String.fromCharCode(65 + oIdx)}</span>
+                                    <span class="text-slate-300 flex-1 leading-none font-medium">${opt.text}</span>
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+
+                typeWriter('boss-question-text', currentQ.q, 15);
+            };
+
+            window.answerBoss = function(optIdx) {
+                const currentQ = bossQuestions[activeBossQIdx];
+                const selected = currentQ.options[optIdx];
+
+                if (selected.correct) {
+                    playSound('success');
+                    bossHealth -= 34;
+                    if (bossHealth < 0) bossHealth = 0;
+                    activeBossQIdx = (activeBossQIdx + 1) % bossQuestions.length;
+                } else {
+                    playSound('fail');
+                    playerHealth -= 34;
+                    if (playerHealth < 0) playerHealth = 0;
+                    
+                    const box = container.firstElementChild;
+                    if (box) {
+                        box.classList.add('shake-effect');
+                        setTimeout(() => box.classList.remove('shake-effect'), 500);
+                    }
+                }
+
+                setTimeout(renderBossFight, 400);
+            };
+
+            renderBossFight();
+        }
+
+        /* ============================================================= */
+        /* POPUP QUIZ FOR CLAIMING SYSTEM CRYSTALS                       */
+        /* ============================================================= */
+        function openQuiz() {
+            playSound('click');
+            const idx = state.activeLevelIndex;
+            const lvl = levelData[idx];
+
+            // Mengosongkan wadah mini-game agar pop-up "TUGAS SUKSES" menutup di latar belakang
+            document.getElementById('mini-game-container').innerHTML = '';
+
+            document.getElementById('quiz-title').textContent = `Verifikasi Keamanan: ${lvl.name}`;
+            typeWriter('quiz-question', lvl.quiz.question, 15);
+
+            const answersContainer = document.getElementById('quiz-answers');
+            answersContainer.innerHTML = '';
+
+            lvl.quiz.options.forEach((opt, oIdx) => {
+                const btn = document.createElement('button');
+                btn.className = `quiz-option-btn w-full p-2.5 md:p-3 bg-slate-900 hover:bg-slate-800 text-left text-[9px] md:text-sm rounded-xl border border-slate-700/50 hover:border-yellow-500/50 transition-all duration-200 flex items-center gap-2.5 shadow-lg ${oIdx === 4 ? 'sm:col-span-2' : ''}`;
+                btn.innerHTML = `
+                    <span class="w-5 h-5 md:w-7 md:h-7 bg-slate-800 rounded-full flex items-center justify-center font-bold text-slate-300 text-[8px] md:text-xs">${String.fromCharCode(65 + oIdx)}</span>
+                    <span class="flex-1 text-white leading-tight font-semibold readable-text-glow">${opt.text}</span>
+                `;
+                btn.onclick = () => selectQuizAnswer(opt.correct, btn);
+                answersContainer.appendChild(btn);
+            });
+
+            document.getElementById('quiz-feedback').classList.add('hidden');
+            document.getElementById('popup-quiz').classList.remove('hidden');
+        }
+
+        function selectQuizAnswer(isCorrect, btn) {
+            const buttons = document.querySelectorAll('.quiz-option-btn');
+            buttons.forEach(b => b.disabled = true);
+
+            const feedback = document.getElementById('quiz-feedback');
+            feedback.classList.remove('hidden');
+
+            if (isCorrect) {
+                playSound('success');
+                btn.classList.remove('border-slate-700/50', 'bg-slate-900');
+                btn.classList.add('border-emerald-500', 'bg-emerald-950/90');
+                btn.querySelector('span').className = "w-5 h-5 md:w-7 md:h-7 bg-emerald-500 rounded-full flex items-center justify-center font-bold text-slate-955 text-[8px] md:text-xs";
+                feedback.className = "text-center text-[8px] md:text-xs font-bold p-1.5 rounded-lg mt-2 bg-emerald-950/90 text-emerald-400 border border-emerald-500/30 relative z-10 shadow-lg";
+                feedback.textContent = "Verifikasi Sukses! +100 Skor & 1 Kristal Sistem Terklaim!";
+
+                const idx = state.activeLevelIndex;
+                if (!state.levelStates[idx].completed) {
+                    state.levelStates[idx].completed = true;
+                    state.score += 100;
+                    state.crystalsCollected++;
+                    
+                    if (idx + 1 < state.unlockedLevels.length) {
+                        state.unlockedLevels[idx + 1] = true;
+                    }
+                }
+
+                setTimeout(() => {
+                    document.getElementById('popup-quiz').classList.add('hidden');
+                    
+                    if (state.crystalsCollected >= 7 && state.levelStates[6].completed) {
+                        showVictoryScreen();
+                    } else {
+                        backToMap();
+                    }
+                }, 2000);
+
+            } else {
+                playSound('fail');
+                btn.classList.remove('border-slate-700/50', 'bg-slate-900');
+                btn.classList.add('border-rose-500', 'bg-rose-955/90');
+                btn.querySelector('span').className = "w-5 h-5 md:w-7 md:h-7 bg-rose-500 rounded-full flex items-center justify-center font-bold text-slate-955 text-[8px] md:text-xs";
+                feedback.className = "text-center text-[8px] md:text-xs font-bold p-1.5 rounded-lg mt-2 bg-rose-955/90 text-rose-400 border border-rose-500/30 relative z-10 shadow-lg";
+                feedback.textContent = "Verifikasi Gagal! Baca kembali Kit Catatan Materi di sudut kanan atas.";
+
+                const popupBox = document.getElementById('popup-quiz').querySelector('.aspect-video');
+                popupBox.classList.add('shake-effect');
+                setTimeout(() => popupBox.classList.remove('shake-effect'), 500);
+
+                setTimeout(() => {
+                    buttons.forEach(b => b.disabled = false);
+                    btn.classList.remove('border-rose-500', 'bg-rose-955/90');
+                    btn.classList.add('border-slate-700/50', 'bg-slate-900');
+                    btn.querySelector('span').className = "w-5 h-5 bg-slate-800 rounded-full flex items-center justify-center font-bold text-slate-300 text-[8px] md:text-xs";
+                    feedback.classList.add('hidden');
+                }, 1500);
+            }
+        }
+
+        function finishMiniGame() {
+            playSound('success');
+            const idx = state.activeLevelIndex;
+            state.levelStates[idx].miniGameDone = true;
+            state.score += 200;
+            
+            const container = document.getElementById('mini-game-container');
+            container.innerHTML = `
+                <!-- UKURAN SHADING DISESUAIKAN MENJADI LEBIH TRANSPARAN: bg-slate-955/20 -->
+                <div class="text-center p-6 md:p-8 max-w-[280px] md:max-w-sm w-full float-effect bg-slate-955/20 border border-[#07f00f]/30 backdrop-blur-md rounded-2xl shadow-2xl shadow-[#07f00f]/20 animate-fadeIn">
+                    <div class="text-5xl text-[#07f00f] mb-3 drop-shadow-[0_0_15px_rgba(7,240,15,0.4)]">
+                        <i class="fa-solid fa-circle-check animate-pulse"></i>
+                    </div>
+                    <h3 class="text-sm md:text-base font-bold text-[#07f00f] tracking-wide uppercase">Tugas Sukses!</h3>
+                    <p class="text-[11px] md:text-xs text-slate-300 my-3 leading-relaxed">
+                        Kamu berhasil menstabilkan tugas teknis. Sekarang jawab kuis keamanan untuk merestorasi kristal!
+                    </p>
+                    <button onclick="openQuiz()" class="w-full py-2 bg-gradient-to-r from-[#07f00f] to-emerald-600 hover:from-[#06d60e] hover:to-emerald-500 text-slate-955 font-black text-xs rounded-xl shadow-lg shadow-[#07f00f]/20 active:scale-95 transition-all duration-150 tracking-wide uppercase">
+                        Lanjut ke Kuis
+                    </button>
+                </div>
+            `;
+        }
+
+        function showVictoryScreen() {
+            playSound('level-up');
+            document.getElementById('game-hud').classList.add('hidden');
+            document.getElementById('final-score').textContent = state.score;
+            document.getElementById('final-crystals').textContent = `${state.crystalsCollected}/7`;
+            
+            transitionScreen('screen-gameplay', 'screen-victory');
+        }
+    </script>
+</body>
+</html>
