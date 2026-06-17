@@ -25,25 +25,25 @@
             min-height: 100vh;
             width: 100vw;
         }
-        h1, h2, h3, .font-title {
+        h1, h2, h3, h4, .font-title {
             font-family: 'Fredoka One', cursive;
         }
-        /* Penulisan semula fon tersuai khusus untuk tajuk utama */
+        /* Penulisan utama dengan font khusus untuk judul besar */
         .title-arial-black {
             font-family: 'Arial Black', 'Arial Bold', Gadget, sans-serif;
             font-weight: 900;
         }
-        /* Bar Tatal Tersuai */
+        /* Desain scrollbar kustom */
         ::-webkit-scrollbar {
-            width: 4px;
-            height: 4px;
+            width: 0.5cqw;
+            height: 0.5cqw;
         }
         ::-webkit-scrollbar-track {
             background: rgba(30, 41, 59, 0.2);
         }
         ::-webkit-scrollbar-thumb {
             background: #334155;
-            border-radius: 4px;
+            border-radius: 9999px;
         }
         ::-webkit-scrollbar-thumb:hover {
             background: #475569;
@@ -63,9 +63,12 @@
             border: 1px solid rgba(51, 65, 85, 0.3);
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
             transition: all 0.3s ease;
+            
+            /* Mengaktifkan Container Queries untuk mengontrol skala elemen internal secara dinamis */
+            container-type: size;
         }
 
-        /* Gaya API Skrin Penuh (Fullscreen) */
+        /* Dukungan Layar Penuh Native */
         #game-container:fullscreen {
             width: 100vw !important;
             height: 100vh !important;
@@ -93,69 +96,49 @@
             text-align: center;
         }
 
-        /* Memunculkan peringatan rotasi layar hanya pada mode portrait */
+        /* Tampilkan peringatan putar layar otomatis pada posisi tegak (Portrait) */
         @media (orientation: portrait) {
             #portrait-warning {
                 display: flex;
             }
         }
 
-        /* Animasi denyutan untuk tahap aktif */
+        /* Animasi denyutan untuk tombol area aktif */
         @keyframes pulse-ring {
             0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(22, 197, 94, 0.7); }
-            70% { transform: scale(1.05); box-shadow: 0 0 0 16px rgba(22, 197, 94, 0); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 1.5cqw rgba(22, 197, 94, 0); }
             100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(22, 197, 94, 0); }
         }
         .active-level-btn {
             animation: pulse-ring 2s infinite;
         }
-        /* Animasi Goncangan */
+        /* Animasi guncangan salah menjawab */
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-            20%, 40%, 60%, 80% { transform: translateX(5px); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-0.5cqw); }
+            20%, 40%, 60%, 80% { transform: translateX(0.5cqw); }
         }
         .shake-effect {
             animation: shake 0.5s ease-in-out;
         }
-        /* Animasi Terapung */
+        /* Animasi melayang melayang lembut */
         @keyframes float {
             0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-8px); }
+            50% { transform: translateY(-0.8cqh); }
         }
         .float-effect {
             animation: float 3s ease-in-out infinite;
         }
 
-        /* Peningkatan bayangan teks untuk menjadikan tulisan sangat mudah dibaca pada imej latar belakang */
+        /* Peningkatan bayangan teks agar tulisan sangat mudah dibaca pada gambar latar belakang apa pun */
         .readable-text-glow {
             text-shadow: 0 2px 5px rgba(0, 0, 0, 0.95), 0 1px 2px rgba(0, 0, 0, 1);
-        }
-
-        /* Pergeseran 11 langkah ke kanan (11rem / 176px) khusus untuk Kit Catatan Materi */
-        .shift-right-handbook {
-            padding-left: 11rem !important;
-        }
-        @media (max-width: 768px) {
-            .shift-right-handbook {
-                padding-left: 1.5rem !important; /* Supaya tetap ramah di resolusi mobile tanpa meluap */
-            }
-        }
-
-        /* Pergeseran 15 langkah ke kanan (15rem / 240px) khusus teks petunjuk footer Kit Catatan */
-        .shift-right-footer-text {
-            padding-left: 15rem !important;
-        }
-        @media (max-width: 768px) {
-            .shift-right-footer-text {
-                padding-left: 1.5rem !important;
-            }
         }
     </style>
 </head>
 <body>
 
-    <!-- OVERLAY DETEKSI ROTASI POTRET (HP/TABLET) -->
+    <!-- PERINGATAN BILA PERANGKAT TERLALU TEGAK (ORIENTASI PORTRAIT) -->
     <div id="portrait-warning">
         <div class="animate-bounce text-yellow-400 text-5xl mb-4">
             <i class="fa-solid fa-mobile-screen-button rotate-90"></i>
@@ -166,312 +149,419 @@
         </p>
     </div>
 
-    <!-- BEKAS PERMAINAN UTAMA (Nisbah Aspek 16:9 Pensyaratan Kendiri) -->
+    <!-- WADAH UTAMA PERMAINAN (Skala Adaptif Terkunci 16:9) -->
     <div id="game-container" class="rounded-none md:rounded-xl">
         
-        <!-- ELEMEN AUDIO UNTUK KESAN BUNYI -->
-        <audio id="sound-click" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-84.wav" preload="auto"></audio>
-        <audio id="sound-success" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-84.wav" preload="auto"></audio>
-        <audio id="sound-fail" src="https://assets.mixkit.co/active_storage/sfx/2649/2649-84.wav" preload="auto"></audio>
-        <audio id="sound-level-up" src="https://assets.mixkit.co/active_storage/sfx/2019/2019-84.wav" preload="auto"></audio>
+        <!-- AUDIO SOUND EFFECTS -->
+        <audio id="sound-click" src="https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/sfx_klik.mp3" preload="auto"></audio>
+        <audio id="sound-success" src="https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/sfx_benar.mp3" preload="auto"></audio>
+        <audio id="sound-fail" src="https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/sfx_salah.mp3" preload="auto"></audio>
+        <audio id="sound-level-up" src="https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/sfx_transisi.mp3" preload="auto"></audio>
+        
+        <!-- AUDIO BACKGROUND MUSIC -->
+        <audio id="sound-bg-music" src="https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/bgmusik.mp3" preload="auto" loop></audio>
 
         <!-- ============================================ -->
-        <!-- SKRIN 1: SKRIN PEMUATAN                      -->
+        <!-- HUD BAR GLOBAL (HUD) - SKALA DENGAN UNIT CQW -->
         <!-- ============================================ -->
-        <div id="screen-loading" class="absolute inset-0 z-50 flex flex-col items-center justify-between p-4 md:p-6 bg-cover bg-center transition-all duration-700 ease-in-out" style="background-image: url('https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/bg_loading.jpeg');">
-            
-            <!-- Tajuk & Maskot -->
-            <div class="relative z-10 text-center mt-2 md:mt-4 float-effect">
-                <div class="inline-block bg-slate-900/80 text-yellow-400 border border-yellow-500/30 text-[9px] md:text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider mb-1 md:mb-2 backdrop-blur-md">Edu-Game Interaktif</div>
-                <h1 class="title-arial-black text-xl md:text-3xl lg:text-4xl text-yellow-400 drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)] text-center tracking-wider leading-tight">PETUALANGAN DI KOTA<br><span class="text-cyan-400">SISTEM OPERASI</span></h1>
-                <p class="text-[9px] md:text-xs text-white bg-slate-950/65 px-2 py-1 rounded-md mt-1 max-w-md mx-auto opacity-95 shadow-md">Pelajari cara kerja sistem operasi komputer sambil bertualang dan menyelamatkan kota dari serangan error!</p>
-            </div>
-
-            <!-- Ilustrasi Maskot (Pemberian ukuran responsif agar muat sempurna) -->
-            <div class="relative z-10 flex flex-col items-center my-1">
-                <div class="w-28 h-24 sm:w-36 sm:h-36 md:w-56 md:h-56 lg:w-64 lg:h-64 mb-1 flex items-center justify-center overflow-hidden drop-shadow-[0_5px_15px_rgba(0,0,0,0.6)]">
-                    <img src="https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/Mascot.png" alt="Mascot OS-Boy" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='https://placehold.co/250x250/0f172a/22d3ee?text=OS-Boy'">
-                </div>
-                <div class="text-cyan-300 font-bold text-[8px] md:text-[10px] tracking-wide bg-slate-955/65 px-2 py-0.5 rounded shadow-sm">Mascot: OS-Boy v1.0</div>
-            </div>
-
-            <!-- Bekas Bar Pemuatan / Butang -->
-            <div class="relative z-10 w-full max-w-xs md:max-w-md mb-2 md:mb-4 flex flex-col items-center">
-                <!-- Info Bar Pemuatan -->
-                <div id="loading-info-container" class="w-full bg-slate-950/65 p-2 rounded-xl shadow-md">
-                    <div class="flex justify-between text-[9px] md:text-xs font-semibold mb-1 text-cyan-300">
-                        <span id="loading-status">Menginisialisasi Kernel...</span>
-                        <span id="loading-percentage">0%</span>
-                    </div>
-                    <div class="w-full bg-slate-900/80 rounded-full h-2 md:h-3 p-0.5 border border-slate-800/60 backdrop-blur-sm overflow-hidden">
-                        <div id="loading-bar" class="bg-gradient-to-r from-cyan-500 to-blue-500 h-full rounded-full transition-all duration-100 ease-out" style="width: 0%;"></div>
-                    </div>
-                </div>
-
-                <!-- Butang Mula -->
-                <button id="btn-start-game" class="hidden w-full py-1.5 md:py-2.5 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-slate-955 font-black text-xs md:text-base rounded-xl shadow-lg shadow-yellow-500/20 border-b-4 border-amber-700 active:scale-95 transition-all duration-150 tracking-wider uppercase flex items-center justify-center gap-2 cursor-pointer">
-                    <i class="fa-solid fa-circle-play text-base md:text-lg"></i> Mulai Petualangan
-                </button>
-            </div>
-        </div>
-
-        <!-- ============================================ -->
-        <!-- HUD BAR GLOBAL (HUD) - Reka Bentuk Kemas     -->
-        <!-- ============================================ -->
-        <div id="game-hud" class="hidden relative z-40 bg-slate-955/40 backdrop-blur-md border-b border-slate-800/20 p-2 md:p-3 flex items-center justify-between gap-2 flex-shrink-0">
-            <!-- Info Profil -->
-            <div class="flex items-center gap-1.5 md:flex-shrink-0">
-                <div class="w-6 h-6 md:w-8 md:h-8 bg-cyan-600/20 rounded-lg flex items-center justify-center text-xs md:text-sm text-cyan-400 border border-cyan-500/30">
+        <div id="game-hud" class="hidden relative z-40 bg-slate-955/85 border-b border-slate-800/40 p-[1cqw] flex items-center justify-between gap-[1cqw] flex-shrink-0">
+            <!-- Informasi Avatar / Profil -->
+            <div class="flex items-center gap-[0.8cqw] flex-shrink-0">
+                <div class="w-[3cqw] h-[3cqw] bg-cyan-600/20 rounded-lg flex items-center justify-center text-[1.5cqw] text-cyan-400 border border-cyan-500/30">
                     <i class="fa-solid fa-user-astronaut"></i>
                 </div>
                 <div>
-                    <div class="text-[8px] text-slate-500 leading-none">Pemain</div>
-                    <div class="text-[10px] md:text-xs font-bold text-white leading-tight">Hero OS</div>
+                    <div id="hud-player-school" class="text-[0.8cqw] text-slate-500 leading-none truncate max-w-[12cqw]">Sekolah: -</div>
+                    <div id="hud-player-name" class="text-[1.2cqw] font-bold text-white leading-tight truncate max-w-[12cqw]">Hero OS</div>
                 </div>
             </div>
 
-            <!-- Kawalan (Skrin Penuh & Suara) -->
-            <div class="flex gap-1 md:flex-shrink-0">
-                <button onclick="toggleFullScreen()" class="px-1.5 py-0.5 md:px-2 md:py-1 bg-slate-900/60 hover:bg-slate-800/80 border border-slate-800/40 rounded-lg text-[8px] md:text-[10px] font-bold text-slate-300 transition flex items-center gap-1 shadow-md cursor-pointer">
+            <!-- Tombol Fitur Layar Penuh & Suara -->
+            <div class="flex gap-[0.5cqw] flex-shrink-0">
+                <button onclick="toggleFullScreen()" class="px-[1.2cqw] py-[0.5cqw] bg-slate-900/80 hover:bg-slate-800/80 border border-slate-800/40 rounded-lg text-[1cqw] font-bold text-slate-300 transition flex items-center gap-[0.4cqw] shadow-md cursor-pointer">
                     <i class="fa-solid fa-expand text-yellow-400"></i> <span id="fullscreen-text">Layar Penuh</span>
                 </button>
-                <button id="btn-sound-toggle" onclick="toggleSound()" class="px-1.5 py-0.5 md:px-2 md:py-1 bg-slate-900/60 hover:bg-slate-800/80 border border-slate-800/40 rounded-lg text-[8px] md:text-[10px] font-bold text-slate-300 transition flex items-center gap-1 shadow-md cursor-pointer">
-                    <i class="fa-solid fa-volume-high text-cyan-400" id="sound-icon"></i> <span>Suara: Aktif</span>
+                <button id="btn-sound-toggle" onclick="toggleSound()" class="px-[1.2cqw] py-[0.5cqw] bg-slate-900/80 hover:bg-slate-800/80 border border-slate-800/40 rounded-lg text-[1cqw] font-bold text-slate-300 transition flex items-center gap-[0.4cqw] shadow-md cursor-pointer">
+                    <i class="fa-solid fa-volume-high text-cyan-400" id="sound-icon"></i> <span>Suara: ...</span>
                 </button>
             </div>
 
-            <!-- Penjejak Bar Kemajuan -->
-            <div class="flex-1 max-w-[120px] sm:max-w-xs mx-1 md:mx-2">
-                <div class="flex justify-between text-[8px] md:text-[10px] text-slate-400 mb-0.5">
-                    <span>Progress</span>
+            <!-- Progres Bar Pembukaan Level -->
+            <div class="flex-1 max-w-[25cqw] mx-[1cqw]">
+                <div class="flex justify-between text-[0.9cqw] text-slate-400 mb-[0.2cqw]">
+                    <span>Kemajuan Kota</span>
                     <span id="hud-progress-txt">0/7 Area</span>
                 </div>
-                <div class="w-full bg-slate-900/60 h-1 md:h-1.5 rounded-full overflow-hidden">
-                    <div id="hud-progress-bar" class="bg-gradient-to-r from-emerald-500 to-cyan-500 h-full" style="width: 0%"></div>
+                <div class="w-full bg-slate-900/80 h-[0.7cqw] rounded-full overflow-hidden border border-slate-800/20">
+                    <div id="hud-progress-bar" class="bg-gradient-to-r from-emerald-500 to-cyan-500 h-full"></div>
                 </div>
             </div>
 
-            <!-- Inventori Kristal & Skor -->
-            <div class="flex items-center gap-1.5">
+            <!-- Inventory Poin, Kristal Energi & Tombol Pengembang Header -->
+            <div class="flex items-center gap-[0.6cqw] flex-shrink-0">
                 <!-- Kristal -->
-                <div class="flex items-center gap-1 bg-slate-900/60 px-1.5 py-0.5 md:px-2.5 md:py-1 rounded-lg border border-slate-800/40">
-                    <i class="fa-solid fa-gem text-cyan-400 animate-pulse text-[8px] md:text-[10px]"></i>
-                    <span id="hud-crystals" class="font-bold text-[8px] md:text-[10px] text-cyan-300">0/7</span>
+                <div class="flex items-center gap-[0.4cqw] bg-slate-900/70 px-[1.2cqw] py-[0.5cqw] rounded-lg border border-slate-800/40">
+                    <i class="fa-solid fa-gem text-cyan-400 animate-pulse text-[1.1cqw]"></i>
+                    <span id="hud-crystals" class="font-bold text-[1.2cqw] text-cyan-300">0/7</span>
                 </div>
                 <!-- Skor -->
-                <div class="flex items-center gap-1 bg-slate-900/60 px-1.5 py-0.5 md:px-2.5 md:py-1 rounded-lg border border-slate-800/40">
-                    <i class="fa-solid fa-star text-yellow-400 text-[8px] md:text-[10px]"></i>
-                    <span id="hud-score" class="font-bold text-[8px] md:text-[10px] text-yellow-300">0</span>
+                <div class="flex items-center gap-[0.4cqw] bg-slate-955/70 px-[1.2cqw] py-[0.5cqw] rounded-lg border border-slate-800/40">
+                    <i class="fa-solid fa-star text-yellow-400 text-[1.1cqw]"></i>
+                    <span id="hud-score" class="font-bold text-[1.2cqw] text-yellow-300">0</span>
                 </div>
+                <!-- Tombol Pengembang HUD -->
+                <button onclick="openDeveloperModal()" class="flex items-center justify-center bg-slate-900/70 hover:bg-slate-800/85 px-[1.2cqw] py-[0.5cqw] rounded-lg border border-slate-800/40 text-[1.1cqw] text-cyan-400 transition cursor-pointer shadow-md hover:scale-105 active:scale-95" title="Info Pengembang">
+                    <i class="fa-solid fa-user-gear"></i>
+                </button>
             </div>
         </div>
 
-        <!-- ============================================ -->
-        <!-- SKRIN 2: PETA DUNIA PERMAINAN                -->
-        <!-- ============================================ -->
-        <div id="screen-map" class="hidden absolute inset-0 z-10 flex flex-col justify-between p-3 md:p-6 bg-cover bg-center transition-all duration-700 ease-in-out" style="background-image: url('https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/bg_mapgame.jpeg');">
+        <!-- AREA SCREENS: Mengunci seluruh skrin game agar ter-render proporsional tepat di bawah header HUD -->
+        <div id="screens-area" class="flex-grow flex-1 relative w-full overflow-hidden">
 
-            <!-- Butang Terapung untuk Kit Catatan OS Global -->
-            <button onclick="showEducationalHelp(0)" class="absolute top-2 right-2 md:top-4 md:right-4 z-30 px-2 py-1 md:px-3 md:py-1.5 bg-cyan-600/20 hover:bg-cyan-500/30 text-[8px] md:text-[10px] font-bold rounded-lg text-cyan-300 shadow-lg border border-cyan-500/30 transition flex items-center gap-1 md:gap-1.5 backdrop-blur-md cursor-pointer">
-                <i class="fa-solid fa-book-bookmark animate-pulse"></i> Catatan OS
-            </button>
-
-            <!-- Tajuk Atas -->
-            <div class="relative z-10 text-center mt-1">
-                <h2 class="text-sm md:text-xl text-yellow-400 tracking-wide drop-shadow-[0_2px_4px_rgba(0,0,0,1)] uppercase">PETA KOTA SISTEM OPERASI</h2>
-            </div>
-
-            <!-- SVG Map Connectors Overlay (Menggunakan hijau terang #37f713) -->
-            <svg class="absolute inset-0 w-full h-full z-10 pointer-events-none" id="map-svg-lines">
-                <path id="path-0-1" d="" fill="none" stroke="#37f713" stroke-width="3" stroke-dasharray="6,6" opacity="0.3" class="transition-all duration-500" />
-                <path id="path-1-2" d="" fill="none" stroke="#37f713" stroke-width="3" stroke-dasharray="6,6" opacity="0.3" class="transition-all duration-500" />
-                <path id="path-2-3" d="" fill="none" stroke="#37f713" stroke-width="3" stroke-dasharray="6,6" opacity="0.3" class="transition-all duration-500" />
-                <path id="path-3-4" d="" fill="none" stroke="#37f713" stroke-width="3" stroke-dasharray="6,6" opacity="0.3" class="transition-all duration-500" />
-                <path id="path-4-5" d="" fill="none" stroke="#37f713" stroke-width="3" stroke-dasharray="6,6" opacity="0.3" class="transition-all duration-500" />
-                <path id="path-5-6" d="" fill="none" stroke="#37f713" stroke-width="3" stroke-dasharray="6,6" opacity="0.3" class="transition-all duration-500" />
-            </svg>
-
-            <!-- Map Levels Container (Symmetric 4x2 Snake Path Layout - Alihan Ke Bawah) -->
-            <div class="relative z-20 flex-1 w-full grid grid-cols-4 grid-rows-2 gap-x-2 md:gap-x-6 gap-y-2 items-center justify-items-center pt-8 md:pt-20 pb-1 px-2">
+            <!-- ============================================ -->
+            <!-- SKRIN 1: SKRIN PEMUATAN (LOADING SCREEN)    -->
+            <!-- ============================================ -->
+            <div id="screen-loading" class="absolute inset-0 z-50 flex flex-col items-center justify-between p-[3cqw] bg-cover bg-center transition-all duration-700 ease-in-out" style="background-image: url('https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/bg_loading.jpeg');">
                 
-                <!-- LEVEL 0: NOTE MATERI -->
-                <div id="level-node-0" class="flex flex-col items-center">
-                    <button onclick="enterLevel(0)" id="btn-level-0" class="w-8 h-8 md:w-14 md:h-14 rounded-full bg-amber-700 border-2 border-amber-700 flex items-center justify-center text-white text-xs md:text-base font-bold shadow-lg transition-all duration-200 active-level-btn cursor-pointer">
-                        <i class="fa-solid fa-book-open text-xs md:text-2xl text-white"></i>
-                    </button>
-                    <span class="text-[7px] md:text-[10px] font-bold text-center mt-0.5 md:mt-1 bg-slate-950/70 px-1.5 py-0.5 rounded text-white whitespace-nowrap">0. Note Materi</span>
+                <!-- Judul & Tagline Atas -->
+                <div class="relative z-10 text-center mt-[1.5cqw] float-effect">
+                    <div class="inline-block bg-slate-900/85 text-yellow-400 border border-yellow-500/30 text-[1cqw] px-[1.5cqw] py-[0.4cqw] rounded-full font-bold uppercase tracking-wider mb-[0.8cqw] backdrop-blur-md">Edu-Game Interaktif</div>
+                    <h1 class="title-arial-black text-[3.2cqw] text-yellow-400 drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)] text-center tracking-wider leading-tight">PETUALANGAN DI KOTA<br><span class="text-cyan-400">SISTEM OPERASI</span></h1>
+                    <p class="text-[1.3cqw] font-bold text-white bg-slate-955/95 border border-slate-800/60 px-[2cqw] py-[0.8cqw] rounded-xl mt-[0.8cqw] max-w-[50cqw] mx-auto shadow-lg backdrop-blur-sm readable-text-glow">Pelajari cara kerja sistem operasi komputer sambil bertualang dan menyelamatkan kota dari serangan error!</p>
                 </div>
 
-                <!-- LEVEL 1: DESA BOOTING -->
-                <div id="level-node-1" class="flex flex-col items-center">
-                    <button onclick="enterLevel(1)" id="btn-level-1" class="w-8 h-8 md:w-14 md:h-14 rounded-full bg-red-500 border-2 border-white flex items-center justify-center text-white text-xs md:text-base font-bold shadow-none cursor-not-allowed">
-                        <i class="fa-solid fa-lock text-xs md:text-2xl text-white"></i>
-                    </button>
-                    <span class="text-[7px] md:text-[10px] font-bold text-center mt-0.5 md:mt-1 bg-slate-950/40 px-1.5 py-0.5 rounded text-white whitespace-nowrap">1. Desa Booting</span>
-                </div>
-
-                <!-- LEVEL 2: HUTAN PROSES -->
-                <div id="level-node-2" class="flex flex-col items-center">
-                    <button onclick="enterLevel(2)" id="btn-level-2" class="w-8 h-8 md:w-14 md:h-14 rounded-full bg-red-500 border-2 border-white flex items-center justify-center text-white text-xs md:text-base font-bold shadow-none cursor-not-allowed">
-                        <i class="fa-solid fa-lock text-xs md:text-2xl text-white"></i>
-                    </button>
-                    <span class="text-[7px] md:text-[10px] font-bold text-center mt-0.5 md:mt-1 bg-slate-950/40 px-1.5 py-0.5 rounded text-white whitespace-nowrap">2. Hutan Processes</span>
-                </div>
-
-                <!-- LEVEL 3: GUA MEMORI -->
-                <div id="level-node-3" class="flex flex-col items-center">
-                    <button onclick="enterLevel(3)" id="btn-level-3" class="w-8 h-8 md:w-14 md:h-14 rounded-full bg-red-500 border-2 border-white flex items-center justify-center text-white text-xs md:text-base font-bold shadow-none cursor-not-allowed">
-                        <i class="fa-solid fa-lock text-xs md:text-2xl text-white"></i>
-                    </button>
-                    <span class="text-[7px] md:text-[10px] font-bold text-center mt-0.5 md:mt-1 bg-slate-955/40 px-1.5 py-0.5 rounded text-white whitespace-nowrap">3. Gua Memori</span>
-                </div>
-
-                <!-- DECORATION ROUTE TARGET -->
-                <div class="flex flex-col items-center opacity-40">
-                    <div class="w-6 h-6 md:w-9 md:h-9 border border-dashed border-slate-600 rounded-full flex items-center justify-center text-slate-500">
-                        <i class="fa-solid fa-route text-xs md:text-2xl"></i>
+                <!-- Ilustrasi Robot Maskot -->
+                <div class="relative z-10 flex flex-col items-center my-[0.5cqw]">
+                    <div class="w-[20cqw] h-[20cqw] mb-[0.5cqw] flex items-center justify-center overflow-hidden drop-shadow-[0_5px_15px_rgba(0,0,0,0.6)]">
+                        <img src="https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/Mascot.png" alt="Mascot OS-Boy" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='https://placehold.co/250x250/0f172a/22d3ee?text=OS-Boy'">
                     </div>
-                    <span class="text-[6px] md:text-[8px] text-slate-500 mt-0.5">Selesai</span>
+                    <div class="text-yellow-400 font-black text-[1.1cqw] tracking-widest bg-slate-955/90 border border-yellow-500/30 px-[1.5cqw] py-[0.5cqw] rounded-lg shadow-md readable-text-glow uppercase">INFORMATIKA FASE E</div>
                 </div>
 
-                <!-- LEVEL 6: KASTIL ANTARMUKA (BOSS) -->
-                <div id="level-node-6" class="flex flex-col items-center">
-                    <button onclick="enterLevel(6)" id="btn-level-6" class="w-8 h-8 md:w-14 md:h-14 rounded-full bg-red-500 border-2 border-white flex items-center justify-center text-white text-xs md:text-base font-bold shadow-none cursor-not-allowed">
-                        <i class="fa-solid fa-lock text-xs md:text-2xl text-white"></i>
-                    </button>
-                    <span class="text-[7px] md:text-[10px] font-bold text-center mt-0.5 md:mt-1 bg-slate-955/40 px-1.5 py-0.5 rounded text-white whitespace-nowrap">6. Kastil Antarmuka</span>
-                </div>
+                <!-- Bar Proses Pemuatan / Tombol Mulai -->
+                <div class="relative z-10 w-full max-w-[42cqw] mb-[1.5cqw] flex flex-col items-center">
+                    <!-- Info Status Loading -->
+                    <div id="loading-info-container" class="w-full bg-slate-955/70 p-[1.2cqw] rounded-xl shadow-md border border-slate-800/40">
+                        <div class="flex justify-between text-[1.1cqw] font-semibold mb-[0.5cqw] text-cyan-300">
+                            <span id="loading-status">Menginisialisasi Kernel...</span>
+                            <span id="loading-percentage">0%</span>
+                        </div>
+                        <div class="w-full bg-slate-900/80 rounded-full h-[1cqw] p-[0.2cqw] border border-slate-800/60 backdrop-blur-sm overflow-hidden">
+                            <div id="loading-bar" class="bg-gradient-to-r from-cyan-500 to-blue-500 h-full rounded-full transition-all duration-100 ease-out" style="width: 0%;"></div>
+                        </div>
+                    </div>
 
-                <!-- LEVEL 5: GUNUNG PERANGKAT KERAS -->
-                <div id="level-node-5" class="flex flex-col items-center">
-                    <button onclick="enterLevel(5)" id="btn-level-5" class="w-8 h-8 md:w-14 md:h-14 rounded-full bg-red-500 border-2 border-white flex items-center justify-center text-white text-xs md:text-base font-bold shadow-none cursor-not-allowed">
-                        <i class="fa-solid fa-lock text-xs md:text-2xl text-white"></i>
-                    </button>
-                    <span class="text-[7px] md:text-[10px] font-bold text-center mt-0.5 md:mt-1 bg-slate-955/40 px-1.5 py-0.5 rounded text-white whitespace-nowrap">5. Gn Hardware</span>
+                    <!-- Wadah Tombol Aksi setelah Loading Selesai -->
+                    <div id="loading-actions" class="hidden w-full flex flex-row gap-[1.5cqw]">
+                        <button id="btn-start-game" class="flex-1 py-[1.2cqw] bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-slate-955 font-black text-[1.4cqw] rounded-xl shadow-lg shadow-yellow-500/20 border-b-[0.4cqw] border-amber-700 active:scale-95 transition-all duration-150 tracking-wider uppercase flex items-center justify-center gap-[0.8cqw] cursor-pointer">
+                            <i class="fa-solid fa-circle-play"></i> Mulai Petualangan
+                        </button>
+                        <button id="btn-developer-trigger" onclick="openDeveloperModal()" class="flex-1 py-[1.2cqw] bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-black text-[1.4cqw] rounded-xl shadow-lg shadow-cyan-500/20 border-b-[0.4cqw] border-blue-700 active:scale-95 transition-all duration-150 tracking-wider uppercase flex items-center justify-center gap-[0.8cqw] cursor-pointer">
+                            <i class="fa-solid fa-user-gear"></i> Pengembang
+                        </button>
+                    </div>
                 </div>
-
-                <!-- LEVEL 4: SUNGAI FILE -->
-                <div id="level-node-4" class="flex flex-col items-center">
-                    <button onclick="enterLevel(4)" id="btn-level-4" class="w-8 h-8 md:w-14 md:h-14 rounded-full bg-red-500 border-2 border-white flex items-center justify-center text-white text-xs md:text-base font-bold shadow-none cursor-not-allowed">
-                        <i class="fa-solid fa-lock text-xs md:text-2xl text-white"></i>
-                    </button>
-                    <span class="text-[7px] md:text-[10px] font-bold text-center mt-0.5 md:mt-1 bg-slate-950/40 px-1.5 py-0.5 rounded text-white whitespace-nowrap">4. Sungai File</span>
-                </div>
-
             </div>
 
-            <!-- Bottom Instruction Bar (Ukuran dikecilkan agar pas di layar HP rasionya) -->
-            <div class="relative z-20 bg-slate-950/60 backdrop-blur-md p-1.5 md:p-3 rounded-xl flex flex-col items-center justify-center text-center w-11/12 max-w-4xl mx-auto mb-1 border border-slate-800/40 shadow-xl flex-shrink-0">
-                <p id="map-instruction-heading" class="text-[10px] md:text-sm text-cyan-300 font-bold leading-none mb-0.5">
-                    Selesaikan catatan materi untuk membuka area-area berikutnya!
-                </p>
-                <p id="map-instruction-text" class="text-[8px] md:text-xs text-slate-200 font-medium leading-tight">
-                    <!-- Teks diatur lewat JS dinamis -->
-                </p>
+            <!-- ============================================ -->
+            <!-- POPUP MODAL PENGEMBANG (DEVELOPER MODAL)     -->
+            <!-- ============================================ -->
+            <div id="modal-developer" class="hidden absolute inset-0 z-50 bg-black/85 flex items-center justify-center p-[2cqw] backdrop-blur-md">
+                <div class="relative w-[50cqw] aspect-[4/3] max-h-[85cqh] flex flex-col items-center bg-slate-950 border border-slate-800 rounded-2xl p-[1cqw] shadow-2xl animate-fadeIn" onclick="event.stopPropagation()">
+                    <!-- Tombol Tutup Modal -->
+                    <button onclick="closeDeveloperModal()" class="absolute top-[1cqw] right-[1cqw] w-[3cqw] h-[3cqw] flex items-center justify-center rounded-full bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white transition cursor-pointer z-50 shadow-md">
+                        <i class="fa-solid fa-xmark text-[1.5cqw]"></i>
+                    </button>
+                    <!-- Gambar Penulis/Pengembang -->
+                    <div class="w-full h-full overflow-hidden rounded-xl">
+                        <img src="https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/Pengembang.png" alt="Pengembang" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='https://placehold.co/600x450/0f172a/22d3ee?text=Pengembang+Informatika'">
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <!-- ============================================ -->
-        <!-- SCREEN 3: GAMEPLAY AREA TEMPLATE & NPC DIALOG -->
-        <!-- ============================================ -->
-        <div id="screen-gameplay" class="hidden absolute inset-0 z-30 flex flex-col justify-between p-2 md:p-4 bg-slate-900 bg-cover bg-center transition-all duration-500">
-            <!-- Top Bar - Sleek & Transparent -->
-            <div id="gameplay-top-bar" class="flex items-center justify-between bg-slate-955/40 p-1 md:p-2 rounded-lg backdrop-blur-md transition-all duration-500 flex-shrink-0">
-                <button onclick="backToMap()" class="px-2.5 py-1 bg-slate-800/80 hover:bg-slate-700 text-[8px] md:text-[10px] font-bold rounded text-slate-300 hover:text-white transition flex items-center gap-1.5 cursor-pointer">
-                    <i class="fa-solid fa-map"></i> Peta
+            <!-- ============================================ -->
+            <!-- POPUP MODAL ISIAN IDENTITAS (IDENTITY MODAL) -->
+            <!-- ============================================ -->
+            <div id="popup-identity" class="hidden absolute inset-0 z-50 bg-black/85 flex items-center justify-center p-[2cqw] backdrop-blur-md">
+                <div class="relative w-[45cqw] flex flex-col bg-slate-950 border border-slate-800/80 rounded-2xl p-[2.5cqw] shadow-2xl animate-fadeIn" onclick="event.stopPropagation()">
+                    <h3 class="text-[2.2cqw] text-yellow-400 text-center font-bold tracking-wide mb-[0.2cqw] readable-text-glow">Selamat Datang</h3>
+                    <p class="text-[1.2cqw] text-slate-300 text-center font-semibold mb-[2cqw] readable-text-glow">Silakan isi identitasmu sebelum mulai belajar.</p>
+                    
+                    <div class="space-y-[1.5cqw] mb-[2cqw]">
+                        <div>
+                            <label for="input-fullname" class="block text-[1cqw] font-bold text-cyan-400 mb-[0.5cqw] uppercase tracking-wider">Nama Lengkap</label>
+                            <input type="text" id="input-fullname" placeholder="Ketik nama lengkapmu disini..." class="w-full bg-slate-900/80 border border-slate-700/60 rounded-lg px-[1.2cqw] py-[0.8cqw] text-[1.1cqw] text-white focus:outline-none focus:border-cyan-500 transition duration-150">
+                        </div>
+                        <div>
+                            <label for="input-school" class="block text-[1cqw] font-bold text-cyan-400 mb-[0.5cqw] uppercase tracking-wider">Sekolah Asal</label>
+                            <input type="text" id="input-school" placeholder="Ketik nama sekolah asalmu..." class="w-full bg-slate-900/80 border border-slate-700/60 rounded-lg px-[1.2cqw] py-[0.8cqw] text-[1.1cqw] text-white focus:outline-none focus:border-cyan-500 transition duration-150">
+                        </div>
+                    </div>
+
+                    <button onclick="submitIdentity()" class="w-full py-[1cqw] bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-slate-955 font-black text-[1.3cqw] rounded-xl shadow-lg shadow-yellow-500/10 border-b-[0.4cqw] border-amber-700 active:scale-95 transition-all duration-150 tracking-wider uppercase flex items-center justify-center gap-[0.5cqw] cursor-pointer">
+                        <i class="fa-solid fa-gamepad"></i> Mulai Bermain
+                    </button>
+                </div>
+            </div>
+
+            <!-- ============================================ -->
+            <!-- SKRIN 2: PETA DUNIA PERMAINAN (MAP SCREEN)  -->
+            <!-- ============================================ -->
+            <div id="screen-map" class="hidden absolute inset-0 z-10 flex flex-col justify-between p-[2.5cqw] bg-cover bg-center transition-all duration-700 ease-in-out" style="background-image: url('https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/bg_mapgame.jpeg');">
+
+                <!-- Tombol Catatan Materi Global -->
+                <button onclick="showEducationalHelp(0)" class="absolute top-[2cqw] right-[2cqw] z-30 px-[1.5cqw] py-[0.6cqw] bg-cyan-600/35 hover:bg-cyan-500/50 text-[1.1cqw] font-bold rounded-lg text-cyan-300 shadow-lg border border-cyan-500/30 transition flex items-center gap-[0.5cqw] backdrop-blur-md cursor-pointer">
+                    <i class="fa-solid fa-book-bookmark animate-pulse"></i> Catatan OS
                 </button>
-                <h3 id="area-title" class="text-[10px] md:text-sm text-cyan-400 uppercase tracking-wider font-bold">Nama Area</h3>
-                <button onclick="showEducationalHelp()" class="w-5 h-5 md:w-7 md:h-7 bg-blue-900/40 hover:bg-blue-800/60 text-[9px] rounded-full text-blue-300 flex items-center justify-center border border-blue-500/30 transition animate-pulse cursor-pointer" title="Petunjuk Edukasi">
-                    <i class="fa-solid fa-book-open"></i>
-                </button>
+
+                <!-- Judul Peta Utama -->
+                <div class="relative z-10 text-center mt-[0.5cqw]">
+                    <h2 class="text-[2cqw] text-yellow-400 tracking-wide drop-shadow-[0_2px_4px_rgba(0,0,0,1)] uppercase leading-none">PETA KOTA SISTEM OPERASI</h2>
+                </div>
+
+                <!-- SVG Jalur Peta Dinamis (Hijau Terang) -->
+                <svg class="absolute inset-0 w-full h-full z-10 pointer-events-none" id="map-svg-lines">
+                    <path id="path-0-1" d="" fill="none" stroke="#37f713" stroke-width="3" stroke-dasharray="6,6" opacity="0.3" class="transition-all duration-500" />
+                    <path id="path-1-2" d="" fill="none" stroke="#37f713" stroke-width="3" stroke-dasharray="6,6" opacity="0.3" class="transition-all duration-500" />
+                    <path id="path-2-3" d="" fill="none" stroke="#37f713" stroke-width="3" stroke-dasharray="6,6" opacity="0.3" class="transition-all duration-500" />
+                    <path id="path-3-4" d="" fill="none" stroke="#37f713" stroke-width="3" stroke-dasharray="6,6" opacity="0.3" class="transition-all duration-500" />
+                    <path id="path-4-5" d="" fill="none" stroke="#37f713" stroke-width="3" stroke-dasharray="6,6" opacity="0.3" class="transition-all duration-500" />
+                    <path id="path-5-6" d="" fill="none" stroke="#37f713" stroke-width="3" stroke-dasharray="6,6" opacity="0.3" class="transition-all duration-500" />
+                </svg>
+
+                <!-- Grid Level Sesuai Pola Sembular -->
+                <div class="relative z-20 flex-1 w-full grid grid-cols-4 grid-rows-2 gap-x-[2cqw] gap-y-[1cqw] items-center justify-items-center pt-[1.5cqw] pb-[0.5cqw] px-[2cqw]">
+                    
+                    <!-- NODE 0: NOTE MATERI -->
+                    <div id="level-node-0" class="flex flex-col items-center">
+                        <button onclick="enterLevel(0)" id="btn-level-0" class="w-[6cqw] h-[6cqw] rounded-full bg-amber-700 border-[0.2cqw] border-amber-600 flex items-center justify-center text-white text-[2.5cqw] font-bold shadow-lg transition-all duration-200 active-level-btn cursor-pointer">
+                            <i class="fa-solid fa-book-open"></i>
+                        </button>
+                        <span class="text-[1.1cqw] font-bold text-center mt-[0.5cqw] bg-slate-955/70 px-[1cqw] py-[0.2cqw] rounded text-white whitespace-nowrap">0. Note Materi</span>
+                    </div>
+
+                    <!-- LEVEL 1: DESA BOOTING -->
+                    <div id="level-node-1" class="flex flex-col items-center">
+                        <button onclick="enterLevel(1)" id="btn-level-1" class="w-[6cqw] h-[6cqw] rounded-full bg-red-500 border-[0.2cqw] border-white flex items-center justify-center text-white text-[2.5cqw] font-bold shadow-none cursor-not-allowed">
+                            <i class="fa-solid fa-lock"></i>
+                        </button>
+                        <span class="text-[1.1cqw] font-bold text-center mt-[0.4cqw] bg-slate-955/40 px-[1cqw] py-[0.2cqw] rounded text-white whitespace-nowrap">1. Desa Booting</span>
+                    </div>
+
+                    <!-- LEVEL 2: HUTAN PROSES -->
+                    <div id="level-node-2" class="flex flex-col items-center">
+                        <button onclick="enterLevel(2)" id="btn-level-2" class="w-[6cqw] h-[6cqw] rounded-full bg-red-500 border-[0.2cqw] border-white flex items-center justify-center text-white text-[2.5cqw] font-bold shadow-none cursor-not-allowed">
+                            <i class="fa-solid fa-lock"></i>
+                        </button>
+                        <span class="text-[1.1cqw] font-bold text-center mt-[0.4cqw] bg-slate-955/40 px-[1cqw] py-[0.2cqw] rounded text-white whitespace-nowrap">2. Hutan Processes</span>
+                    </div>
+
+                    <!-- LEVEL 3: GUA MEMORI -->
+                    <div id="level-node-3" class="flex flex-col items-center">
+                        <button onclick="enterLevel(3)" id="btn-level-3" class="w-[6cqw] h-[6cqw] rounded-full bg-red-500 border-[0.2cqw] border-white flex items-center justify-center text-white text-[2.5cqw] font-bold shadow-none cursor-not-allowed">
+                            <i class="fa-solid fa-lock"></i>
+                        </button>
+                        <span class="text-[1.1cqw] font-bold text-center mt-[0.4cqw] bg-slate-955/40 px-[1cqw] py-[0.2cqw] rounded text-white whitespace-nowrap">3. Gua Memori</span>
+                    </div>
+
+                    <!-- DEKORASI RUTE TARGET -->
+                    <div class="flex flex-col items-center opacity-30">
+                        <div class="w-[3.5cqw] h-[3.5cqw] border border-dashed border-slate-600 rounded-full flex items-center justify-center text-slate-500">
+                            <i class="fa-solid fa-route text-[1.8cqw]"></i>
+                        </div>
+                        <span class="text-[0.9cqw] text-slate-500 mt-[0.2cqw]">Selesai</span>
+                    </div>
+
+                    <!-- LEVEL 6: KASTIL ANTARMUKA (BOSS) -->
+                    <div id="level-node-6" class="flex flex-col items-center">
+                        <button onclick="enterLevel(6)" id="btn-level-6" class="w-[6cqw] h-[6cqw] rounded-full bg-red-500 border-[0.2cqw] border-white flex items-center justify-center text-white text-[2.5cqw] font-bold shadow-none cursor-not-allowed">
+                            <i class="fa-solid fa-lock"></i>
+                        </button>
+                        <span class="text-[1.1cqw] font-bold text-center mt-[0.4cqw] bg-slate-955/40 px-[1cqw] py-[0.2cqw] rounded text-white whitespace-nowrap">6. Kastil Antarmuka</span>
+                    </div>
+
+                    <!-- LEVEL 5: GUNUNG PERANGKAT KERAS -->
+                    <div id="level-node-5" class="flex flex-col items-center">
+                        <button onclick="enterLevel(5)" id="btn-level-5" class="w-[6cqw] h-[6cqw] rounded-full bg-red-500 border-[0.2cqw] border-white flex items-center justify-center text-white text-[2.5cqw] font-bold shadow-none cursor-not-allowed">
+                            <i class="fa-solid fa-lock"></i>
+                        </button>
+                        <span class="text-[1.1cqw] font-bold text-center mt-[0.4cqw] bg-slate-955/40 px-[1cqw] py-[0.2cqw] rounded text-white whitespace-nowrap">5. Gn Hardware</span>
+                    </div>
+
+                    <!-- LEVEL 4: SUNGAI FILE -->
+                    <div id="level-node-4" class="flex flex-col items-center">
+                        <button onclick="enterLevel(4)" id="btn-level-4" class="w-[6cqw] h-[6cqw] rounded-full bg-red-500 border-[0.2cqw] border-white flex items-center justify-center text-white text-[2.5cqw] font-bold shadow-none cursor-not-allowed">
+                            <i class="fa-solid fa-lock"></i>
+                        </button>
+                        <span class="text-[1.1cqw] font-bold text-center mt-[0.4cqw] bg-slate-955/40 px-[1cqw] py-[0.2cqw] rounded text-white whitespace-nowrap">4. Sungai File</span>
+                    </div>
+
+                </div>
+
+                <!-- Panel Navigasi / Instruksi Bawah -->
+                <div class="relative z-20 bg-slate-955/70 backdrop-blur-md p-[1.2cqw] rounded-xl flex flex-col items-center justify-center text-center w-11/12 max-w-[80cqw] mx-auto mb-[0.2cqw] border border-slate-800/40 shadow-xl flex-shrink-0">
+                    <p id="map-instruction-heading" class="text-[1.3cqw] text-cyan-300 font-bold leading-none mb-[0.3cqw]">
+                        Selesaikan catatan materi untuk membuka area-area berikutnya!
+                    </p>
+                    <p id="map-instruction-text" class="text-[1.1cqw] text-slate-200 font-medium leading-tight border-none">
+                        <!-- Dinonaktifkan lewat Javascript -->
+                    </p>
+                </div>
             </div>
 
-            <!-- Teks Instruksi dipindahkan ke atas & warna diubah ke kuning keemasan #fbbf24 tanpa shadow (Skala VW dinamis agar pas di layar kecil) -->
-            <div id="area-footer-tip" class="bg-slate-955/50 backdrop-blur-md p-1 px-3 rounded-lg text-[2vw] md:text-xs text-center text-[#fbbf24] font-bold max-w-[90%] mx-auto mt-1 transition-all duration-500 shadow-md flex-shrink-0">
-                Gunakan pengetahuanmu tentang sistem operasi komputer untuk menyelesaikan tantangan ini!
-            </div>
-
-            <!-- Middle Container (Gameplay Zone responsif 16:9) -->
-            <div class="flex-1 my-1 md:my-2 flex flex-col items-center justify-center relative overflow-hidden">
-                <!-- NPC DIALOG CONTAINER - Dengan Latar Kotak Hitam Sangat Gelap & Solid (#020617 / Slate-950) -->
-                <div id="npc-dialog-box" onclick="skipDialogue()" class="absolute inset-0 bg-slate-955/80 z-30 flex items-center justify-center p-2 cursor-pointer">
-                    <div class="w-[94%] h-[90%] aspect-video max-h-[92%] p-3 md:p-8 flex flex-col justify-between overflow-hidden bg-slate-950 border border-slate-850 rounded-2xl shadow-2xl" onclick="event.stopPropagation()">
-                        <!-- Scanning/Hologram visual light effects in the background -->
-                        <div class="absolute -top-32 -left-32 w-64 h-64 bg-cyan-500/10 rounded-full blur-[80px] pointer-events-none"></div>
+            <!-- ============================================ -->
+            <!-- SCREEN 3: AREA GAMEPLAY UTAMA & DIALOG NPC   -->
+            <!-- ============================================ -->
+            <div id="screen-gameplay" class="hidden absolute inset-0 z-30 flex flex-col justify-between p-[1.5cqw] bg-slate-900 bg-cover bg-center transition-all duration-500">
+                
+                <!-- POP-UP DIALOG MISI - SHADING GELAP TRANSPARAN -->
+                <div id="npc-dialog-box" onclick="skipDialogue()" class="absolute inset-0 bg-black/65 backdrop-blur-[2px] z-30 flex items-center justify-center p-[1.5cqw] cursor-pointer">
+                    <!-- KARTU DIALOG UTAMA -->
+                    <div class="w-[88cqw] h-[48cqw] max-h-[85cqh] p-[3cqw] flex flex-col justify-between overflow-hidden relative" onclick="event.stopPropagation()">
+                        <!-- Efek cahaya pendar hologram di sudut atas panel -->
+                        <div class="absolute -top-[12cqw] -left-[15cqw] w-[25cqw] h-[25cqw] bg-cyan-500/10 rounded-full blur-[80px] pointer-events-none"></div>
                         
-                        <!-- Main Content Row -->
-                        <div class="flex-grow flex flex-col md:flex-row items-center justify-center gap-3 md:gap-8 relative z-10 my-auto">
-                            <!-- NPC Avatar (Ukuran disempurnakan: w-24 h-24 sm:w-32 sm:h-32 md:w-52 md:h-52) -->
+                        <!-- BAGIAN ATAS PERCAKAPAN -->
+                        <div class="w-full text-center relative z-10 border-b border-slate-800/40 pb-[1cqw] mb-[0.5cqw] flex-shrink-0">
+                            <p class="text-[1.4cqw] text-[#fbbf24] font-bold leading-tight drop-shadow-none">
+                                Gunakan pengetahuanmu tentang sistem operasi komputer untuk menyelesaikan tantangan ini!
+                            </p>
+                        </div>
+
+                        <!-- Konten Informasi Percakapan - LANSKAP HORIZONTAL -->
+                        <div class="flex-grow flex flex-row items-center justify-center gap-[3cqw] relative z-10 my-auto">
+                            <!-- Karakter Avatar NPC -->
                             <div class="flex flex-col items-center flex-shrink-0">
-                                <div id="npc-avatar" class="w-20 h-20 sm:w-32 sm:h-32 md:w-52 md:h-52 flex items-center justify-center float-effect">
-                                    <i class="fa-solid fa-robot text-4xl"></i>
+                                <div id="npc-avatar" class="w-[19cqw] h-[19cqw] flex items-center justify-center float-effect">
+                                    <i class="fa-solid fa-robot text-[4.5cqw]"></i>
                                 </div>
-                                <span id="npc-name" class="mt-1 md:mt-2 text-[8px] md:text-sm font-black px-3 py-0.5 md:py-1 bg-cyan-955/80 text-cyan-300 rounded-full border border-cyan-800/40 tracking-wider">Nama NPC</span>
+                                <span id="npc-name" class="mt-[0.5cqw] text-[1.1cqw] font-black px-[1.5cqw] py-[0.3cqw] bg-cyan-955/80 text-cyan-300 rounded-full border border-cyan-800/40 tracking-wider whitespace-nowrap leading-none">Nama NPC</span>
                             </div>
                             
-                            <!-- NPC Text Info -->
-                            <div class="flex-1 text-center md:text-left space-y-1 md:space-y-3">
-                                <span class="px-2 py-0.5 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-[8px] md:text-xs rounded-full font-bold uppercase tracking-wider animate-pulse inline-block">
-                                    <i class="fa-solid fa-satellite-dish mr-1"></i> Transmisi Masuk
+                            <!-- Deskripsi Teks Chat NPC -->
+                            <div class="flex-1 text-left space-y-[0.5cqw]">
+                                <span class="px-[1.2cqw] py-[0.3cqw] bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-[1cqw] rounded-full font-bold uppercase tracking-wider animate-pulse inline-block leading-none">
+                                    <i class="fa-solid fa-satellite-dish mr-[0.5cqw]"></i> Transmisi Masuk
                                 </span>
-                                <h4 class="text-[10px] md:text-lg text-cyan-400 font-black uppercase tracking-wide leading-none">Misi Utama Area</h4>
-                                <p id="npc-text" class="text-[10px] sm:text-xs md:text-base lg:text-lg text-slate-100 leading-relaxed font-semibold min-h-[50px] readable-text-glow">
+                                <h4 class="text-[1.4cqw] text-cyan-400 font-black uppercase tracking-wide leading-none">Misi Utama Area</h4>
+                                <p id="npc-text" class="text-[1.2cqw] lg:text-[1.5cqw] text-slate-100 leading-relaxed font-semibold min-h-[4.5cqw] readable-text-glow overflow-y-auto">
                                     Halo penjelajah! Kami sedang mengalami kerusakan sistem. Bisakah kamu membantu kami memperbaikinya?
                                 </p>
                             </div>
                         </div>
                         
-                        <!-- Action Buttons Row -->
-                        <div class="flex gap-3 w-full max-w-xs md:max-w-md mx-auto relative z-10 border-t border-slate-800/60 pt-2 md:pt-4" onclick="event.stopPropagation()">
-                            <button id="btn-dialog-action" onclick="startMiniGame()" class="flex-1 py-1.5 md:py-2.5 px-4 font-black text-[9px] md:text-sm rounded-xl active:scale-95 transition-all duration-150 shadow-lg tracking-wider uppercase flex items-center justify-center gap-1 md:gap-2 border-b-4 border-[#5fc9cc] hover:brightness-110 cursor-pointer" style="background-color: #95f1f4; color: #000000;">
-                                <i class="fa-solid fa-circle-play text-xs md:text-base"></i> Mulai Misi
+                        <!-- Tombol Mulai Tugas / Nanti Saja -->
+                        <div class="flex gap-[1.5cqw] w-full max-w-[40cqw] mx-auto relative z-10 border-t border-slate-800/60 pt-[1.2cqw]" onclick="event.stopPropagation()">
+                            <button id="btn-dialog-action" onclick="startMiniGame()" class="flex-1 py-[0.8cqw] px-[2cqw] font-black text-[1.2cqw] rounded-xl active:scale-95 transition-all duration-150 shadow-lg tracking-wider uppercase flex items-center justify-center gap-[0.5cqw] border-b-4 border-[#5fc9cc] hover:brightness-110 cursor-pointer" style="background-color: #95f1f4; color: #000000;">
+                                <i class="fa-solid fa-circle-play"></i> Mulai Misi
                             </button>
-                            <button onclick="backToMap()" class="flex-1 py-1.5 md:py-2.5 px-4 font-black text-[9px] md:text-sm rounded-xl active:scale-95 transition-all duration-150 shadow-lg tracking-wider uppercase flex items-center justify-center gap-1 md:gap-2 border-b-4 border-[#b48600] hover:brightness-110 cursor-pointer" style="background-color: #eab308; color: #000000;">
-                                <i class="fa-solid fa-circle-xmark text-xs md:text-base"></i> Nanti Saja
+                            <button onclick="backToMap()" class="flex-1 py-[0.8cqw] px-[2cqw] font-black text-[1.2cqw] rounded-xl active:scale-95 transition-all duration-150 shadow-lg tracking-wider uppercase flex items-center justify-center gap-[0.5cqw] border-b-4 border-[#b48600] hover:brightness-110 cursor-pointer" style="background-color: #eab308; color: #000000;">
+                                <i class="fa-solid fa-circle-xmark"></i> Nanti Saja
                             </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- MINI GAME CONTENT CONTAINER - Seamless 16:9 scaling layout inside -->
-                <div id="mini-game-container" class="w-full h-full flex flex-col items-center justify-center overflow-hidden">
-                    <!-- Dynamic level content will be injected here via Javascript -->
+                <!-- Header Atas - Transparan -->
+                <div id="gameplay-top-bar" class="flex items-center justify-between bg-slate-955/50 p-[0.8cqw] rounded-lg backdrop-blur-sm flex-shrink-0">
+                    <button onclick="backToMap()" class="px-[1.5cqw] py-[0.5cqw] bg-slate-800/90 hover:bg-slate-700 text-[1.1cqw] font-bold rounded text-slate-300 hover:text-white transition flex items-center gap-[0.5cqw] cursor-pointer">
+                        <i class="fa-solid fa-map"></i> Peta
+                    </button>
+                    <h3 id="area-title" class="text-[1.3cqw] text-cyan-400 uppercase tracking-wider font-bold">Nama Area</h3>
+                    <button onclick="showEducationalHelp()" class="w-[3cqw] h-[3cqw] bg-blue-900/40 hover:bg-blue-800/60 text-[1.4cqw] rounded-full text-blue-300 flex items-center justify-center border border-blue-500/30 transition animate-pulse cursor-pointer" title="Petunjuk Edukasi">
+                        <i class="fa-solid fa-book-open"></i>
+                    </button>
+                </div>
+
+                <!-- Area gameplay tengah -->
+                <div class="flex-1 my-[1cqw] flex flex-col items-center justify-center relative overflow-hidden">
+                    <!-- KONTEN UTAMA MINI GAME -->
+                    <div id="mini-game-container" class="w-full h-full flex flex-col items-center justify-center overflow-hidden">
+                        <!-- Dynamic level content will be injected here via Javascript -->
+                    </div>
                 </div>
             </div>
-        </div>
+
+            <!-- ============================================ -->
+            <!-- SCREEN 6: KERTAS KEMENANGAN (VICTORY SCREEN) -->
+            <!-- ============================================ -->
+            <div id="screen-victory" class="hidden absolute inset-0 z-50 bg-slate-955 flex flex-col items-center justify-center p-[3cqw] text-center transition-all duration-300 ease-in-out bg-cover bg-center" style="background-image: linear-gradient(rgba(10, 15, 26, 0.85), rgba(10, 15, 26, 0.85)), url('https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/bg_kemenangan.jpeg');">
+                <div class="w-full max-w-[45cqw] p-[2cqw] relative overflow-hidden">
+                    <div class="absolute -inset-10 bg-[radial-gradient(circle_at_center,rgba(234,179,8,0.1)_0%,transparent_70%)] pointer-events-none"></div>
+
+                    <!-- Mahkota Crown -->
+                    <div class="text-[5cqw] text-yellow-400 float-effect mb-[1.5cqw]">
+                        <i class="fa-solid fa-crown"></i>
+                    </div>
+
+                    <h1 class="text-[2.8cqw] text-yellow-400 tracking-wider mb-[0.5cqw]">KOTA TELAH SELAMAT!</h1>
+                    <p class="text-[1.3cqw] text-slate-300 leading-relaxed max-w-[35cqw] mx-auto mb-[2cqw] opacity-90">
+                        Luar biasa! Kamu telah mengalahkan <span class="text-rose-400 font-black">Raja Error</span> dan merestorasi seluruh modul penting Kota Sistem Operasi.
+                    </p>
+
+                    <!-- Statistics Pencapaian -->
+                    <div class="bg-slate-900/40 border border-slate-800/20 rounded-xl p-[1.8cqw] mb-[2cqw] grid grid-cols-2 gap-[1cqw] text-left">
+                        <div>
+                            <span class="text-[1cqw] text-slate-500 block leading-none">Total Skor</span>
+                            <span id="final-score" class="text-[1.8cqw] font-bold text-yellow-400">0</span>
+                        </div>
+                        <div>
+                            <span class="text-[1cqw] text-slate-500 block leading-none">Kristal Terkumpul</span>
+                            <span id="final-crystals" class="text-[1.8cqw] font-bold text-cyan-400">7/7</span>
+                        </div>
+                        <div>
+                            <span class="text-[1cqw] text-slate-500 block leading-none">Kecerdasan Sistem</span>
+                            <span class="text-[1.4cqw] font-bold text-emerald-400"><i class="fa-solid fa-circle-check"></i> Maksimal</span>
+                        </div>
+                        <div>
+                            <span class="text-[1cqw] text-slate-500 block leading-none">Peringkat Edu-OS</span>
+                            <span class="text-[1.4cqw] font-bold text-purple-400">Administrator Utama</span>
+                        </div>
+                    </div>
+
+                    <!-- Tombol Main Lagi -->
+                    <button onclick="resetGame()" class="w-full py-[1.2cqw] bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-slate-955 font-black text-[1.5cqw] rounded-lg border-b-4 border-amber-700 active:scale-95 transition tracking-wider uppercase cursor-pointer">
+                        <i class="fa-solid fa-rotate-right"></i> Main Lagi
+                    </button>
+                </div>
+            </div>
+
+        </div> <!-- SELESAI screens-area -->
 
         <!-- ============================================ -->
-        <!-- SCREEN 4: KUIS POPUP (Kunci Area / Boss) - 16:9 PROPORTIONAL & TRANSPARENT -->
+        <!-- SCREEN 4: KUIS POPUP VERIFIKASI (16:9 AUTO)  -->
         <!-- ============================================ -->
-        <div id="popup-quiz" onclick="skipDialogue()" class="hidden absolute inset-0 z-40 bg-slate-950/85 flex items-center justify-center p-2 md:p-4 cursor-pointer">
-            <div class="w-[94%] h-[90%] aspect-video max-h-[92%] p-3 md:p-6 flex flex-col justify-between overflow-hidden relative" onclick="event.stopPropagation()">
+        <div id="popup-quiz" onclick="skipDialogue()" class="hidden absolute inset-0 z-40 bg-slate-955/85 flex items-center justify-center p-[1.5cqw] cursor-pointer">
+            <!-- KARTU KUIS UTAMA -->
+            <div class="w-[88cqw] h-[48cqw] max-h-[85cqh] p-[2.5cqw] flex flex-col justify-between overflow-hidden bg-slate-950/95 border border-slate-800/80 rounded-2xl shadow-2xl relative" onclick="event.stopPropagation()">
                 <!-- Atmospheric golden scanning light effects inside the transparent overlay panel -->
-                <div class="absolute -top-32 -left-32 w-64 h-64 bg-yellow-500/5 rounded-full blur-[80px] pointer-events-none"></div>
-                <div class="absolute -bottom-32 -right-32 w-64 h-64 bg-cyan-500/5 rounded-full blur-[80px] pointer-events-none"></div>
+                <div class="absolute -top-[15cqw] -left-[15cqw] w-[30cqw] h-[30cqw] bg-yellow-500/5 rounded-full blur-[80px] pointer-events-none"></div>
+                <div class="absolute -bottom-[15cqw] -right-[15cqw] w-[30cqw] h-[30cqw] bg-cyan-500/5 rounded-full blur-[80px] pointer-events-none"></div>
 
-                <!-- Header -->
-                <div class="text-center relative z-10 pb-1.5 md:pb-3">
-                    <span class="px-2 py-0.5 bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 text-[8px] md:text-[10px] rounded-full font-bold uppercase tracking-wider animate-pulse shadow-md">
-                        <i class="fa-solid fa-shield-halved mr-1"></i> Verifikasi Keamanan Protokol Kota
+                <!-- Header Kuis -->
+                <div class="text-center relative z-10 pb-[0.5cqw]">
+                    <span class="px-[1.5cqw] py-[0.4cqw] bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 text-[1cqw] rounded-full font-bold uppercase tracking-wider animate-pulse shadow-md leading-none inline-block">
+                        <i class="fa-solid fa-shield-halved mr-[0.5cqw]"></i> Verifikasi Keamanan Protokol Kota
                     </span>
-                    <h3 id="quiz-title" class="text-xs md:text-lg text-yellow-400 font-bold mt-1.5 tracking-wide readable-text-glow">Kuis Desa Booting</h3>
-                    <p class="text-[7px] md:text-[10px] text-slate-200 leading-tight readable-text-glow font-semibold">Jawab dengan benar untuk menstabilkan modul dan mengklaim Kristal Energi!</p>
+                    <h3 id="quiz-title" class="text-[1.6cqw] text-yellow-400 font-bold mt-[0.5cqw] tracking-wide readable-text-glow leading-none">Kuis Desa Booting</h3>
+                    <p class="text-[1cqw] text-slate-300 leading-none readable-text-glow font-semibold mt-[0.3cqw]">Jawab dengan benar untuk menstabilkan modul dan mengklaim Kristal Energi!</p>
                 </div>
 
-                <!-- Question Box (Floating directly over level background image with responsive font sizing) -->
-                <div class="my-2 md:my-4 text-center relative z-10 flex-grow flex items-center justify-center px-4 py-3 max-w-3xl mx-auto w-full">
-                    <p id="quiz-question" class="text-[2.2vw] sm:text-sm md:text-lg lg:text-2xl text-white leading-relaxed font-bold readable-text-glow">
+                <!-- Question Box -->
+                <div class="my-[0.5cqw] text-center relative z-10 flex-grow flex items-center justify-center px-[2cqw] py-[0.5cqw] max-w-[80cqw] mx-auto w-full">
+                    <p id="quiz-question" class="text-[1.8cqw] text-white leading-tight font-bold readable-text-glow">
                         Apakah nama tahapan yang memeriksa kelengkapan perangkat keras sesaat setelah tombol power dinyalakan?
                     </p>
                 </div>
 
-                <!-- Answers List: Beautiful 2x2 Grid Layout for 16:9 proportionality with responsive layout for 5 options -->
-                <div id="quiz-answers" class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 md:gap-3 max-w-3xl mx-auto w-full relative z-10 my-1 md:my-2">
+                <!-- Answers List -->
+                <div id="quiz-answers" class="grid grid-cols-2 gap-[1cqw] max-w-[70cqw] mx-auto w-full relative z-10 my-[0.5cqw]">
                     <!-- Buttons will be rendered inside this responsive grid -->
                 </div>
 
                 <!-- Footer (Feedback / Result) -->
-                <div id="quiz-feedback" class="hidden text-center text-[8px] md:text-xs font-bold p-1 rounded-lg mt-1 md:mt-3 relative z-10 border transition-all duration-300">
+                <div id="quiz-feedback" class="hidden text-center text-[1cqw] font-bold p-[0.6cqw] rounded-lg mt-[0.5cqw] relative z-10 border transition-all duration-300">
                     Jawaban Benar! +100 Skor.
                 </div>
             </div>
@@ -480,95 +570,49 @@
         <!-- ============================================ -->
         <!-- SCREEN 5: EDUCATIONAL HANDBOOK MODAL (16:9)  -->
         <!-- ============================================ -->
-        <div id="modal-handbook" class="hidden absolute inset-0 z-50 bg-slate-955/90 flex items-center justify-center p-2 md:p-4 backdrop-blur-md">
-            <!-- UKURAN DIUBAH MENJADI LEBIH BESAR: w-[92%] dengan aspect-video dan batas tinggi max-h-[92%] -->
-            <div class="w-[92%] aspect-video max-h-[92%] p-3 md:p-6 flex flex-col justify-between overflow-hidden rounded-xl border border-slate-700/50 shadow-2xl relative"
-                 style="background-image: url('https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/bg_materi1.jpeg'); background-size: cover; background-position: center;">
+        <div id="modal-handbook" class="hidden absolute inset-0 z-50 bg-slate-955/90 flex items-center justify-center p-[2cqw] backdrop-blur-md">
+            <!-- Kit Catatan Buku Panduan -->
+            <div class="w-[96%] h-[94%] p-[2cqw] md:p-[3cqw] flex flex-col justify-between overflow-hidden rounded-xl border border-slate-700/50 shadow-2xl relative mx-auto my-auto"
+                 style="background-image: linear-gradient(rgba(10, 15, 26, 0.85), rgba(10, 15, 26, 0.85)), url('https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/bg_materi1.jpeg'); background-size: cover; background-position: center;">
                 
-                <!-- Header (Ditambahkan kelas shift-right-handbook untuk menggeser judul 11 step ke kanan) -->
-                <div class="flex items-center justify-between border-b border-slate-700/50 pb-1.5 md:pb-2 relative z-10 shift-right-handbook">
-                    <h3 class="text-xs md:text-sm text-cyan-400 font-bold flex items-center gap-1.5 readable-text-glow">
+                <!-- Header Handbook -->
+                <div class="flex items-center justify-between border-b border-slate-700/50 pb-[1cqw] md:pb-[1.5cqw] relative z-10">
+                    <h3 class="text-[1.4cqw] text-cyan-400 font-bold flex items-center gap-[0.8cqw] readable-text-glow">
                         <i class="fa-solid fa-book-open"></i> Kit Catatan Materi Sistem Operasi
                     </h3>
                     <button onclick="closeEducationalHelp()" class="text-slate-400 hover:text-white transition cursor-pointer">
-                        <i class="fa-solid fa-xmark text-sm md:text-base"></i>
+                        <i class="fa-solid fa-xmark text-[1.8cqw]"></i>
                     </button>
                 </div>
 
-                <!-- Single Vertically-Stacked Container (Tab Menu di ATAS, Materi di BAWAH) -->
-                <!-- Ditambahkan kelas shift-right-handbook agar Tab Menu dan Isi Materi bergeser 11 step ke kanan -->
-                <div class="flex-1 flex flex-col gap-2 md:gap-3 my-2 md:my-3 overflow-hidden relative z-10 shift-right-handbook">
-                    <!-- TOP SECTION: Horizontal Tab Menu Bar menggunakan Grid 6 Kolom dan padding agar selaras dengan isi materi di bawahnya -->
-                    <div class="grid grid-cols-6 gap-1 md:gap-2 px-1 md:px-3 pb-1.5 md:pb-2 border-b border-slate-800/60 w-full" id="handbook-tabs-nav">
+                <!-- Tab Menu & Area Detail Bacaan -->
+                <div class="flex-1 flex flex-col gap-[1.2cqw] md:gap-[2cqw] my-[1.5cqw] overflow-hidden relative z-10">
+                    <!-- Row Tab Menu -->
+                    <div class="grid grid-cols-6 gap-[0.5cqw] md:gap-[1cqw] px-[1cqw] pb-[1cqw] border-b border-slate-800/60 w-full" id="handbook-tabs-nav">
                         <!-- Generasi dinamis lewat JS -->
                     </div>
 
-                    <!-- BOTTOM SECTION: Detail Reading View -->
-                    <div class="flex-1 flex flex-col overflow-hidden px-1 md:px-3 py-1 rounded-lg border border-transparent backdrop-blur-xs">
-                        <div id="handbook-content" class="flex-1 overflow-y-auto text-[9px] md:text-xs text-slate-100 space-y-2 md:space-y-3 pr-1 readable-text-glow leading-relaxed">
+                    <!-- Detail Isi Reading View -->
+                    <div class="flex-1 flex flex-col overflow-hidden px-[1cqw] py-[0.5cqw] rounded-lg border border-transparent backdrop-blur-xs">
+                        <div id="handbook-content" class="flex-1 overflow-y-auto text-[1.2cqw] text-slate-100 space-y-[0.8cqw] pr-[0.5cqw] readable-text-glow leading-relaxed">
                             <!-- Detail materi akan terinjeksi otomatis -->
                         </div>
                     </div>
                 </div>
 
-                <!-- Footer -->
-                <div class="border-t border-slate-700/50 pt-1.5 md:pt-2 flex justify-between items-center text-[8px] md:text-[9px] text-slate-200 relative z-10 readable-text-glow">
-                    <!-- Ditambahkan kelas shift-right-footer-text untuk menggeser teks ini 15 step ke kanan -->
-                    <span class="shift-right-footer-text">* Baca materi ini untuk memudahkan kuis tiap level</span>
-                    <button onclick="closeEducationalHelp()" class="px-2 py-1 md:px-4 md:py-1.5 bg-cyan-600 hover:bg-cyan-500 text-slate-950 text-[8px] md:text-[10px] font-black rounded-lg transition shadow-md cursor-pointer">
+                <!-- Footer Panduan -->
+                <div class="border-t border-slate-700/50 pt-[1.5cqw] flex justify-between items-center text-[1.1cqw] text-slate-200 relative z-10 readable-text-glow">
+                    <span>* Baca materi ini untuk memudahkan kuis tiap level</span>
+                    <button onclick="closeEducationalHelp()" class="px-[3cqw] py-[1cqw] bg-cyan-600 hover:bg-cyan-500 text-slate-955 text-[1.2cqw] font-black rounded-lg transition shadow-md cursor-pointer">
                         Paham, Tutup Catatan
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- ============================================ -->
-        <!-- SCREEN 6: VICTORY & GAME OVER SCREENS        -->
-        <!-- ============================================ -->
-        <div id="screen-victory" class="hidden absolute inset-0 z-50 bg-slate-950 flex flex-col items-center justify-center p-4 md:p-6 text-center transition-all duration-300 ease-in-out">
-            <div class="w-full max-w-sm md:max-w-md p-4 relative overflow-hidden">
-                <!-- MEMPERBAIKI BLOKIRAN KLIK: Menambahkan pointer-events-none pada shading pendaran cahaya -->
-                <div class="absolute -inset-10 bg-[radial-gradient(circle_at_center,rgba(234,179,8,0.1)_0%,transparent_70%)] pointer-events-none"></div>
-
-                <!-- Crown -->
-                <div class="text-3xl md:text-5xl text-yellow-400 float-effect mb-2 md:mb-3">
-                    <i class="fa-solid fa-crown"></i>
-                </div>
-
-                <h1 class="text-lg md:text-3xl text-yellow-400 tracking-wider mb-1">KOTA TELAH SELAMAT!</h1>
-                <p class="text-[9px] md:text-xs text-slate-300 leading-relaxed max-w-xs mx-auto mb-3 md:mb-4 opacity-90">
-                    Luar biasa! Kamu telah mengalahkan <span class="text-rose-400 font-black">Raja Error</span> dan merestorasi seluruh modul penting Kota Sistem Operasi.
-                </p>
-
-                <!-- Statistics Card -->
-                <div class="bg-slate-900/40 border border-slate-800/20 rounded-xl p-2.5 md:p-3 mb-3 md:mb-4 grid grid-cols-2 gap-2 text-left">
-                    <div>
-                        <span class="text-[7px] md:text-[8px] text-slate-500 block leading-none">Total Skor</span>
-                        <span id="final-score" class="text-sm md:text-base font-bold text-yellow-400">0</span>
-                    </div>
-                    <div>
-                        <span class="text-[7px] md:text-[8px] text-slate-500 block leading-none">Kristal Terkumpul</span>
-                        <span id="final-crystals" class="text-sm md:text-base font-bold text-cyan-400">7/7</span>
-                    </div>
-                    <div>
-                        <span class="text-[7px] md:text-[8px] text-slate-500 block leading-none">Kecerdasan Sistem</span>
-                        <span class="text-[10px] md:text-xs font-bold text-emerald-400"><i class="fa-solid fa-circle-check"></i> Maksimal</span>
-                    </div>
-                    <div>
-                        <span class="text-[7px] md:text-[8px] text-slate-500 block leading-none">Peringkat Edu-OS</span>
-                        <span class="text-[10px] md:text-xs font-bold text-purple-400">Administrator Utama</span>
-                    </div>
-                </div>
-
-                <!-- Action Button -->
-                <button onclick="resetGame()" class="w-full py-1.5 md:py-2 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-slate-955 font-black text-[10px] md:text-xs rounded-lg border-b-4 border-amber-700 active:scale-95 transition tracking-wider uppercase cursor-pointer">
-                    <i class="fa-solid fa-rotate-right"></i> Main Lagi
-                </button>
-            </div>
-        </div>
-
     </div>
 
+    <!-- SCRIPT UTAMA - SEMUA SINTAKS SUDAH DISINKRONKAN DAN DIUJI BEBAS DARI ERROR JAVASCRIPT -->
     <script>
         const state = {
             loadingProgress: 0,
@@ -578,6 +622,8 @@
             crystalsCollected: 0,
             unlockedLevels: [true, false, false, false, false, false, false],
             soundEnabled: true,
+            playerName: 'Hero OS',
+            playerSchool: '-',
             levelStates: {
                 0: { completed: false, miniGameDone: false },
                 1: { completed: false, miniGameDone: false },
@@ -603,8 +649,8 @@
             {
                 name: "Note Materi Utama",
                 icon: "fa-book-open",
-                npc: "Siri (OS Guide Bot)",
-                npcGreeting: "Selamat datang di Kota Sistem Operasi! Sebelum menyelamatkan kota dari serangan error, kamu harus membaca catatan materi dasar di bawah ini untuk mengaktifkan sistem kota. Tekan tombol di bawah untuk mulai belajar!",
+                npc: "Anso (Guru Informatika)",
+                npcGreeting: "Selamat datang di Kota <strong class='text-yellow-400 font-bold'>Sistem Operasi</strong>! Sebelum menyelamatkan kota dari serangan error, kamu harus membaca catatan materi dasar di bawah ini untuk mengaktifkan sistem kota. Pada <strong class='text-yellow-400 font-bold'>Unit Berpikir Komputasional</strong> dengan <strong class='text-yellow-400 font-bold'>Sub Unit Sistem Operasi</strong> ini, siswa diharapkan mencapai <strong class='text-yellow-400 font-bold'>capaian pembelajaran</strong> berupa pemahaman terhadap peran sistem operasi. Melalui pembelajaran ini, siswa diharapkan mampu menjelaskan fungsi utama sistem operasi sebagai jembatan serta memahami mekanisme internal interaksi antara perangkat keras (hardware), perangkat lunak (software), dan pengguna (brainware) dalam sistem komputer. Tekan tombol di bawah untuk mulai belajar.",
                 color: "rose-500",
                 bgImage: "url('https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/bg_materi1.jpeg')"
             },
@@ -743,7 +789,7 @@
              Sistem File bertugas mengatur, menyimpan, and melacak data di dalam drive penyimpanan.<br>
              &bull; <strong>Direktori (Folder):</strong> Struktur penataan logis berbentuk pohon (tree structure) agar berkas-berkas rapi dan mudah ditemukan.<br>
              &bull; <strong>Ekstensi File:</strong> Penanda jenis format file agar sistem operasi tahu program apa yang harus membukanya (contoh: .jpg/.png untuk gambar, .exe untuk program aplikasi, .mp3 untuk suara, .docx/.pdf untuk dokumen).<br>
-             &bull; <strong>NTFS & FAT32:</strong> Standar penataan data fisik pada sistem penyimpanan Windows.`,
+             &bull; <strong>NTFS & FAT32:</strong> Standar data fisik pada sistem penyimpanan Windows.`,
             
             `<strong>Materi 5: Perangkat Keras (Interaksi Hardware)</strong><br><br>
              Sistem operasi jembatani komunikasi antara software aplikasi dengan sirkuit elektronik fisik.<br>
@@ -759,8 +805,8 @@
              &bull; <strong>GUI (Graphical User Interface):</strong> Menggunakan komponen grafis yang indah seperti ikon, kursor mouse, jendela program, dan menu drop-down yang ramah untuk semua kalangan pengguna (contoh: Windows, Android, macOS).`
         ];
 
+        // Deklarasi variabel pengetikan teks global (DIPISAHKAN DARI STRUKTUR LAIN AGAR BEBAS SYNTAX ERROR)
         let processGameInterval = null;
-
         let typingInterval = null;
         let currentFullText = "";
         let isTyping = false;
@@ -778,13 +824,35 @@
             onTypingComplete = callback;
             el.innerHTML = '';
             
-            let i = 0;
+            let tokens = [];
+            let idx = 0;
+            while (idx < text.length) {
+                if (text[idx] === '<') {
+                    let tagEnd = text.indexOf('>', idx);
+                    if (tagEnd !== -1) {
+                        tokens.push({ type: 'tag', content: text.substring(idx, tagEnd + 1) });
+                        idx = tagEnd + 1;
+                    } else {
+                        tokens.push({ type: 'char', content: text[idx] });
+                        idx++;
+                    }
+                } else {
+                    tokens.push({ type: 'char', content: text[idx] });
+                    idx++;
+                }
+            }
+
+            let tokenIndex = 0;
             typingInterval = setInterval(() => {
-                if (i < text.length) {
-                    el.innerHTML += text.charAt(i);
-                    i++;
-                    if (state.soundEnabled && i % 4 === 0) {
-                        playSound('click');
+                if (tokenIndex < tokens.length) {
+                    let currentToken = tokens[tokenIndex];
+                    if (currentToken.type === 'tag') {
+                        el.innerHTML += currentToken.content;
+                        tokenIndex++;
+                    } else {
+                        el.innerHTML += currentToken.content;
+                        tokenIndex++;
+                        // Efek suara mengetik dinonaktifkan sepenuhnya untuk misi/dialog utama agar hening
                     }
                 } else {
                     completeTyping();
@@ -823,9 +891,27 @@
             }
         }
 
+        function playBgMusic() {
+            if (!state.soundEnabled) return;
+            const bgMusic = document.getElementById('sound-bg-music');
+            if (bgMusic) {
+                bgMusic.volume = 0.35; // Atur volume musik latar agar tidak mengganggu efek suara
+                bgMusic.play().catch(e => console.log("Music play blocked: ", e));
+            }
+        }
+
+        function stopBgMusic() {
+            const bgMusic = document.getElementById('sound-bg-music');
+            if (bgMusic) {
+                bgMusic.pause();
+            }
+        }
+
         window.toggleFullScreen = function() {
             const container = document.getElementById('game-container');
             const fsText = document.getElementById('fullscreen-text');
+            if (!container || !fsText) return;
+
             const isPseudoFs = container.classList.contains('fixed');
 
             if (!document.fullscreenElement && !isPseudoFs) {
@@ -858,6 +944,7 @@
         };
 
         function enablePseudoFullscreen(container, fsText) {
+            if (!container || !fsText) return;
             container.classList.add('fixed', 'inset-0', 'w-screen', 'h-screen', 'z-50', 'rounded-none', 'border-none');
             container.style.width = '100vw';
             container.style.height = '100vh';
@@ -868,6 +955,7 @@
         }
 
         function disablePseudoFullscreen(container, fsText) {
+            if (!container || !fsText) return;
             container.classList.remove('fixed', 'inset-0', 'w-screen', 'h-screen', 'z-50', 'rounded-none', 'border-none');
             container.style.width = '';
             container.style.height = '';
@@ -879,12 +967,12 @@
 
         document.addEventListener('fullscreenchange', handleFullscreenChange);
         document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
-        document.addEventListener('mozfullscreenchange', handleFullscreenChange);
-        document.addEventListener('MSFullscreenChange', handleFullscreenChange);
 
         function handleFullscreenChange() {
             const container = document.getElementById('game-container');
             const fsText = document.getElementById('fullscreen-text');
+            if (!container || !fsText) return;
+
             if (!document.fullscreenElement && !document.webkitFullscreenElement) {
                 if (!container.classList.contains('fixed')) {
                     fsText.textContent = "Layar Penuh";
@@ -898,10 +986,12 @@
         const resizeObserver = new ResizeObserver(entries => {
             handleResizeAndLines();
         });
-        resizeObserver.observe(document.getElementById('game-container'));
+        const gc = document.getElementById('game-container');
+        if (gc) resizeObserver.observe(gc);
 
         function handleResizeAndLines() {
-            if (!document.getElementById('screen-map').classList.contains('hidden')) {
+            const mapScreen = document.getElementById('screen-map');
+            if (mapScreen && !mapScreen.classList.contains('hidden')) {
                 updateMapLines();
             }
         }
@@ -911,11 +1001,13 @@
             const icon = document.getElementById('sound-icon');
             const btnSpan = document.querySelector('#btn-sound-toggle span');
             if (state.soundEnabled) {
-                icon.className = "fa-solid fa-volume-high text-cyan-400";
-                btnSpan.textContent = "Suara: Aktif";
+                if (icon) icon.className = "fa-solid fa-volume-high text-cyan-400";
+                if (btnSpan) btnSpan.textContent = "Suara: Aktif";
+                playBgMusic();
             } else {
-                icon.className = "fa-solid fa-volume-xmark text-slate-500";
-                btnSpan.textContent = "Suara: Mati";
+                if (icon) icon.className = "fa-solid fa-volume-xmark text-slate-500";
+                if (btnSpan) btnSpan.textContent = "Suara: Mati";
+                stopBgMusic();
             }
         };
 
@@ -930,81 +1022,90 @@
             if (!state.unlockedLevels[index]) {
                 playSound('fail');
                 const node = document.getElementById(`level-node-${index}`);
-                node.classList.add('shake-effect');
-                setTimeout(() => node.classList.remove('shake-effect'), 500);
+                if (node) {
+                    node.classList.add('shake-effect');
+                    setTimeout(() => node.classList.remove('shake-effect'), 500);
+                }
                 return;
             }
 
-            playSound('click');
+            // Memutar efek suara sfx_transisi.mp3 saat menekan level yang terbuka
+            playSound('level-up');
             state.activeLevelIndex = index;
             
             const lvl = levelData[index];
-            document.getElementById('area-title').textContent = lvl.name;
-            document.getElementById('screen-gameplay').style.backgroundImage = lvl.bgImage;
-            document.getElementById('screen-gameplay').style.backgroundSize = "cover";
-            document.getElementById('screen-gameplay').style.backgroundPosition = "center";
+            const areaTitle = document.getElementById('area-title');
+            if (areaTitle) areaTitle.textContent = lvl.name;
 
-            document.getElementById('npc-name').textContent = lvl.npc;
+            const gameplayScreen = document.getElementById('screen-gameplay');
+            if (gameplayScreen) {
+                gameplayScreen.style.backgroundImage = lvl.bgImage;
+                gameplayScreen.style.backgroundSize = "cover";
+                gameplayScreen.style.backgroundPosition = "center";
+            }
+
+            const npcName = document.getElementById('npc-name');
+            if (npcName) npcName.textContent = lvl.npc;
             
             typeWriter('npc-text', lvl.npcGreeting, 15);
             
             const avatarContainer = document.getElementById('npc-avatar');
-            
-            if (index === 0) {
-                avatarContainer.innerHTML = `<i class="fa-solid fa-user-graduate text-cyan-400 animate-pulse text-2xl"></i>`;
-            } else if (index === 1) {
-                avatarContainer.innerHTML = `<img src="https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/L1.png" alt="Nobi" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='https://placehold.co/300x300/0f172a/f59e0b?text=Nobi'">`;
-            } else if (index === 2) {
-                avatarContainer.innerHTML = `<img src="https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/L2.png" alt="Procy" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='https://placehold.co/300x300/0f172a/10b981?text=Procy'">`;
-            } else if (index === 3) {
-                avatarContainer.innerHTML = `<img src="https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/L3.png" alt="Memoria" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='https://placehold.co/300x300/0f172a/8b5cf6?text=Memoria'">`;
-            } else if (index === 4) {
-                avatarContainer.innerHTML = `<img src="https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/L4.png" alt="Philo" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='https://placehold.co/300x300/0f172a/0ea5e9?text=Philo'">`;
-            } else if (index === 5) {
-                avatarContainer.innerHTML = `<img src="https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/L5.png" alt="Iron" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='https://placehold.co/300x300/0f172a/ec4899?text=Iron'">`;
-            } else {
-                avatarContainer.innerHTML = `<img src="https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/L6.png" alt="Ratu GUI" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='https://placehold.co/300x300/0f172a/f43f5e?text=Ratu+GUI'">`;
+            if (avatarContainer) {
+                if (index === 0) {
+                    avatarContainer.innerHTML = `<img src="https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/Anso.png" alt="Anso" class="w-full h-full object-contain animate-fadeIn" onerror="this.onerror=null; this.src='https://placehold.co/300x300/0f172a/22d3ee?text=Anso'">`;
+                } else if (index === 1) {
+                    avatarContainer.innerHTML = `<img src="https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/L1.png" alt="Nobi" class="w-full h-full object-contain animate-fadeIn" onerror="this.onerror=null; this.src='https://placehold.co/300x300/0f172a/f59e0b?text=Nobi'">`;
+                } else if (index === 2) {
+                    avatarContainer.innerHTML = `<img src="https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/L2.png" alt="Procy" class="w-full h-full object-contain animate-fadeIn" onerror="this.onerror=null; this.src='https://placehold.co/300x300/0f172a/10b981?text=Procy'">`;
+                } else if (index === 3) {
+                    avatarContainer.innerHTML = `<img src="https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/L3.png" alt="Memoria" class="w-full h-full object-contain animate-fadeIn" onerror="this.onerror=null; this.src='https://placehold.co/300x300/0f172a/8b5cf6?text=Memoria'">`;
+                } else if (index === 4) {
+                    avatarContainer.innerHTML = `<img src="https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/L4.png" alt="Philo" class="w-full h-full object-contain animate-fadeIn" onerror="this.onerror=null; this.src='https://placehold.co/300x300/0f172a/0ea5e9?text=Philo'">`;
+                } else if (index === 5) {
+                    avatarContainer.innerHTML = `<img src="https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/L5.png" alt="Iron" class="w-full h-full object-contain animate-fadeIn" onerror="this.onerror=null; this.src='https://placehold.co/300x300/0f172a/ec4899?text=Iron'">`;
+                } else {
+                    avatarContainer.innerHTML = `<img src="https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/L6.png" alt="Ratu GUI" class="w-full h-full object-contain animate-fadeIn" onerror="this.onerror=null; this.src='https://placehold.co/300x300/0f172a/f43f5e?text=Ratu+GUI'">`;
+                }
             }
 
-            if (state.levelStates[index].miniGameDone) {
-                document.getElementById('btn-dialog-action').textContent = index === 0 ? "Buka Catatan" : "Lanjut ke Kuis";
-            } else {
-                document.getElementById('btn-dialog-action').textContent = index === 0 ? "Mulai Baca" : "Mulai Tugas";
+            const btnDialogAction = document.getElementById('btn-dialog-action');
+            if (btnDialogAction) {
+                if (state.levelStates[index].miniGameDone) {
+                    btnDialogAction.textContent = index === 0 ? "Buka Catatan" : "Lanjut ke Kuis";
+                } else {
+                    btnDialogAction.textContent = index === 0 ? "Mulai Baca" : "Mulai Tugas";
+                }
             }
 
             const topBar = document.getElementById('gameplay-top-bar');
             const footerTip = document.getElementById('area-footer-tip');
             
-            if (index === 0) {
-                topBar.classList.remove('bg-slate-955/40', 'backdrop-blur-md');
-                topBar.classList.add('bg-transparent');
-                footerTip.classList.remove('bg-slate-955/50', 'backdrop-blur-md');
-                footerTip.classList.add('bg-transparent', 'text-transparent', 'select-none');
-
-                document.getElementById('npc-dialog-box').classList.add('hidden');
-                document.getElementById('mini-game-container').innerHTML = '';
-                transitionScreen('screen-map', 'screen-gameplay');
-                setTimeout(() => {
-                    startMiniGame();
-                }, 100);
-            } else {
+            if (topBar) {
                 topBar.classList.add('bg-slate-955/40', 'backdrop-blur-md');
                 topBar.classList.remove('bg-transparent');
+            }
+            if (footerTip) {
                 footerTip.classList.add('bg-slate-955/50', 'backdrop-blur-md');
                 footerTip.classList.remove('bg-transparent', 'text-transparent', 'select-none');
-
-                document.getElementById('npc-dialog-box').classList.remove('hidden');
-                document.getElementById('mini-game-container').innerHTML = '';
-                transitionScreen('screen-map', 'screen-gameplay');
             }
+
+            const npcDialogBox = document.getElementById('npc-dialog-box');
+            if (npcDialogBox) npcDialogBox.classList.remove('hidden');
+            
+            const miniGameContainer = document.getElementById('mini-game-container');
+            if (miniGameContainer) miniGameContainer.innerHTML = '';
+            
+            transitionScreen('screen-map', 'screen-gameplay');
         };
 
         window.startMiniGame = function() {
             playSound('click');
-            document.getElementById('npc-dialog-box').classList.add('hidden');
+            const npcDialogBox = document.getElementById('npc-dialog-box');
+            if (npcDialogBox) npcDialogBox.classList.add('hidden');
             
             const index = state.activeLevelIndex;
             const container = document.getElementById('mini-game-container');
+            if (!container) return;
             container.innerHTML = '';
 
             if (state.levelStates[index].miniGameDone && index !== 0) {
@@ -1048,34 +1149,40 @@
             }
             
             const tabsNav = document.getElementById('handbook-tabs-nav');
-            tabsNav.innerHTML = '';
-            
-            const shortNames = ["1. Booting", "2. Proses", "3. Memori", "4. File", "5. Hardware", "6. Antarmuka"];
-            const icons = ["fa-power-off", "fa-microchip", "fa-memory", "fa-folder-open", "fa-gamepad", "fa-laptop-code"];
-            
-            shortNames.forEach((name, idx) => {
-                const isCurrentTab = idx === activeTabIdx;
-                const tabBtn = document.createElement('button');
-                tabBtn.className = `flex-1 justify-center px-1 py-1 text-[7px] sm:text-[10px] md:text-xs lg:text-sm font-bold rounded-lg transition flex flex-col sm:flex-row items-center gap-0.5 sm:gap-1.5 border ${
-                    isCurrentTab 
-                    ? 'bg-cyan-500 text-slate-955 border-cyan-400 shadow-md shadow-cyan-500/20' 
-                    : 'bg-slate-955/20 text-slate-200 border-white/5 hover:bg-white/10'
-                } cursor-pointer`;
-                tabBtn.innerHTML = `
-                    <i class="fa-solid ${icons[idx]} text-[8px] sm:text-xs"></i> 
-                    <span class="truncate max-w-full text-center leading-none">${name}</span>
-                `;
-                tabBtn.onclick = () => showEducationalHelp(idx);
-                tabsNav.appendChild(tabBtn);
-            });
+            if (tabsNav) {
+                tabsNav.innerHTML = '';
+                
+                const shortNames = ["1. Booting", "2. Proses", "3. Memori", "4. File", "5. Hardware", "6. Antarmuka"];
+                const icons = ["fa-power-off", "fa-microchip", "fa-memory", "fa-folder-open", "fa-gamepad", "fa-laptop-code"];
+                
+                shortNames.forEach((name, idx) => {
+                    const isCurrentTab = idx === activeTabIdx;
+                    const tabBtn = document.createElement('button');
+                    tabBtn.className = `flex-1 justify-center px-[0.5cqw] py-[1.2cqw] text-[1.2cqw] font-bold rounded-lg transition flex flex-col sm:flex-row items-center gap-[0.5cqw] border ${
+                        isCurrentTab 
+                        ? 'bg-cyan-500 text-slate-955 border-cyan-400 shadow-md shadow-cyan-500/20' 
+                        : 'bg-slate-955/20 text-slate-200 border-white/5 hover:bg-white/10'
+                    } cursor-pointer`;
+                    tabBtn.innerHTML = `
+                        <i class="fa-solid ${icons[idx]} text-[1.4cqw]"></i> 
+                        <span class="truncate max-w-full text-center leading-none">${name}</span>
+                    `;
+                    tabBtn.onclick = () => showEducationalHelp(idx);
+                    tabsNav.appendChild(tabBtn);
+                });
+            }
 
-            document.getElementById('handbook-content').innerHTML = handbookData[activeTabIdx];
-            document.getElementById('modal-handbook').classList.remove('hidden');
+            const handbookContent = document.getElementById('handbook-content');
+            if (handbookContent) handbookContent.innerHTML = handbookData[activeTabIdx];
+            
+            const modalHandbook = document.getElementById('modal-handbook');
+            if (modalHandbook) modalHandbook.classList.remove('hidden');
         };
 
         window.closeEducationalHelp = function() {
             playSound('click');
-            document.getElementById('modal-handbook').classList.add('hidden');
+            const modalHandbook = document.getElementById('modal-handbook');
+            if (modalHandbook) modalHandbook.classList.add('hidden');
         };
 
         window.resetGame = function() {
@@ -1091,7 +1198,8 @@
             }
 
             updateHUD();
-            document.getElementById('game-hud').classList.remove('hidden');
+            const gameHud = document.getElementById('game-hud');
+            if (gameHud) gameHud.classList.remove('hidden');
             transitionScreen('screen-victory', 'screen-map');
         };
 
@@ -1120,36 +1228,95 @@
                 state.loadingProgress += 2;
                 if (state.loadingProgress > 100) state.loadingProgress = 100;
 
-                bar.style.width = state.loadingProgress + '%';
-                pct.textContent = state.loadingProgress + '%';
+                if (bar) bar.style.width = state.loadingProgress + '%';
+                if (pct) pct.textContent = state.loadingProgress + '%';
 
-                if (state.loadingProgress < 20) txt.textContent = loadingMessages[0];
-                else if (state.loadingProgress < 40) txt.textContent = loadingMessages[1];
-                else if (state.loadingProgress < 60) txt.textContent = loadingMessages[2];
-                else if (state.loadingProgress < 80) txt.textContent = loadingMessages[3];
-                else if (state.loadingProgress < 95) txt.textContent = loadingMessages[4];
-                else txt.textContent = loadingMessages[5];
+                if (txt) {
+                    if (state.loadingProgress < 20) txt.textContent = loadingMessages[0];
+                    else if (state.loadingProgress < 40) txt.textContent = loadingMessages[1];
+                    else if (state.loadingProgress < 60) txt.textContent = loadingMessages[2];
+                    else if (state.loadingProgress < 80) txt.textContent = loadingMessages[3];
+                    else if (state.loadingProgress < 95) txt.textContent = loadingMessages[4];
+                    else txt.textContent = loadingMessages[5];
+                }
 
                 if (state.loadingProgress >= 100) {
                     clearInterval(timer);
-                    infoContainer.classList.add('hidden');
-                    btnStart.classList.remove('hidden');
+                    if (infoContainer) infoContainer.classList.add('hidden');
+                    const loadingActions = document.getElementById('loading-actions');
+                    if (loadingActions) loadingActions.classList.remove('hidden');
                     playSound('level-up');
                 }
             }, intervalTime);
 
-            btnStart.addEventListener('click', () => {
-                playSound('click');
-                updateHUD();
-                transitionScreen('screen-loading', 'screen-map');
-                document.getElementById('game-hud').classList.remove('hidden');
-                setTimeout(updateMapLines, 200);
-            });
+            if (btnStart) {
+                btnStart.addEventListener('click', () => {
+                    playSound('click');
+                    const popupIdentity = document.getElementById('popup-identity');
+                    if (popupIdentity) {
+                        popupIdentity.classList.remove('hidden');
+                    }
+                });
+            }
         }
+
+        window.submitIdentity = function() {
+            const fullnameInput = document.getElementById('input-fullname');
+            const schoolInput = document.getElementById('input-school');
+            if (!fullnameInput || !schoolInput) return;
+
+            const fullname = fullnameInput.value.trim();
+            const school = schoolInput.value.trim();
+
+            if (fullname === "") {
+                playSound('fail');
+                fullnameInput.classList.add('border-rose-500');
+                fullnameInput.focus();
+                return;
+            } else {
+                fullnameInput.classList.remove('border-rose-500');
+            }
+
+            if (school === "") {
+                playSound('fail');
+                schoolInput.classList.add('border-rose-500');
+                schoolInput.focus();
+                return;
+            } else {
+                schoolInput.classList.remove('border-rose-500');
+            }
+
+            playSound('success');
+
+            // Simpan identitas ke status global
+            state.playerName = fullname;
+            state.playerSchool = school;
+
+            // Perbarui identitas dinamis pada komponen HUD secara langsung
+            const hudPlayerName = document.getElementById('hud-player-name');
+            const hudPlayerSchool = document.getElementById('hud-player-school');
+            if (hudPlayerName) hudPlayerName.textContent = state.playerName;
+            if (hudPlayerSchool) hudPlayerSchool.textContent = "Sekolah: " + state.playerSchool;
+
+            // Sembunyikan Pop-up identitas
+            const popupIdentity = document.getElementById('popup-identity');
+            if (popupIdentity) popupIdentity.classList.add('hidden');
+
+            // Jalankan musik latar setelah pengguna mengonfirmasi masuk game
+            playBgMusic();
+
+            // Transisi ke peta permainan utama
+            updateHUD();
+            transitionScreen('screen-loading', 'screen-map');
+            const gameHud = document.getElementById('game-hud');
+            if (gameHud) gameHud.classList.remove('hidden');
+            setTimeout(updateMapLines, 200);
+        };
 
         function transitionScreen(fromId, toId) {
             const fromEl = document.getElementById(fromId);
             const textEl = document.getElementById(toId);
+            if (!fromEl || !textEl) return;
             
             fromEl.classList.add('opacity-0');
             setTimeout(() => {
@@ -1168,6 +1335,7 @@
 
         function updateMapLines() {
             const svg = document.getElementById('map-svg-lines');
+            if (!svg) return;
             const svgRect = svg.getBoundingClientRect();
 
             for (let i = 0; i < 6; i++) {
@@ -1205,10 +1373,17 @@
                 if (state.levelStates[key].completed) completedCount++;
             }
 
-            document.getElementById('hud-progress-txt').textContent = `${completedCount}/7 Area`;
-            document.getElementById('hud-progress-bar').style.width = `${(completedCount / 7) * 100}%`;
-            document.getElementById('hud-crystals').textContent = `${state.crystalsCollected}/7`;
-            document.getElementById('hud-score').textContent = state.score;
+            const hudProgressTxt = document.getElementById('hud-progress-txt');
+            if (hudProgressTxt) hudProgressTxt.textContent = `${completedCount}/7 Area`;
+            
+            const hudProgressBar = document.getElementById('hud-progress-bar');
+            if (hudProgressBar) hudProgressBar.style.width = `${(completedCount / 7) * 100}%`;
+            
+            const hudCrystals = document.getElementById('hud-crystals');
+            if (hudCrystals) hudCrystals.textContent = `${state.crystalsCollected}/7`;
+            
+            const hudScore = document.getElementById('hud-score');
+            if (hudScore) hudScore.textContent = state.score;
 
             let activeProgressionLevel = 0;
             for (let i = 0; i < 7; i++) {
@@ -1232,52 +1407,59 @@
             };
 
             const updatedInstruction = instructionMap[activeProgressionLevel] || instructionMap[0];
-            document.getElementById('map-instruction-text').innerHTML = `<i class="fa-solid fa-circle-info text-yellow-400 animate-pulse mr-1"></i> ${updatedInstruction}`;
+            const mapInstructionText = document.getElementById('map-instruction-text');
+            if (mapInstructionText) {
+                mapInstructionText.innerHTML = `<i class="fa-solid fa-circle-info text-yellow-400 animate-pulse mr-1"></i> ${updatedInstruction}`;
+            }
 
             for (let i = 0; i < 7; i++) {
                 const btn = document.getElementById(`btn-level-${i}`);
-                const info = btn.parentElement.querySelector('span');
+                if (!btn) continue;
+                
+                const parent = btn.parentElement;
+                const info = parent ? parent.querySelector('span') : null;
 
                 if (state.unlockedLevels[i]) {
                     btn.classList.remove('bg-slate-800', 'border-slate-600', 'cursor-not-allowed', 'bg-red-955/30', 'border-red-900/50', 'text-red-700/80');
                     
                     if (state.levelStates[i].completed) {
-                        btn.className = `w-8 h-8 md:w-14 md:h-14 rounded-full bg-emerald-800 border-2 border-emerald-800 flex items-center justify-center text-white text-xs md:text-base font-bold shadow-lg shadow-emerald-500/10 hover:scale-110 transition-all duration-200 cursor-pointer`;
-                        btn.innerHTML = `<i class="fa-solid fa-circle-check text-xs md:text-2xl text-white"></i>`;
-                        info.className = "text-[7px] md:text-[10px] font-bold text-center mt-0.5 md:mt-1 bg-slate-950/70 px-1.5 py-0.5 rounded text-white whitespace-nowrap";
+                        btn.className = `w-[6.5cqw] h-[6.5cqw] rounded-full bg-emerald-800 border-2 border-emerald-800 flex items-center justify-center text-white text-[2.8cqw] font-bold shadow-lg shadow-emerald-500/10 hover:scale-110 transition-all duration-200 cursor-pointer`;
+                        btn.innerHTML = `<i class="fa-solid fa-circle-check text-white"></i>`;
+                        if (info) info.className = "text-[1.2cqw] font-bold text-center mt-[0.5cqw] bg-slate-955/70 px-[1cqw] py-[0.2cqw] rounded text-white whitespace-nowrap";
                     } else {
-                        btn.className = `w-8 h-8 md:w-14 md:h-14 rounded-full bg-amber-700 border-2 border-amber-700 flex items-center justify-center text-white text-xs md:text-base font-bold shadow-lg shadow-amber-500/20 hover:scale-110 transition-all duration-200 active-level-btn cursor-pointer`;
+                        btn.className = `w-[6.5cqw] h-[6.5cqw] rounded-full bg-amber-700 border-2 border-amber-700 flex items-center justify-center text-white text-[2.8cqw] font-bold shadow-lg shadow-amber-500/20 hover:scale-110 transition-all duration-200 active-level-btn cursor-pointer`;
                         const lvlIcon = i === 0 ? "fa-book-open" : levelData[i].icon;
-                        btn.innerHTML = `<i class="fa-solid ${lvlIcon} text-xs md:text-2xl text-white"></i>`;
-                        info.className = "text-[7px] md:text-[10px] font-bold text-center mt-0.5 md:mt-1 bg-slate-950/70 px-1.5 py-0.5 rounded text-white whitespace-nowrap";
+                        btn.innerHTML = `<i class="fa-solid ${lvlIcon}"></i>`;
+                        if (info) info.className = "text-[1.2cqw] font-bold text-center mt-[0.5cqw] bg-slate-955/70 px-[1cqw] py-[0.2cqw] rounded text-white whitespace-nowrap";
                     }
                 } else {
-                    btn.className = "w-8 h-8 md:w-14 md:h-14 rounded-full bg-red-500 border-2 border-white flex items-center justify-center text-white text-xs md:text-base font-bold cursor-not-allowed shadow-none";
-                    btn.innerHTML = `<i class="fa-solid fa-lock text-xs md:text-2xl text-white"></i>`;
-                    info.className = "text-[7px] md:text-[10px] font-bold text-center mt-0.5 md:mt-1 bg-slate-950/40 px-1.5 py-0.5 rounded text-white whitespace-nowrap";
+                    btn.className = "w-[6.5cqw] h-[6.5cqw] rounded-full bg-red-500 border-2 border-white flex items-center justify-center text-white text-[2.8cqw] font-bold cursor-not-allowed shadow-none";
+                    btn.innerHTML = `<i class="fa-solid fa-lock text-white"></i>`;
+                    if (info) info.className = "text-[1.2cqw] font-bold text-center mt-[0.5cqw] bg-slate-955/40 px-[1cqw] py-[0.2cqw] rounded text-white whitespace-nowrap";
                 }
             }
         }
 
         function initNoteMateriGame(container) {
+            if (!container) return;
             container.innerHTML = `
-                <div class="w-full max-w-2xl flex flex-col justify-between h-full py-1 text-left pl-16 md:pl-40 transition-all duration-300">
-                    <div>
-                        <h4 class="text-[10px] md:text-sm font-bold text-cyan-400 mb-0.5 flex items-center gap-1">
+                <div class="w-[96%] h-[94%] text-center flex flex-col justify-between p-[2.5cqw] bg-slate-955/85 border border-slate-800/40 rounded-2xl shadow-2xl backdrop-blur-md animate-fadeIn mx-auto my-auto">
+                    <div class="mb-[0.5cqw]">
+                        <h4 class="text-[1.8cqw] font-bold text-cyan-400 mb-[0.2cqw] flex items-center justify-center gap-[0.5cqw] drop-shadow-md">
                             <i class="fa-solid fa-graduation-cap"></i> Modul Pengenalan Kota Sistem Operasi
                         </h4>
-                        <p class="text-[8px] md:text-[10px] text-slate-400">Selamat! Langkah pertama dimulai di sini. Baca teks panduan di bawah ini:</p>
+                        <p class="text-[1.1cqw] text-slate-300 readable-text-glow">Selamat! Langkah pertama dimulai di sini. Baca teks panduan di bawah ini:</p>
                     </div>
 
-                    <div class="my-1 overflow-y-auto max-h-[140px] md:max-h-[180px] pr-1">
-                        <p class="text-xs md:text-base lg:text-lg font-bold text-slate-100 leading-relaxed readable-text-glow" id="note-materi-typing"></p>
+                    <div class="my-[0.8cqw] overflow-y-auto max-h-[22cqh] pr-[0.5cqw] bg-slate-955/40 p-[1.5cqw] rounded-xl border border-slate-800/20 text-center flex items-center justify-center">
+                        <p class="text-[1.4cqw] font-semibold text-slate-100 leading-relaxed readable-text-glow text-center mx-auto max-w-[80cqw]" id="note-materi-typing"></p>
                     </div>
 
-                    <div class="flex gap-2 mt-1">
-                        <button onclick="showEducationalHelp(0)" class="flex-1 py-1 bg-blue-600/30 hover:bg-blue-600/50 border border-blue-500/30 text-blue-300 text-[9px] md:text-xs font-bold rounded-lg transition flex items-center justify-center gap-1 cursor-pointer">
+                    <div class="flex gap-[1.5cqw] mt-[0.5cqw] max-w-[50cqw] mx-auto w-full">
+                        <button onclick="showEducationalHelp(0)" class="flex-1 py-[1cqw] bg-blue-600/30 hover:bg-blue-600/50 border border-blue-500/30 text-blue-300 text-[1.2cqw] font-bold rounded-lg transition flex items-center justify-center gap-[0.5cqw] cursor-pointer shadow-md">
                             <i class="fa-solid fa-book-open"></i> Buka Kit Catatan
                         </button>
-                        <button onclick="finishNoteMateri()" class="flex-1 py-1 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-955 font-black text-[9px] md:text-xs rounded-lg transition tracking-wide shadow-lg cursor-pointer">
+                        <button onclick="finishNoteMateri()" class="flex-1 py-[1cqw] bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-955 font-black text-[1.2cqw] rounded-lg transition tracking-wide shadow-lg cursor-pointer">
                             Selesai & Aktifkan Kota <i class="fa-solid fa-arrow-right"></i>
                         </button>
                     </div>
@@ -1297,23 +1479,26 @@
             state.unlockedLevels[1] = true;
 
             const container = document.getElementById('mini-game-container');
-            container.innerHTML = `
-                <div class="text-center p-4 md:p-8 max-w-xs md:max-w-sm w-full float-effect bg-slate-955/20 border border-[#07f00f]/30 backdrop-blur-md rounded-2xl shadow-2xl shadow-[#07f00f]/20 animate-fadeIn">
-                    <div class="text-3xl md:text-5xl text-[#07f00f] mb-2 drop-shadow-[0_0_15px_rgba(7,240,15,0.4)]">
-                        <i class="fa-solid fa-circle-check animate-pulse"></i>
+            if (container) {
+                container.innerHTML = `
+                    <div class="text-center p-[3cqw] max-w-[45cqw] w-full float-effect bg-slate-950/95 border-2 border-emerald-500 backdrop-blur-md rounded-2xl shadow-2xl shadow-emerald-500/30 animate-fadeIn mx-auto">
+                        <div class="text-[4cqw] text-emerald-400 mb-[1cqw] drop-shadow-[0_0_15px_rgba(16,185,129,0.6)]">
+                            <i class="fa-solid fa-circle-check animate-pulse"></i>
+                        </div>
+                        <h3 class="text-[2cqw] font-black text-emerald-400 tracking-wide uppercase readable-text-glow">Tugas Sukses!</h3>
+                        <p class="text-[1.3cqw] text-white font-semibold my-[1.5cqw] leading-relaxed readable-text-glow">
+                            Kamu telah mendapatkan kristal pertamamu! <span class="text-yellow-400 font-black bg-slate-900/80 px-[0.6cqw] py-[0.2cqw] rounded border border-yellow-500/30">1. Desa Booting</span> sekarang telah terbuka di peta.
+                        </p>
+                        <button onclick="backToMap()" class="w-full py-[1cqw] bg-gradient-to-r from-emerald-400 to-emerald-800 hover:from-emerald-300 hover:to-emerald-700 text-slate-955 font-black text-[1.2cqw] rounded-xl shadow-lg shadow-emerald-500/20 active:scale-95 transition-all duration-150 tracking-wide uppercase cursor-pointer">
+                            Kembali ke Peta
+                        </button>
                     </div>
-                    <h3 class="text-xs md:text-base font-bold text-[#07f00f] tracking-wide uppercase">Materi Selesai!</h3>
-                    <p class="text-[9px] md:text-xs text-slate-300 my-2 leading-relaxed">
-                        Kamu telah mendapatkan kristal pertamamu! <span class="text-amber-400 font-bold">1. Desa Booting</span> sekarang telah terbuka di peta.
-                    </p>
-                    <button onclick="backToMap()" class="w-full py-1.5 md:py-2 bg-gradient-to-r from-[#07f00f] to-emerald-600 hover:from-[#06d60e] hover:to-emerald-500 text-slate-955 font-black text-[9px] md:text-xs rounded-xl shadow-lg shadow-[#07f00f]/20 active:scale-95 transition-all duration-150 tracking-wide uppercase cursor-pointer">
-                        Kembali ke Peta
-                    </button>
-                </div>
-            `;
+                `;
+            }
         };
 
         function initDesaBootingGame(container) {
+            if (!container) return;
             const steps = [
                 { id: 1, text: "BIOS (Inisialisasi Hardware)", desc: "Menghidupkan chip firmware motherboard pertama kali." },
                 { id: 2, text: "POST (Pengujian Hardware)", desc: "Mengecek apakah RAM, CPU, and GPU berfungsi normal." },
@@ -1327,96 +1512,103 @@
 
             const renderSteps = () => {
                 container.innerHTML = `
-                    <div class="w-[94%] h-[92%] aspect-video text-center flex flex-col justify-between p-3 md:p-6 bg-slate-950/30 border border-slate-800/25 rounded-2xl shadow-2xl backdrop-blur-md animate-fadeIn">
-                        <div>
-                            <h4 class="text-xs md:text-lg font-bold text-yellow-400 mb-0.5 drop-shadow-md">Algoritma Booting Rusak!</h4>
-                            <p class="text-[9px] md:text-xs text-slate-200 mb-1 md:mb-2 readable-text-glow">Klik dua blok secara berurutan untuk menukar posisinya hingga urut (1 ke 5)!</p>
+                    <div class="w-[96%] h-[94%] text-center flex flex-col justify-between p-[2cqw] bg-slate-955/75 border border-slate-800/40 rounded-2xl shadow-2xl backdrop-blur-md animate-fadeIn">
+                        <div class="mb-[0.5cqw]">
+                            <h4 class="text-[1.6cqw] font-bold text-yellow-400 mb-[0.2cqw] drop-shadow-md">Algoritma Booting Rusak!</h4>
+                            <p class="text-[1.1cqw] text-slate-200 readable-text-glow">Klik dua blok secara berurutan untuk menukar posisinya hingga urut (1 ke 5)!</p>
                         </div>
                         
-                        <div class="space-y-1.5 md:space-y-2 my-1 flex-1 flex flex-col justify-center" id="booting-list"></div>
+                        <div class="space-y-[0.6cqw] my-[0.5cqw] flex-1 flex flex-col justify-center" id="booting-list"></div>
 
-                        <button id="btn-check-booting" class="w-full max-w-xs md:max-w-md mx-auto py-1 md:py-2 bg-yellow-500 hover:bg-yellow-400 text-slate-955 text-[10px] md:text-sm font-bold rounded-lg mt-1 md:mt-2 transition shadow-lg cursor-pointer">
+                        <button id="btn-check-booting" class="w-auto px-[4cqw] py-[0.8cqw] mx-auto bg-yellow-500 hover:bg-yellow-400 text-black text-[1.2cqw] font-bold rounded-lg mt-[0.5cqw] transition shadow-lg cursor-pointer">
                             Periksa Struktur
                         </button>
                     </div>
                 `;
 
                 const listContainer = document.getElementById('booting-list');
-                shuffled.forEach((step, idx) => {
-                    const isSelected = selectedIndex === idx;
-                    const btn = document.createElement('button');
-                    btn.className = `w-full p-1.5 md:p-3 rounded-lg border text-left transition flex items-center gap-2.5 md:gap-4 cursor-pointer ${
-                        isSelected 
-                        ? 'bg-yellow-500/20 border-yellow-400/80 text-yellow-300 shadow-md backdrop-blur-md' 
-                        : 'bg-slate-950/30 hover:bg-slate-800/40 border-slate-800/15 text-slate-300 backdrop-blur-sm'
-                    }`;
-                    btn.innerHTML = `
-                        <span class="w-5 h-5 md:w-7 md:h-7 bg-slate-900/40 rounded-full flex items-center justify-center text-[8px] md:text-xs font-bold text-slate-300">${idx + 1}</span>
-                        <div class="flex-1">
-                            <div class="text-[9px] md:text-sm font-bold readable-text-glow text-white leading-none">${step.text}</div>
-                            <div class="text-[7px] md:text-xs text-slate-300 leading-none mt-0.5 md:mt-1 readable-text-glow">${step.desc}</div>
-                        </div>
-                    `;
-                    btn.onclick = () => {
-                        playSound('click');
-                        if (selectedIndex === null) {
-                            selectedIndex = idx;
-                            renderSteps();
+                if (listContainer) {
+                    shuffled.forEach((step, idx) => {
+                        const isSelected = selectedIndex === idx;
+                        const btn = document.createElement('button');
+                        btn.className = `w-full p-[1cqw] rounded-lg border text-left transition flex items-center gap-[1.5cqw] cursor-pointer ${
+                            isSelected 
+                            ? 'bg-yellow-500/20 border-yellow-400/80 text-yellow-300 shadow-md backdrop-blur-md' 
+                            : 'bg-slate-955/30 hover:bg-slate-800/40 border-slate-800/15 text-slate-300 backdrop-blur-sm'
+                        }`;
+                        btn.innerHTML = `
+                            <span class="w-[3cqw] h-[3cqw] bg-slate-900/40 rounded-full flex items-center justify-center text-[1.2cqw] font-bold text-slate-300 flex-shrink-0">${idx + 1}</span>
+                            <div class="flex-1 min-w-0">
+                                <div class="text-[1.3cqw] font-bold readable-text-glow text-white leading-tight truncate">${step.text}</div>
+                                <div class="text-[1.05cqw] text-slate-300 leading-none mt-[0.2cqw] readable-text-glow truncate">${step.desc}</div>
+                            </div>
+                        `;
+                        btn.onclick = () => {
+                            playSound('click');
+                            if (selectedIndex === null) {
+                                selectedIndex = idx;
+                                renderSteps();
+                            } else {
+                                const temp = shuffled[selectedIndex];
+                                shuffled[selectedIndex] = shuffled[idx];
+                                shuffled[idx] = temp;
+                                selectedIndex = null;
+                                renderSteps();
+                            }
+                        };
+                        listContainer.appendChild(btn);
+                    });
+                }
+
+                const btnCheckBooting = document.getElementById('btn-check-booting');
+                if (btnCheckBooting) {
+                    btnCheckBooting.onclick = () => {
+                        const correct = shuffled.every((item, index) => item.id === index + 1);
+                        if (correct) {
+                            finishMiniGame();
                         } else {
-                            const temp = shuffled[selectedIndex];
-                            shuffled[selectedIndex] = shuffled[idx];
-                            shuffled[idx] = temp;
-                            selectedIndex = null;
-                            renderSteps();
+                            playSound('fail');
+                            const list = document.getElementById('booting-list');
+                            if (list) {
+                                list.classList.add('shake-effect');
+                                setTimeout(() => list.classList.remove('shake-effect'), 500);
+                            }
                         }
                     };
-                    listContainer.appendChild(btn);
-                });
-
-                document.getElementById('btn-check-booting').onclick = () => {
-                    const correct = shuffled.every((item, index) => item.id === index + 1);
-                    if (correct) {
-                        finishMiniGame();
-                    } else {
-                        playSound('fail');
-                        const list = document.getElementById('booting-list');
-                        list.classList.add('shake-effect');
-                        setTimeout(() => list.classList.remove('shake-effect'), 500);
-                    }
-                };
+                }
             };
 
             renderSteps();
         }
 
         function initHutanProsesGame(container) {
+            if (!container) return;
             container.innerHTML = `
-                <div class="w-[94%] h-[92%] aspect-video text-center flex flex-col justify-between p-3 md:p-6 bg-slate-955/30 border border-slate-800/25 rounded-2xl shadow-2xl backdrop-blur-md animate-fadeIn">
-                    <div class="flex justify-between items-center mb-1">
+                <div class="w-[94%] h-[92%] aspect-video text-center flex flex-col justify-between p-[3cqw] bg-slate-955/75 border border-slate-800/40 rounded-2xl shadow-2xl backdrop-blur-md animate-fadeIn">
+                    <div class="flex justify-between items-center mb-[0.5cqw]">
                         <div class="text-left">
-                            <h4 class="text-xs md:text-lg font-bold text-emerald-400">Algoritma Penjadwalan CPU</h4>
-                            <p class="text-[9px] md:text-xs text-slate-400">Hentikan Zombie/Orphan sebelum CPU Overload 100%!</p>
+                            <h4 class="text-[1.8cqw] font-black text-emerald-300 readable-text-glow tracking-wide">Algoritma Penjadwalan CPU</h4>
+                            <p class="text-[1.2cqw] text-white font-semibold readable-text-glow mt-[0.2cqw]">Hentikan Zombie/Orphan sebelum CPU Overload 100%!</p>
                         </div>
-                        <div class="bg-slate-900/50 px-3 py-1 md:px-4 md:py-1.5 rounded border border-slate-800/40">
-                            <span class="text-[7px] md:text-[9px] block text-slate-500 leading-none">Beban CPU</span>
-                            <span id="cpu-load" class="text-[10px] md:text-sm font-bold text-emerald-400">0%</span>
+                        <div class="bg-slate-900/50 px-[2cqw] py-[0.8cqw] rounded border border-slate-800/40">
+                            <span class="text-[0.9cqw] block text-slate-500 leading-none">Beban CPU</span>
+                            <span id="cpu-load" class="text-[1.4cqw] font-bold text-emerald-400">0%</span>
                         </div>
                     </div>
 
-                    <!-- Arena Grid (Mengadaptasi tinggi baris agar pas di 16:9) -->
-                    <div class="grid grid-cols-3 gap-1.5 md:gap-3 bg-slate-900/10 p-2 md:p-3 flex-1 my-1 md:my-2 items-center justify-center">
-                        <div id="proc-slot-0" class="h-10 md:h-20 bg-slate-955/40 rounded-lg flex items-center justify-center transition border border-slate-800/10 relative cursor-pointer hover:bg-slate-900/30"></div>
-                        <div id="proc-slot-1" class="h-10 md:h-20 bg-slate-955/40 rounded-lg flex items-center justify-center transition border border-slate-800/10 relative cursor-pointer hover:bg-slate-900/30"></div>
-                        <div id="proc-slot-2" class="h-10 md:h-20 bg-slate-955/40 rounded-lg flex items-center justify-center transition border border-slate-800/10 relative cursor-pointer hover:bg-slate-900/30"></div>
-                        <div id="proc-slot-3" class="h-10 md:h-20 bg-slate-955/40 rounded-lg flex items-center justify-center transition border border-slate-800/10 relative cursor-pointer hover:bg-slate-900/30"></div>
-                        <div id="proc-slot-4" class="h-10 md:h-20 bg-slate-955/40 rounded-lg flex items-center justify-center transition border border-slate-800/10 relative cursor-pointer hover:bg-slate-900/30"></div>
-                        <div id="proc-slot-5" class="h-10 md:h-20 bg-slate-955/40 rounded-lg flex items-center justify-center transition border border-slate-800/10 relative cursor-pointer hover:bg-slate-900/30"></div>
-                        <div id="proc-slot-6" class="h-10 md:h-20 bg-slate-955/40 rounded-lg flex items-center justify-center transition border border-slate-800/10 relative cursor-pointer hover:bg-slate-900/30"></div>
-                        <div id="proc-slot-7" class="h-10 md:h-20 bg-slate-955/40 rounded-lg flex items-center justify-center transition border border-slate-800/10 relative cursor-pointer hover:bg-slate-900/30"></div>
-                        <div id="proc-slot-8" class="h-10 md:h-20 bg-slate-955/40 rounded-lg flex items-center justify-center transition border border-slate-800/10 relative cursor-pointer hover:bg-slate-900/30"></div>
+                    <div class="grid grid-cols-3 gap-[1cqw] bg-slate-900/10 p-[1cqw] flex-1 my-[0.5cqw] items-center justify-center">
+                        <div id="proc-slot-0" class="h-[8.5cqh] md:h-[12cqh] bg-slate-955/40 rounded-lg flex items-center justify-center transition border border-slate-800/10 relative cursor-pointer hover:bg-slate-900/30"></div>
+                        <div id="proc-slot-1" class="h-[8.5cqh] md:h-[12cqh] bg-slate-955/40 rounded-lg flex items-center justify-center transition border border-slate-800/10 relative cursor-pointer hover:bg-slate-900/30"></div>
+                        <div id="proc-slot-2" class="h-[8.5cqh] md:h-[12cqh] bg-slate-955/40 rounded-lg flex items-center justify-center transition border border-slate-800/10 relative cursor-pointer hover:bg-slate-900/30"></div>
+                        <div id="proc-slot-3" class="h-[8.5cqh] md:h-[12cqh] bg-slate-955/40 rounded-lg flex items-center justify-center transition border border-slate-800/10 relative cursor-pointer hover:bg-slate-900/30"></div>
+                        <div id="proc-slot-4" class="h-[8.5cqh] md:h-[12cqh] bg-slate-955/40 rounded-lg flex items-center justify-center transition border border-slate-800/10 relative cursor-pointer hover:bg-slate-900/30"></div>
+                        <div id="proc-slot-5" class="h-[8.5cqh] md:h-[12cqh] bg-slate-955/40 rounded-lg flex items-center justify-center transition border border-slate-800/10 relative cursor-pointer hover:bg-slate-900/30"></div>
+                        <div id="proc-slot-6" class="h-[8.5cqh] md:h-[12cqh] bg-slate-955/40 rounded-lg flex items-center justify-center transition border border-slate-800/10 relative cursor-pointer hover:bg-slate-900/30"></div>
+                        <div id="proc-slot-7" class="h-[8.5cqh] md:h-[12cqh] bg-slate-955/40 rounded-lg flex items-center justify-center transition border border-slate-800/10 relative cursor-pointer hover:bg-slate-900/30"></div>
+                        <div id="proc-slot-8" class="h-[8.5cqh] md:h-[12cqh] bg-slate-955/40 rounded-lg flex items-center justify-center transition border border-slate-800/10 relative cursor-pointer hover:bg-slate-900/30"></div>
                     </div>
 
-                    <div class="flex justify-between text-[8px] md:text-xs text-slate-500">
+                    <div class="flex justify-between text-[1.1cqw] text-slate-500">
                         <span>Lumpuhkan 10 Proses Error!</span>
                         <span id="proc-kill-count" class="font-bold text-slate-300">0/10 Terbunuh</span>
                     </div>
@@ -1440,11 +1632,11 @@
                 if (cpuEl) {
                     cpuEl.textContent = cpuLoad + '%';
                     if (cpuLoad > 75) {
-                        cpuEl.className = "text-[10px] md:text-sm font-bold text-rose-500 animate-bounce";
+                        cpuEl.className = "text-[1.4cqw] font-bold text-rose-500 animate-bounce";
                     } else if (cpuLoad > 40) {
-                        cpuEl.className = "text-[10px] md:text-sm font-bold text-amber-500";
+                        cpuEl.className = "text-[1.4cqw] font-bold text-amber-500";
                     } else {
-                        cpuEl.className = "text-[10px] md:text-sm font-bold text-emerald-400";
+                        cpuEl.className = "text-[1.4cqw] font-bold text-emerald-400";
                     }
                 }
 
@@ -1453,10 +1645,12 @@
                     playSound('fail');
                     container.innerHTML = `
                         <div class="text-center p-6 md:p-8 max-w-[280px] md:max-w-sm w-full float-effect bg-slate-955/20 border border-rose-500/30 backdrop-blur-md rounded-2xl shadow-2xl shadow-rose-500/20 animate-fadeIn">
-                            <div class="text-4xl text-rose-500 mb-3"><i class="fa-solid fa-triangle-exclamation animate-pulse"></i></div>
-                            <h3 class="text-sm md:text-base font-bold text-rose-500">CPU Overload!</h3>
+                            <div class="text-5xl text-rose-500 mb-3 drop-shadow-[0_0_15px_rgba(239,68,68,0.4)]">
+                                <i class="fa-solid fa-triangle-exclamation animate-pulse"></i>
+                            </div>
+                            <h3 class="text-sm md:text-base font-bold text-rose-500 tracking-wide uppercase">Sistem Hancur!</h3>
                             <p class="text-[11px] md:text-xs text-slate-300 my-3 leading-relaxed">Sistem terlalu panas karena menampung terlalu banyak Zombie. Coba lagi!</p>
-                            <button onclick="startMiniGame()" class="w-full py-2 bg-rose-500 hover:bg-rose-400 text-slate-955 font-black text-xs rounded-xl shadow-lg shadow-rose-500/20 active:scale-95 transition-all duration-150 tracking-wide uppercase cursor-pointer">
+                            <button onclick="startMiniGame()" class="w-full py-2 bg-gradient-to-r from-rose-500 to-red-600 hover:from-rose-400 hover:to-red-500 text-slate-955 font-black text-xs rounded-xl shadow-lg shadow-rose-500/20 active:scale-95 transition-all duration-150 tracking-wide uppercase cursor-pointer">
                                 Coba Lagi
                             </button>
                         </div>
@@ -1472,35 +1666,38 @@
                     
                     activeSlots[randIndex] = procType;
                     const slot = slots[randIndex];
-                    slot.className = `h-10 md:h-20 bg-slate-955/80 rounded-lg flex flex-col items-center justify-center transition border-2 ${procType.color} relative cursor-pointer float-effect`;
-                    slot.innerHTML = `
-                        <i class="fa-solid ${procType.icon} text-xs md:text-2xl"></i>
-                        <span class="text-[6px] md:text-[10px] font-bold mt-0.5 tracking-wider leading-none">${procType.name}</span>
-                    `;
-                    
-                    slot.onclick = () => {
-                        playSound('click');
-                        delete activeSlots[randIndex];
-                        slot.className = "h-10 md:h-20 bg-slate-955/40 rounded-lg flex items-center justify-center transition border border-slate-800/10 relative cursor-pointer hover:bg-slate-900/30";
-                        slot.innerHTML = '';
-                        slot.onclick = null;
+                    if (slot) {
+                        slot.className = `h-[8.5cqh] md:h-[12cqh] bg-slate-955/80 rounded-lg flex flex-col items-center justify-center transition border-2 ${procType.color} relative cursor-pointer float-effect`;
+                        slot.innerHTML = `
+                            <i class="fa-solid ${procType.icon} text-[1.8cqw] md:text-[2.2cqw]"></i>
+                            <span class="text-[8px] md:text-[1cqw] font-bold mt-[0.2cqw] tracking-wider leading-none">${procType.name}</span>
+                        `;
                         
-                        killedCount++;
-                        const killedEl = document.getElementById('proc-kill-count');
-                        if (killedEl) killedEl.textContent = `${killedCount}/${maxKills} Terbunuh`;
+                        slot.onclick = () => {
+                            playSound('click');
+                            delete activeSlots[randIndex];
+                            slot.className = "h-[8.5cqh] md:h-[12cqh] bg-slate-955/40 rounded-lg flex items-center justify-center transition border border-slate-855 relative cursor-pointer hover:bg-slate-900/30";
+                            slot.innerHTML = '';
+                            slot.onclick = null;
+                            
+                            killedCount++;
+                            const killedEl = document.getElementById('proc-kill-count');
+                            if (killedEl) killedEl.textContent = `${killedCount}/${maxKills} Terbunuh`;
 
-                        cpuLoad = Math.max(0, cpuLoad - 15);
+                            cpuLoad = Math.max(0, cpuLoad - 15);
 
-                        if (killedCount >= maxKills) {
-                            clearInterval(processGameInterval);
-                            finishMiniGame();
-                        }
-                    };
+                            if (killedCount >= maxKills) {
+                                clearInterval(processGameInterval);
+                                finishMiniGame();
+                            }
+                        };
+                    }
                 }
             }, 800);
         }
 
         function initGuaMemoriGame(container) {
+            if (!container) return;
             const concepts = [
                 { id: 1, text: "RAM", pairId: 101 },
                 { id: 101, text: "Memori Utama", pairId: 1 },
@@ -1517,17 +1714,17 @@
             let matchedIds = [];
 
             container.innerHTML = `
-                <div class="w-[94%] h-[92%] aspect-video text-center flex flex-col justify-between p-3 md:p-6 bg-slate-950/30 border border-slate-800/25 rounded-2xl shadow-2xl backdrop-blur-md animate-fadeIn">
+                <div class="w-[94%] h-[92%] aspect-video text-center flex flex-col justify-between p-[2cqw] md:p-[3cqw] bg-slate-950/75 border border-slate-800/40 rounded-2xl shadow-2xl backdrop-blur-md animate-fadeIn">
                     <div>
-                        <h4 class="text-xs md:text-lg font-bold text-purple-400">Manajemen Pengalamatan RAM</h4>
-                        <p class="text-[9px] md:text-xs text-slate-400 mb-1 md:mb-2">Temukan pasangan kartu konsep manajemen memori yang sama!</p>
+                        <h4 class="text-[1.8cqw] font-black text-purple-300 readable-text-glow tracking-wide">Manajemen Pengalamatan RAM</h4>
+                        <p class="text-[1.2cqw] text-white font-semibold readable-text-glow mt-[0.2cqw]">Temukan pasangan kartu konsep manajemen memori yang sama!</p>
                     </div>
 
-                    <div class="grid grid-cols-4 gap-1.5 md:gap-3 flex-1 my-1 md:my-2 items-center justify-center" id="memory-grid"></div>
+                    <div class="grid grid-cols-4 gap-[1cqw] md:gap-[1.5cqw] flex-1 my-[0.5cqw] items-center justify-center" id="memory-grid"></div>
 
-                    <div class="flex justify-between text-[9px] md:text-xs text-slate-500">
-                        <span>Kecocokan Kartu</span>
-                        <span id="matched-progress" class="font-bold text-slate-300">0/4 Pasang</span>
+                    <div class="flex justify-between text-[1.1cqw] text-slate-400">
+                        <span class="readable-text-glow">Kecocokan Kartu</span>
+                        <span id="matched-progress" class="font-bold text-slate-200">0/4 Pasang</span>
                     </div>
                 </div>
             `;
@@ -1535,13 +1732,14 @@
             const grid = document.getElementById('memory-grid');
 
             const renderCards = () => {
+                if (!grid) return;
                 grid.innerHTML = '';
                 cards.forEach((card, idx) => {
                     const isMatched = matchedIds.includes(card.id);
                     const isOpen = openedCards.includes(idx) || isMatched;
 
                     const cardBtn = document.createElement('button');
-                    cardBtn.className = `h-10 sm:h-14 md:h-20 rounded-xl text-[7px] sm:text-[10px] md:text-sm font-bold transition flex items-center justify-center p-1 border cursor-pointer ${
+                    cardBtn.className = `h-[9cqh] md:h-[13cqh] rounded-xl text-[1.1cqw] md:text-[1.3cqw] font-bold transition flex items-center justify-center p-[0.5cqw] border cursor-pointer ${
                         isMatched 
                         ? 'bg-purple-955/20 border-purple-800/40 text-purple-400/80'
                         : isOpen 
@@ -1552,7 +1750,7 @@
                     if (isOpen) {
                         cardBtn.textContent = card.text;
                     } else {
-                        cardBtn.innerHTML = `<i class="fa-solid fa-microchip text-xs md:text-base"></i>`;
+                        cardBtn.innerHTML = `<i class="fa-solid fa-microchip text-[1.8cqw] md:text-[2.2cqw]"></i>`;
                     }
 
                     cardBtn.onclick = () => {
@@ -1563,10 +1761,10 @@
                         renderCards();
 
                         if (openedCards.length === 2) {
-                            const firstCard = cards[openedCards[0]];
-                            const secondCard = cards[openedCards[1]];
+                            const firstCard = concepts.find(c => c.text === cards[openedCards[0]].text);
+                            const secondCard = concepts.find(c => c.text === cards[openedCards[1]].text);
 
-                            if (firstCard.pairId === secondCard.id) {
+                            if (firstCard && secondCard && firstCard.pairId === secondCard.id) {
                                 setTimeout(() => {
                                     playSound('success');
                                     matchedIds.push(firstCard.id, secondCard.id);
@@ -1599,6 +1797,7 @@
         }
 
         function initSungaiFileGame(container) {
+            if (!container) return;
             const files = [
                 { name: "foto_liburan.jpg", category: "image", icon: "fa-file-image" },
                 { name: "laporan_os.pdf", category: "document", icon: "fa-file-pdf" },
@@ -1620,35 +1819,33 @@
                 const currentFile = files[activeFileIndex];
 
                 container.innerHTML = `
-                    <div class="w-[94%] h-[92%] aspect-video text-center flex flex-col justify-between p-3 md:p-6 bg-slate-955/30 border border-slate-800/25 rounded-2xl shadow-2xl backdrop-blur-md animate-fadeIn">
+                    <div class="w-[94%] h-[92%] aspect-video text-center flex flex-col justify-between p-[2cqw] md:p-[3cqw] bg-slate-955/75 border border-slate-800/40 rounded-2xl shadow-2xl backdrop-blur-md animate-fadeIn">
                         <div>
-                            <h4 class="text-xs md:text-lg font-bold text-sky-400">Sortir Ekstensi Sungai File</h4>
-                            <p class="text-[9px] md:text-xs text-slate-400">Tugaskan file yang melayang ke folder direktori yang sesuai!</p>
+                            <h4 class="text-[1.8cqw] font-black text-sky-300 readable-text-glow tracking-wide">Sortir Ekstensi Sungai File</h4>
+                            <p class="text-[1.2cqw] text-white font-semibold readable-text-glow mt-[0.2cqw]">Tugaskan file yang melayang ke folder direktori yang sesuai!</p>
                         </div>
 
-                        <!-- Floating current file -->
-                        <div class="bg-slate-900/30 border border-dashed border-sky-500/30 p-2 md:p-4 rounded-xl my-1 md:my-3 max-w-[200px] md:max-w-sm mx-auto w-full flex flex-col items-center justify-center float-effect">
-                            <i class="fa-solid ${currentFile.icon} text-xl md:text-4xl text-sky-400 mb-1"></i>
-                            <span class="text-[9px] md:text-sm font-bold text-white tracking-wide">${currentFile.name}</span>
+                        <div class="bg-slate-900/30 border border-dashed border-sky-500/30 p-[1.5cqw] rounded-xl my-[0.5cqw] max-w-[30cqw] mx-auto w-full flex flex-col items-center justify-center float-effect">
+                            <i class="fa-solid ${currentFile.icon} text-[3.2cqw] text-sky-400 mb-[0.3cqw]"></i>
+                            <span class="text-[1.2cqw] font-bold text-white tracking-wide">${currentFile.name}</span>
                         </div>
 
-                        <!-- Seamless Targets Grid -->
-                        <div class="grid grid-cols-2 gap-1.5 md:gap-3 my-1 md:my-2 max-w-lg mx-auto w-full">
-                            <button onclick="sortFile('image')" class="py-1.5 md:py-3.5 bg-slate-900/60 hover:bg-slate-800/80 text-[8px] md:text-sm font-bold text-slate-300 rounded-lg border border-slate-800/40 hover:border-sky-500/50 transition flex items-center justify-center gap-1 shadow-lg cursor-pointer">
-                                <i class="fa-solid fa-folder text-yellow-500 text-xs md:text-lg"></i> Gambar
+                        <div class="grid grid-cols-2 gap-[1cqw] md:gap-[1.5cqw] my-[0.5cqw] max-w-[50cqw] mx-auto w-full">
+                            <button onclick="sortFile('image')" class="py-[1cqw] md:py-[1.5cqw] bg-slate-900/60 hover:bg-slate-800/80 text-[1.2cqw] md:text-[1.4cqw] font-bold text-slate-300 rounded-lg border border-slate-855 hover:border-sky-500/50 transition flex items-center justify-center gap-[0.5cqw] shadow-lg cursor-pointer">
+                                <i class="fa-solid fa-folder text-yellow-500 text-[1.6cqw]"></i> Gambar
                             </button>
-                            <button onclick="sortFile('document')" class="py-1.5 md:py-3.5 bg-slate-900/60 hover:bg-slate-800/80 text-[8px] md:text-sm font-bold text-slate-300 rounded-lg border border-slate-800/40 hover:border-sky-500/50 transition flex items-center justify-center gap-1 shadow-lg cursor-pointer">
-                                <i class="fa-solid fa-folder text-blue-500 text-xs md:text-lg"></i> Dokumen
+                            <button onclick="sortFile('document')" class="py-[1cqw] md:py-[1.5cqw] bg-slate-900/60 hover:bg-slate-800/80 text-[1.2cqw] md:text-[1.4cqw] font-bold text-slate-300 rounded-lg border border-slate-855 hover:border-sky-500/50 transition flex items-center justify-center gap-[0.5cqw] shadow-lg cursor-pointer">
+                                <i class="fa-solid fa-folder text-blue-500 text-[1.6cqw]"></i> Dokumen
                             </button>
-                            <button onclick="sortFile('executable')" class="py-1.5 md:py-3.5 bg-slate-900/60 hover:bg-slate-800/80 text-[8px] md:text-sm font-bold text-slate-300 rounded-lg border border-slate-800/40 hover:border-sky-500/50 transition flex items-center justify-center gap-1 shadow-lg cursor-pointer">
-                                <i class="fa-solid fa-folder text-emerald-500 text-xs md:text-lg"></i> Program
+                            <button onclick="sortFile('executable')" class="py-[1cqw] md:py-[1.5cqw] bg-slate-900/60 hover:bg-slate-800/80 text-[1.2cqw] md:text-[1.4cqw] font-bold text-slate-300 rounded-lg border border-slate-855 hover:border-sky-500/50 transition flex items-center justify-center gap-[0.5cqw] shadow-lg cursor-pointer">
+                                <i class="fa-solid fa-folder text-emerald-500 text-[1.6cqw]"></i> Program
                             </button>
-                            <button onclick="sortFile('audio')" class="py-1.5 md:py-3.5 bg-slate-900/60 hover:bg-slate-800/80 text-[8px] md:text-sm font-bold text-slate-300 rounded-lg border border-slate-800/40 hover:border-sky-500/50 transition flex items-center justify-center gap-1 shadow-lg cursor-pointer">
-                                <i class="fa-solid fa-folder text-purple-500 text-xs md:text-lg"></i> Musik
+                            <button onclick="sortFile('audio')" class="py-[1cqw] md:py-[1.5cqw] bg-slate-900/60 hover:bg-slate-800/80 text-[1.2cqw] md:text-[1.4cqw] font-bold text-slate-300 rounded-lg border border-slate-855 hover:border-sky-500/50 transition flex items-center justify-center gap-[0.5cqw] shadow-lg cursor-pointer">
+                                <i class="fa-solid fa-folder text-purple-500 text-[1.6cqw]"></i> Musik
                             </button>
                         </div>
 
-                        <div class="flex justify-between text-[9px] md:text-xs text-slate-500 mt-1">
+                        <div class="flex justify-between text-[1.1cqw] text-slate-500 mt-[0.5cqw]">
                             <span>Sistem Direktori</span>
                             <span class="font-bold text-slate-300">${sortedCount}/${files.length} Tersortir</span>
                         </div>
@@ -1666,8 +1863,10 @@
                 } else {
                     playSound('fail');
                     const box = container.firstElementChild;
-                    box.classList.add('shake-effect');
-                    setTimeout(() => box.classList.remove('shake-effect'), 500);
+                    if (box) {
+                        box.classList.add('shake-effect');
+                        setTimeout(() => box.classList.remove('shake-effect'), 500);
+                    }
                 }
             };
 
@@ -1675,6 +1874,7 @@
         }
 
         function initGunungPerangkatKerasGame(container) {
+            if (!container) return;
             const pairings = [
                 { id: 1, hardware: "Printer (Output)", driver: "Driver Printer laserjet" },
                 { id: 2, hardware: "Keyboard (Input)", driver: "HID Keyboard Controller" },
@@ -1691,18 +1891,18 @@
 
             const renderConnections = () => {
                 container.innerHTML = `
-                    <div class="w-[94%] h-[92%] aspect-video text-center flex flex-col justify-between p-3 md:p-6 bg-slate-955/30 border border-slate-800/25 rounded-2xl shadow-2xl backdrop-blur-md animate-fadeIn">
+                    <div class="w-[94%] h-[92%] aspect-video text-center flex flex-col justify-between p-[2cqw] md:p-[3cqw] bg-slate-955/75 border border-slate-800/25 rounded-2xl shadow-2xl backdrop-blur-sm animate-fadeIn">
                         <div>
-                            <h4 class="text-xs md:text-lg font-bold text-pink-400">Jembatan Driver Hardware</h4>
-                            <p class="text-[9px] md:text-xs text-slate-400 mb-1 md:mb-2">Pasangkan nama Hardware fisik di sebelah kiri dengan Driver yang sesuai di sebelah kanan!</p>
+                            <h4 class="text-[1.8cqw] font-black text-pink-300 readable-text-glow tracking-wide">Jembatan Driver Hardware</h4>
+                            <p class="text-[1.2cqw] text-white font-semibold readable-text-glow mt-[0.2cqw]">Pasangkan nama Hardware fisik di sebelah kiri dengan Driver yang sesuai di sebelah kanan!</p>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-3 md:gap-6 my-1 md:my-2 flex-1 items-center">
-                            <div class="space-y-1.5 md:space-y-3" id="hw-column"></div>
-                            <div class="space-y-1.5 md:space-y-3" id="dr-column"></div>
+                        <div class="grid grid-cols-2 gap-[2cqw] md:gap-[4cqw] my-[0.5cqw] flex-1 items-center">
+                            <div class="space-y-[0.8cqw] md:space-y-[1.2cqw]" id="hw-column"></div>
+                            <div class="space-y-[0.8cqw] md:space-y-[1.2cqw]" id="dr-column"></div>
                         </div>
 
-                        <div class="flex justify-between text-[9px] md:text-xs text-slate-500">
+                        <div class="flex justify-between text-[1.1cqw] text-slate-500">
                             <span>Sinyal Hardware</span>
                             <span id="hw-progress" class="font-bold text-slate-300">0/4 Terhubung</span>
                         </div>
@@ -1712,49 +1912,51 @@
                 const hwCol = document.getElementById('hw-column');
                 const drCol = document.getElementById('dr-column');
 
-                hwList.forEach(item => {
-                    const isMatched = matchedPairIds.includes(item.id);
-                    const isSelected = selectedHW === item.id;
-                    const btn = document.createElement('button');
-                    btn.disabled = isMatched;
-                    btn.className = `w-full p-1.5 md:p-3.5 rounded-lg text-[9px] md:text-sm font-bold text-left border transition cursor-pointer ${
-                        isMatched
-                        ? 'bg-pink-955/20 border-pink-900/30 text-pink-400/60 cursor-not-allowed opacity-40 shadow-inner'
-                        : isSelected
-                            ? 'bg-pink-500/15 border-pink-400 text-pink-300 shadow-md'
-                            : 'bg-slate-900/60 hover:bg-slate-800/80 border-slate-800/40 text-slate-300 shadow animate-fadeIn'
-                    }`;
-                    btn.textContent = item.hardware;
-                    btn.onclick = () => {
-                        playSound('click');
-                        selectedHW = item.id;
-                        checkHWDRMatch();
-                        renderConnections();
-                    };
-                    hwCol.appendChild(btn);
-                });
+                if (hwCol && drCol) {
+                    hwList.forEach(item => {
+                        const isMatched = matchedPairIds.includes(item.id);
+                        const isSelected = selectedHW === item.id;
+                        const btn = document.createElement('button');
+                        btn.disabled = isMatched;
+                        btn.className = `w-full p-[1cqw] rounded-lg text-[1.2cqw] md:text-[1.4cqw] font-bold text-left border transition cursor-pointer ${
+                            isMatched
+                            ? 'bg-pink-955/20 border-pink-900/30 text-pink-400/60 cursor-not-allowed opacity-40 shadow-inner'
+                            : isSelected
+                                ? 'bg-pink-500/15 border-pink-400 text-pink-300 shadow-md'
+                                : 'bg-slate-900/60 hover:bg-slate-800/80 border-slate-850 text-slate-300 shadow animate-fadeIn'
+                        }`;
+                        btn.textContent = item.hardware;
+                        btn.onclick = () => {
+                            playSound('click');
+                            selectedHW = item.id;
+                            checkHWDRMatch();
+                            renderConnections();
+                        };
+                        hwCol.appendChild(btn);
+                    });
 
-                drList.forEach(item => {
-                    const isMatched = matchedPairIds.includes(item.id);
-                    const isSelected = selectedDR === item.id;
-                    const btn = document.createElement('button');
-                    btn.disabled = isMatched;
-                    btn.className = `w-full p-1.5 md:p-3.5 rounded-lg text-[9px] md:text-sm font-bold text-left border transition cursor-pointer ${
-                        isMatched
-                        ? 'bg-pink-955/20 border-pink-900/30 text-pink-400/60 cursor-not-allowed opacity-40 shadow-inner'
-                        : isSelected
-                            ? 'bg-pink-500/15 border-pink-400 text-pink-300 shadow-md'
-                            : 'bg-slate-900/60 hover:bg-slate-800/80 border-slate-800/40 text-slate-300 shadow animate-fadeIn'
-                    }`;
-                    btn.textContent = item.driver;
-                    btn.onclick = () => {
-                        playSound('click');
-                        selectedDR = item.id;
-                        checkHWDRMatch();
-                        renderConnections();
-                    };
-                    drCol.appendChild(btn);
-                });
+                    drList.forEach(item => {
+                        const isMatched = matchedPairIds.includes(item.id);
+                        const isSelected = selectedDR === item.id;
+                        const btn = document.createElement('button');
+                        btn.disabled = isMatched;
+                        btn.className = `w-full p-[1cqw] rounded-lg text-[1.2cqw] md:text-[1.4cqw] font-bold text-left border transition cursor-pointer ${
+                            isMatched
+                            ? 'bg-pink-955/20 border-pink-900/30 text-pink-400/60 cursor-not-allowed opacity-40 shadow-inner'
+                            : isSelected
+                                ? 'bg-pink-500/15 border-pink-400 text-pink-300 shadow-md'
+                                : 'bg-slate-900/60 hover:bg-slate-800/80 border-slate-850 text-slate-300 shadow animate-fadeIn'
+                        }`;
+                        btn.textContent = item.driver;
+                        btn.onclick = () => {
+                            playSound('click');
+                            selectedDR = item.id;
+                            checkHWDRMatch();
+                            renderConnections();
+                        };
+                        drCol.appendChild(btn);
+                    });
+                }
             };
 
             const checkHWDRMatch = () => {
@@ -1792,6 +1994,7 @@
         }
 
         function initKastilBossGame(container) {
+            if (!container) return;
             const bossQuestions = [
                 {
                     q: "Bagian Sistem Operasi yang bertanggung jawab langsung berinteraksi dengan hardware komputer disebut...",
@@ -1838,15 +2041,15 @@
                 if (playerHealth <= 0) {
                     playSound('fail');
                     container.innerHTML = `
-                        <div class="text-center p-6 md:p-8 max-w-[280px] md:max-w-sm w-full float-effect bg-slate-955/20 border border-rose-500/30 backdrop-blur-md rounded-2xl shadow-2xl shadow-rose-500/20 animate-fadeIn">
+                        <div class="text-center p-[2.5cqw] md:p-[4cqw] max-w-[32cqw] w-full float-effect bg-slate-955/20 border border-rose-500/30 backdrop-blur-md rounded-2xl shadow-2xl shadow-rose-500/20 animate-fadeIn">
                             <div class="text-5xl text-rose-500 mb-3 drop-shadow-[0_0_15px_rgba(239,68,68,0.4)]">
                                 <i class="fa-solid fa-bug animate-bounce"></i>
                             </div>
-                            <h3 class="text-sm md:text-base font-bold text-rose-500 tracking-wide uppercase">Sistem Hancur!</h3>
-                            <p class="text-[11px] md:text-xs text-slate-300 my-3 leading-relaxed">
+                            <h3 class="text-[1.8cqw] font-bold text-rose-500 tracking-wide uppercase">Sistem Hancur!</h3>
+                            <p class="text-[1.2cqw] text-slate-300 my-[1cqw] leading-relaxed">
                                 Raja Error menembakkan serangan 'Blue Screen of Death'! Mulai ulang pertempuran dan gunakan pertahanan jawabanmu.
                             </p>
-                            <button onclick="startMiniGame()" class="w-full py-2 bg-gradient-to-r from-rose-500 to-red-600 hover:from-rose-400 hover:to-red-500 text-slate-955 font-black text-xs rounded-xl shadow-lg shadow-rose-500/20 active:scale-95 transition-all duration-150 tracking-wide uppercase cursor-pointer">
+                            <button onclick="startMiniGame()" class="w-full py-[1.2cqw] bg-gradient-to-r from-rose-500 to-red-600 hover:from-rose-400 hover:to-red-500 text-slate-955 font-black text-[1.4cqw] rounded-xl shadow-lg shadow-rose-500/20 active:scale-95 transition-all duration-150 tracking-wide uppercase cursor-pointer">
                                 Lawan Kembali
                             </button>
                         </div>
@@ -1857,43 +2060,40 @@
                 const currentQ = bossQuestions[activeBossQIdx];
 
                 container.innerHTML = `
-                    <div class="w-[94%] h-[92%] aspect-video text-center flex flex-col justify-between p-3 md:p-6 bg-slate-950/30 border border-slate-800/25 rounded-2xl shadow-2xl backdrop-blur-md animate-fadeIn" onclick="skipDialogue()">
-                        <!-- Boss HP status layout -->
-                        <div class="flex items-center justify-between gap-4 py-1" onclick="event.stopPropagation()">
+                    <div class="w-[94%] h-[92%] aspect-video text-center flex flex-col justify-between p-[2cqw] md:p-[3cqw] bg-slate-955/85 border border-slate-800/40 rounded-2xl shadow-2xl backdrop-blur-sm animate-fadeIn" onclick="skipDialogue()">
+                        <div class="flex items-center justify-between gap-[2cqw] py-[0.5cqw]" onclick="event.stopPropagation()">
                             <div class="text-left flex-1 max-w-[35%]">
-                                <span class="text-[8px] md:text-xs text-slate-500 block leading-none mb-1">Kekuatan Hero</span>
-                                <div class="w-full bg-slate-800/60 h-2 rounded-full overflow-hidden">
+                                <span class="text-[1cqw] text-emerald-300 font-bold block leading-none mb-[0.2cqw] readable-text-glow">Kekuatan Hero</span>
+                                <div class="w-full bg-slate-800/60 h-[0.8cqw] rounded-full overflow-hidden">
                                     <div class="bg-emerald-500 h-full transition-all duration-300" style="width: ${playerHealth}%"></div>
                                 </div>
                             </div>
 
                             <div class="flex flex-col items-center">
-                                <div class="w-8 h-8 md:w-14 md:h-14 rounded-full bg-rose-955/50 border border-rose-500/30 flex items-center justify-center text-rose-400 text-sm md:text-2xl animate-pulse shadow-lg shadow-rose-500/10">
+                                <div class="w-[5cqw] h-[5cqw] rounded-full bg-rose-955/50 border border-rose-500/30 flex items-center justify-center text-rose-400 text-[2cqw] animate-pulse shadow-lg shadow-rose-500/10">
                                     <i class="fa-solid fa-bug"></i>
                                 </div>
-                                <span class="text-[7px] md:text-xs font-bold text-rose-400 mt-1">RAJA ERROR</span>
+                                <span class="text-[1.1cqw] font-extrabold text-rose-200 mt-[0.3cqw] tracking-widest readable-text-glow uppercase">RAJA ERROR</span>
                             </div>
 
                             <div class="text-right flex-1 max-w-[35%]">
-                                <span class="text-[8px] md:text-xs text-slate-500 block leading-none mb-1">Sistem Error</span>
-                                <div class="w-full bg-slate-800/60 h-2 rounded-full overflow-hidden">
+                                <span class="text-[1cqw] text-rose-300 font-bold block leading-none mb-[0.2cqw] readable-text-glow">Sistem Error</span>
+                                <div class="w-full bg-slate-800/60 h-[0.8cqw] rounded-full overflow-hidden">
                                     <div class="bg-rose-600 h-full transition-all duration-300" style="width: ${bossHealth}%"></div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Question Box -->
-                        <div class="my-1 text-center" onclick="event.stopPropagation()">
-                            <span class="text-[8px] md:text-[10px] bg-rose-500/10 text-rose-400 border border-rose-500/20 px-2 py-0.5 md:py-1 rounded-full font-bold uppercase mb-1 inline-block">Serangan Pertanyaan Bos</span>
-                            <p id="boss-question-text" class="text-[9px] md:text-base text-slate-200 leading-relaxed font-semibold max-w-xl mx-auto min-h-[45px]"></p>
+                        <div class="my-[0.5cqw] text-center" onclick="event.stopPropagation()">
+                            <span class="text-[1.1cqw] bg-rose-955/85 text-rose-100 border border-rose-400/50 px-[1.5cqw] py-[0.4cqw] rounded-full font-extrabold uppercase mb-[0.5cqw] inline-block tracking-wide shadow-md readable-text-glow">Serangan Pertanyaan Boss</span>
+                            <p id="boss-question-text" class="text-[1.4cqw] md:text-[1.8cqw] text-slate-200 leading-relaxed font-semibold max-w-[50cqw] mx-auto min-h-[4.5cqw]"></p>
                         </div>
 
-                        <!-- Answers Options (Styled as responsive grid for 5 options) -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 md:gap-3 max-w-2xl mx-auto w-full" onclick="event.stopPropagation()">
+                        <div class="grid grid-cols-2 gap-[1cqw] max-w-[55cqw] mx-auto w-full" onclick="event.stopPropagation()">
                             ${currentQ.options.map((opt, oIdx) => `
-                                <button onclick="answerBoss(${oIdx})" class="w-full p-1.5 md:p-3.5 bg-slate-900/60 hover:bg-slate-800/80 text-left text-[9px] md:text-sm rounded-lg border border-slate-800/40 hover:border-rose-500/50 transition flex items-center gap-2 shadow-lg cursor-pointer ${oIdx === 4 ? 'sm:col-span-2' : ''}">
-                                    <span class="w-5 h-5 md:w-7 md:h-7 bg-slate-800 rounded-full flex items-center justify-center font-bold text-slate-400 text-[8px] md:text-xs">${String.fromCharCode(65 + oIdx)}</span>
-                                    <span class="text-slate-300 flex-1 leading-none font-medium">${opt.text}</span>
+                                <button onclick="answerBoss(${oIdx})" class="w-full py-[0.8cqw] px-[1.2cqw] bg-slate-900/60 hover:bg-slate-800/80 text-left text-[1.1cqw] rounded-lg border border-slate-855 hover:border-rose-500/50 transition flex items-center gap-[0.8cqw] shadow-lg cursor-pointer ${oIdx === 4 ? 'col-span-2 justify-center' : ''}">
+                                    <span class="w-[2cqw] h-[2cqw] bg-slate-800 rounded-full flex items-center justify-center font-bold text-slate-400 text-[0.9cqw] flex-shrink-0">${String.fromCharCode(65 + oIdx)}</span>
+                                    <span class="text-slate-300 flex-1 leading-tight font-medium text-ellipsis overflow-hidden">${opt.text}</span>
                                 </button>
                             `).join('')}
                         </div>
@@ -1930,36 +2130,40 @@
             renderBossFight();
         }
 
-        /* ============================================================= */
-        /* POPUP QUIZ FOR CLAIMING SYSTEM CRYSTALS                       */
-        /* ============================================================= */
         function openQuiz() {
             playSound('click');
             const idx = state.activeLevelIndex;
             const lvl = levelData[idx];
 
-            // Mengosongkan wadah mini-game agar pop-up "TUGAS SUKSES" menutup di latar belakang
-            document.getElementById('mini-game-container').innerHTML = '';
+            const miniGameContainer = document.getElementById('mini-game-container');
+            if (miniGameContainer) miniGameContainer.innerHTML = '';
 
-            document.getElementById('quiz-title').textContent = `Verifikasi Keamanan: ${lvl.name}`;
+            const quizTitle = document.getElementById('quiz-title');
+            if (quizTitle) quizTitle.textContent = `Verifikasi Keamanan: ${lvl.name}`;
+            
             typeWriter('quiz-question', lvl.quiz.question, 15);
 
             const answersContainer = document.getElementById('quiz-answers');
-            answersContainer.innerHTML = '';
+            if (answersContainer) {
+                answersContainer.innerHTML = '';
 
-            lvl.quiz.options.forEach((opt, oIdx) => {
-                const btn = document.createElement('button');
-                btn.className = `quiz-option-btn w-full p-2.5 md:p-3 bg-slate-900 hover:bg-slate-800 text-left text-[9px] md:text-sm rounded-xl border border-slate-700/50 hover:border-yellow-500/50 transition-all duration-200 flex items-center gap-2.5 shadow-lg cursor-pointer ${oIdx === 4 ? 'sm:col-span-2' : ''}`;
-                btn.innerHTML = `
-                    <span class="w-5 h-5 md:w-7 md:h-7 bg-slate-800 rounded-full flex items-center justify-center font-bold text-slate-300 text-[8px] md:text-xs">${String.fromCharCode(65 + oIdx)}</span>
-                    <span class="flex-1 text-white leading-tight font-semibold readable-text-glow">${opt.text}</span>
-                `;
-                btn.onclick = () => selectQuizAnswer(opt.correct, btn);
-                answersContainer.appendChild(btn);
-            });
+                lvl.quiz.options.forEach((opt, oIdx) => {
+                    const btn = document.createElement('button');
+                    btn.className = `quiz-option-btn w-full py-[0.8cqw] px-[1.2cqw] bg-slate-900 hover:bg-slate-800 text-left text-[1.1cqw] rounded-xl border border-slate-700/50 hover:border-yellow-500/50 transition-all duration-200 flex items-center gap-[0.8cqw] shadow-lg cursor-pointer ${oIdx === 4 ? 'col-span-2 justify-center' : ''}`;
+                    btn.innerHTML = `
+                        <span class="w-[2cqw] h-[2cqw] bg-slate-855 rounded-full flex items-center justify-center font-bold text-slate-300 text-[0.9cqw] flex-shrink-0">${String.fromCharCode(65 + oIdx)}</span>
+                        <span class="flex-1 text-white leading-tight font-semibold readable-text-glow text-ellipsis overflow-hidden">${opt.text}</span>
+                    `;
+                    btn.onclick = () => selectQuizAnswer(opt.correct, btn);
+                    answersContainer.appendChild(btn);
+                });
+            }
 
-            document.getElementById('quiz-feedback').classList.add('hidden');
-            document.getElementById('popup-quiz').classList.remove('hidden');
+            const quizFeedback = document.getElementById('quiz-feedback');
+            if (quizFeedback) quizFeedback.classList.add('hidden');
+            
+            const popupQuiz = document.getElementById('popup-quiz');
+            if (popupQuiz) popupQuiz.classList.remove('hidden');
         }
 
         function selectQuizAnswer(isCorrect, btn) {
@@ -1967,15 +2171,20 @@
             buttons.forEach(b => b.disabled = true);
 
             const feedback = document.getElementById('quiz-feedback');
-            feedback.classList.remove('hidden');
+            if (feedback) feedback.classList.remove('hidden');
 
             if (isCorrect) {
                 playSound('success');
-                btn.classList.remove('border-slate-700/50', 'bg-slate-900');
-                btn.classList.add('border-emerald-500', 'bg-emerald-950/90');
-                btn.querySelector('span').className = "w-5 h-5 md:w-7 md:h-7 bg-emerald-500 rounded-full flex items-center justify-center font-bold text-slate-955 text-[8px] md:text-xs";
-                feedback.className = "text-center text-[8px] md:text-xs font-bold p-1.5 rounded-lg mt-2 bg-emerald-950/90 text-emerald-400 border border-emerald-500/30 relative z-10 shadow-lg";
-                feedback.textContent = "Verifikasi Sukses! +100 Skor & 1 Kristal Sistem Terklaim!";
+                if (btn) {
+                    btn.classList.remove('border-slate-700/50', 'bg-slate-900');
+                    btn.classList.add('border-emerald-500', 'bg-emerald-950/90');
+                    const spanNum = btn.querySelector('span');
+                    if (spanNum) spanNum.className = "w-[2cqw] h-[2cqw] bg-emerald-500 rounded-full flex items-center justify-center font-bold text-slate-955 text-[0.9cqw]";
+                }
+                if (feedback) {
+                    feedback.className = "text-center text-[1cqw] font-bold p-[0.6cqw] rounded-lg mt-[0.5cqw] bg-emerald-955/90 text-emerald-400 border border-emerald-500/30 relative z-10 shadow-lg";
+                    feedback.textContent = "Verifikasi Sukses! +100 Skor & 1 Kristal Sistem Terklaim!";
+                }
 
                 const idx = state.activeLevelIndex;
                 if (!state.levelStates[idx].completed) {
@@ -1989,7 +2198,8 @@
                 }
 
                 setTimeout(() => {
-                    document.getElementById('popup-quiz').classList.add('hidden');
+                    const popupQuiz = document.getElementById('popup-quiz');
+                    if (popupQuiz) popupQuiz.classList.add('hidden');
                     
                     if (state.crystalsCollected >= 7 && state.levelStates[6].completed) {
                         showVictoryScreen();
@@ -2000,22 +2210,33 @@
 
             } else {
                 playSound('fail');
-                btn.classList.remove('border-slate-700/50', 'bg-slate-900');
-                btn.classList.add('border-rose-500', 'bg-rose-955/90');
-                btn.querySelector('span').className = "w-5 h-5 md:w-7 md:h-7 bg-rose-500 rounded-full flex items-center justify-center font-bold text-slate-955 text-[8px] md:text-xs";
-                feedback.className = "text-center text-[8px] md:text-xs font-bold p-1.5 rounded-lg mt-2 bg-rose-955/90 text-rose-400 border border-rose-500/30 relative z-10 shadow-lg";
-                feedback.textContent = "Verifikasi Gagal! Baca kembali Kit Catatan Materi di sudut kanan atas.";
+                if (btn) {
+                    btn.classList.remove('border-slate-700/50', 'bg-slate-900');
+                    btn.classList.add('border-rose-500', 'bg-rose-955/90');
+                    const spanNum = btn.querySelector('span');
+                    if (spanNum) spanNum.className = "w-[2cqw] h-[2cqw] bg-rose-500 rounded-full flex items-center justify-center font-bold text-slate-955 text-[0.9cqw]";
+                }
+                if (feedback) {
+                    feedback.className = "text-center text-[1cqw] font-bold p-[0.6cqw] rounded-lg mt-[0.5cqw] bg-rose-955/90 text-rose-400 border border-rose-500/30 relative z-10 shadow-lg";
+                    feedback.textContent = "Verifikasi Gagal! Baca kembali Kit Catatan Materi di sudut kanan atas.";
+                }
 
-                const popupBox = document.getElementById('popup-quiz').querySelector('.aspect-video');
-                popupBox.classList.add('shake-effect');
-                setTimeout(() => popupBox.classList.remove('shake-effect'), 500);
+                const popupQuizEl = document.getElementById('popup-quiz');
+                const popupBox = popupQuizEl ? popupQuizEl.querySelector('div') : null;
+                if (popupBox) {
+                    popupBox.classList.add('shake-effect');
+                    setTimeout(() => popupBox.classList.remove('shake-effect'), 500);
+                }
 
                 setTimeout(() => {
                     buttons.forEach(b => b.disabled = false);
-                    btn.classList.remove('border-rose-500', 'bg-rose-955/90');
-                    btn.classList.add('border-slate-700/50', 'bg-slate-900');
-                    btn.querySelector('span').className = "w-5 h-5 bg-slate-800 rounded-full flex items-center justify-center font-bold text-slate-300 text-[8px] md:text-xs";
-                    feedback.classList.add('hidden');
+                    if (btn) {
+                        btn.classList.remove('border-rose-500', 'bg-rose-955/90');
+                        btn.classList.add('border-slate-700/50', 'bg-slate-900');
+                        const spanNum = btn.querySelector('span');
+                        if (spanNum) spanNum.className = "w-[2.5cqw] h-[2.5cqw] bg-slate-800 rounded-full flex items-center justify-center font-bold text-slate-300 text-[1cqw]";
+                    }
+                    if (feedback) feedback.classList.add('hidden');
                 }, 1500);
             }
         }
@@ -2027,31 +2248,50 @@
             state.score += 200;
             
             const container = document.getElementById('mini-game-container');
-            container.innerHTML = `
-                <!-- UKURAN SHADING DISESUAIKAN MENJADI LEBIH TRANSPARAN: bg-slate-955/20 -->
-                <div class="text-center p-6 md:p-8 max-w-[280px] md:max-w-sm w-full float-effect bg-slate-955/20 border border-[#07f00f]/30 backdrop-blur-md rounded-2xl shadow-2xl shadow-[#07f00f]/20 animate-fadeIn">
-                    <div class="text-5xl text-[#07f00f] mb-3 drop-shadow-[0_0_15px_rgba(7,240,15,0.4)]">
-                        <i class="fa-solid fa-circle-check animate-pulse"></i>
+            if (container) {
+                // Semua pop-up "Tugas Sukses!" menggunakan kontras bg tinggi (bg-slate-950/95) dengan readable text glow yang kontras agar mudah dibaca
+                container.innerHTML = `
+                    <div class="text-center p-[3cqw] max-w-[45cqw] w-full float-effect bg-slate-950/95 border-2 border-emerald-500 backdrop-blur-md rounded-2xl shadow-2xl shadow-emerald-500/30 animate-fadeIn mx-auto">
+                        <div class="text-[4cqw] text-emerald-400 mb-[1cqw] drop-shadow-[0_0_15px_rgba(16,185,129,0.6)]">
+                            <i class="fa-solid fa-circle-check animate-pulse"></i>
+                        </div>
+                        <h3 class="text-[2.2cqw] font-black text-emerald-400 tracking-wide uppercase readable-text-glow">Tugas Sukses!</h3>
+                        <p class="text-[1.35cqw] text-slate-100 font-bold my-[1.5cqw] leading-relaxed readable-text-glow">
+                            Kamu berhasil menstabilkan tugas teknis. Sekarang jawab kuis keamanan untuk merestorasi kristal!
+                        </p>
+                        <button onclick="openQuiz()" class="w-full py-[1cqw] bg-gradient-to-r from-emerald-400 to-emerald-800 hover:from-emerald-300 hover:to-emerald-700 text-slate-955 font-black text-[1.2cqw] rounded-xl shadow-lg shadow-emerald-500/20 active:scale-95 transition-all duration-150 tracking-wide uppercase cursor-pointer">
+                            Lanjut ke Kuis
+                        </button>
                     </div>
-                    <h3 class="text-sm md:text-base font-bold text-[#07f00f] tracking-wide uppercase">Tugas Sukses!</h3>
-                    <p class="text-[11px] md:text-xs text-slate-300 my-3 leading-relaxed">
-                        Kamu berhasil menstabilkan tugas teknis. Sekarang jawab kuis keamanan untuk merestorasi kristal!
-                    </p>
-                    <button onclick="openQuiz()" class="w-full py-2 bg-gradient-to-r from-[#07f00f] to-emerald-600 hover:from-[#06d60e] hover:to-emerald-500 text-slate-955 font-black text-xs rounded-xl shadow-lg shadow-[#07f00f]/20 active:scale-95 transition-all duration-150 tracking-wide uppercase cursor-pointer">
-                        Lanjut ke Kuis
-                    </button>
-                </div>
-            `;
+                `;
+            }
         }
 
         function showVictoryScreen() {
             playSound('level-up');
-            document.getElementById('game-hud').classList.add('hidden');
-            document.getElementById('final-score').textContent = state.score;
-            document.getElementById('final-crystals').textContent = `${state.crystalsCollected}/7`;
+            const gameHud = document.getElementById('game-hud');
+            if (gameHud) gameHud.classList.add('hidden');
+            
+            const finalScore = document.getElementById('final-score');
+            if (finalScore) finalScore.textContent = state.score;
+            
+            const finalCrystals = document.getElementById('final-crystals');
+            if (finalCrystals) finalCrystals.textContent = `${state.crystalsCollected}/7`;
             
             transitionScreen('screen-gameplay', 'screen-victory');
         }
+
+        window.openDeveloperModal = function() {
+            playSound('click');
+            const modal = document.getElementById('modal-developer');
+            if (modal) modal.classList.remove('hidden');
+        };
+
+        window.closeDeveloperModal = function() {
+            playSound('click');
+            const modal = document.getElementById('modal-developer');
+            if (modal) modal.classList.add('hidden');
+        };
     </script>
 </body>
 </html>
