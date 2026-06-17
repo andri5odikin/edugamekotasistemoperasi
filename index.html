@@ -79,6 +79,27 @@
             border-radius: 0px !important;
         }
 
+        /* PERINGATAN PORTRAIT UNTUK HP / TABLET */
+        #portrait-warning {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            background-color: #05070c;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        /* Memunculkan peringatan rotasi layar hanya pada mode portrait */
+        @media (orientation: portrait) {
+            #portrait-warning {
+                display: flex;
+            }
+        }
+
         /* Animasi denyutan untuk tahap aktif */
         @keyframes pulse-ring {
             0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(22, 197, 94, 0.7); }
@@ -134,6 +155,17 @@
 </head>
 <body>
 
+    <!-- OVERLAY DETEKSI ROTASI POTRET (HP/TABLET) -->
+    <div id="portrait-warning">
+        <div class="animate-bounce text-yellow-400 text-5xl mb-4">
+            <i class="fa-solid fa-mobile-screen-button rotate-90"></i>
+        </div>
+        <h2 class="font-bold text-lg md:text-xl text-white mb-2">Gunakan Mode Lanskap</h2>
+        <p class="text-slate-400 text-xs md:text-sm max-w-xs leading-relaxed">
+            Silakan putar layar HP atau Tablet Anda ke posisi <strong>Lanskap (Landscape)</strong> untuk mendapatkan pengalaman bermain game terbaik dengan rasio 16:9 yang presisi.
+        </p>
+    </div>
+
     <!-- BEKAS PERMAINAN UTAMA (Nisbah Aspek 16:9 Pensyaratan Kendiri) -->
     <div id="game-container" class="rounded-none md:rounded-xl">
         
@@ -157,7 +189,7 @@
 
             <!-- Ilustrasi Maskot (Pemberian ukuran responsif agar muat sempurna) -->
             <div class="relative z-10 flex flex-col items-center my-1">
-                <div class="w-36 h-36 md:w-56 md:h-56 lg:w-64 lg:h-64 mb-1 flex items-center justify-center overflow-hidden drop-shadow-[0_5px_15px_rgba(0,0,0,0.6)]">
+                <div class="w-28 h-24 sm:w-36 sm:h-36 md:w-56 md:h-56 lg:w-64 lg:h-64 mb-1 flex items-center justify-center overflow-hidden drop-shadow-[0_5px_15px_rgba(0,0,0,0.6)]">
                     <img src="https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/Mascot.png" alt="Mascot OS-Boy" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='https://placehold.co/250x250/0f172a/22d3ee?text=OS-Boy'">
                 </div>
                 <div class="text-cyan-300 font-bold text-[8px] md:text-[10px] tracking-wide bg-slate-955/65 px-2 py-0.5 rounded shadow-sm">Mascot: OS-Boy v1.0</div>
@@ -177,7 +209,7 @@
                 </div>
 
                 <!-- Butang Mula -->
-                <button id="btn-start-game" class="hidden w-full py-2 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-slate-955 font-black text-xs md:text-base rounded-xl shadow-lg shadow-yellow-500/20 border-b-4 border-amber-700 active:scale-95 transition-all duration-150 tracking-wider uppercase flex items-center justify-center gap-2">
+                <button id="btn-start-game" class="hidden w-full py-1.5 md:py-2.5 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-slate-955 font-black text-xs md:text-base rounded-xl shadow-lg shadow-yellow-500/20 border-b-4 border-amber-700 active:scale-95 transition-all duration-150 tracking-wider uppercase flex items-center justify-center gap-2 cursor-pointer">
                     <i class="fa-solid fa-circle-play text-base md:text-lg"></i> Mulai Petualangan
                 </button>
             </div>
@@ -354,8 +386,8 @@
                 </button>
             </div>
 
-            <!-- Teks Instruksi dipindahkan ke atas & warna diubah ke kuning keemasan #fbbf24 tanpa shadow -->
-            <div id="area-footer-tip" class="bg-slate-955/50 backdrop-blur-md p-1.5 rounded-lg text-[1.8vw] md:text-xs text-center text-[#fbbf24] font-bold max-w-[90%] mx-auto mt-1 transition-all duration-500 shadow-md flex-shrink-0">
+            <!-- Teks Instruksi dipindahkan ke atas & warna diubah ke kuning keemasan #fbbf24 tanpa shadow (Skala VW dinamis agar pas di layar kecil) -->
+            <div id="area-footer-tip" class="bg-slate-955/50 backdrop-blur-md p-1 px-3 rounded-lg text-[2vw] md:text-xs text-center text-[#fbbf24] font-bold max-w-[90%] mx-auto mt-1 transition-all duration-500 shadow-md flex-shrink-0">
                 Gunakan pengetahuanmu tentang sistem operasi komputer untuk menyelesaikan tantangan ini!
             </div>
 
@@ -363,15 +395,15 @@
             <div class="flex-1 my-1 md:my-2 flex flex-col items-center justify-center relative overflow-hidden">
                 <!-- NPC DIALOG CONTAINER - Dengan Latar Kotak Hitam Sangat Gelap & Solid (#020617 / Slate-950) -->
                 <div id="npc-dialog-box" onclick="skipDialogue()" class="absolute inset-0 bg-slate-955/80 z-30 flex items-center justify-center p-2 cursor-pointer">
-                    <div class="w-[94%] h-[90%] aspect-video max-h-[92%] p-4 md:p-8 flex flex-col justify-between overflow-hidden bg-slate-950 border border-slate-850 rounded-2xl shadow-2xl animate-fadeIn" onclick="event.stopPropagation()">
+                    <div class="w-[94%] h-[90%] aspect-video max-h-[92%] p-3 md:p-8 flex flex-col justify-between overflow-hidden bg-slate-950 border border-slate-850 rounded-2xl shadow-2xl" onclick="event.stopPropagation()">
                         <!-- Scanning/Hologram visual light effects in the background -->
                         <div class="absolute -top-32 -left-32 w-64 h-64 bg-cyan-500/10 rounded-full blur-[80px] pointer-events-none"></div>
                         
                         <!-- Main Content Row -->
-                        <div class="flex-grow flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 relative z-10 my-auto">
-                            <!-- NPC Avatar (No border, no bg, no shading, size reduced: w-32 h-32 md:w-52 md:h-52) -->
+                        <div class="flex-grow flex flex-col md:flex-row items-center justify-center gap-3 md:gap-8 relative z-10 my-auto">
+                            <!-- NPC Avatar (Ukuran disempurnakan: w-24 h-24 sm:w-32 sm:h-32 md:w-52 md:h-52) -->
                             <div class="flex flex-col items-center flex-shrink-0">
-                                <div id="npc-avatar" class="w-24 h-24 sm:w-32 sm:h-32 md:w-52 md:h-52 flex items-center justify-center float-effect">
+                                <div id="npc-avatar" class="w-20 h-20 sm:w-32 sm:h-32 md:w-52 md:h-52 flex items-center justify-center float-effect">
                                     <i class="fa-solid fa-robot text-4xl"></i>
                                 </div>
                                 <span id="npc-name" class="mt-1 md:mt-2 text-[8px] md:text-sm font-black px-3 py-0.5 md:py-1 bg-cyan-955/80 text-cyan-300 rounded-full border border-cyan-800/40 tracking-wider">Nama NPC</span>
@@ -382,8 +414,8 @@
                                 <span class="px-2 py-0.5 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-[8px] md:text-xs rounded-full font-bold uppercase tracking-wider animate-pulse inline-block">
                                     <i class="fa-solid fa-satellite-dish mr-1"></i> Transmisi Masuk
                                 </span>
-                                <h4 class="text-[10px] md:text-lg text-cyan-400 font-black uppercase tracking-wide">Misi Utama Area</h4>
-                                <p id="npc-text" class="text-[10px] sm:text-xs md:text-base lg:text-lg text-slate-100 leading-relaxed font-semibold min-h-[60px] readable-text-glow">
+                                <h4 class="text-[10px] md:text-lg text-cyan-400 font-black uppercase tracking-wide leading-none">Misi Utama Area</h4>
+                                <p id="npc-text" class="text-[10px] sm:text-xs md:text-base lg:text-lg text-slate-100 leading-relaxed font-semibold min-h-[50px] readable-text-glow">
                                     Halo penjelajah! Kami sedang mengalami kerusakan sistem. Bisakah kamu membantu kami memperbaikinya?
                                 </p>
                             </div>
