@@ -157,6 +157,7 @@
         <audio id="sound-success" src="https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/sfx_benar.mp3" preload="auto"></audio>
         <audio id="sound-fail" src="https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/sfx_salah.mp3" preload="auto"></audio>
         <audio id="sound-level-up" src="https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/sfx_transisi.mp3" preload="auto"></audio>
+        <audio id="sound-victory" src="https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/sfx_bintang.mp3" preload="auto"></audio>
         
         <!-- AUDIO BACKGROUND MUSIC -->
         <audio id="sound-bg-music" src="https://raw.githubusercontent.com/andri5odikin/edugamekotasistemoperasi/main/bgmusik.mp3" preload="auto" loop></audio>
@@ -228,7 +229,7 @@
                 <div class="relative z-10 text-center mt-[1.5cqw] float-effect">
                     <div class="inline-block bg-slate-900/85 text-yellow-400 border border-yellow-500/30 text-[1cqw] px-[1.5cqw] py-[0.4cqw] rounded-full font-bold uppercase tracking-wider mb-[0.8cqw] backdrop-blur-md">Edu-Game Interaktif</div>
                     <h1 class="title-arial-black text-[3.2cqw] text-yellow-400 drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)] text-center tracking-wider leading-tight">PETUALANGAN DI KOTA<br><span class="text-cyan-400">SISTEM OPERASI</span></h1>
-                    <p class="text-[1.3cqw] font-bold text-white bg-slate-955/95 border border-slate-800/60 px-[2cqw] py-[0.8cqw] rounded-xl mt-[0.8cqw] max-w-[50cqw] mx-auto shadow-lg backdrop-blur-sm readable-text-glow">Pelajari cara kerja sistem operasi komputer sambil bertualang dan menyelamatkan kota dari serangan error!</p>
+                    <p class="text-[1.3cqw] font-bold text-white mt-[0.8cqw] max-w-[50cqw] mx-auto readable-text-glow">Pelajari cara kerja sistem operasi komputer sambil bertualang dan menyelamatkan kota dari serangan error!</p>
                 </div>
 
                 <!-- Ilustrasi Robot Maskot -->
@@ -440,12 +441,12 @@
                             </div>
                             
                             <!-- Deskripsi Teks Chat NPC -->
-                            <div class="flex-1 text-left space-y-[0.5cqw]">
+                            <div class="flex-1 text-justify space-y-[0.5cqw]">
                                 <span class="px-[1.2cqw] py-[0.3cqw] bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-[1cqw] rounded-full font-bold uppercase tracking-wider animate-pulse inline-block leading-none">
                                     <i class="fa-solid fa-satellite-dish mr-[0.5cqw]"></i> Transmisi Masuk
                                 </span>
                                 <h4 class="text-[1.4cqw] text-cyan-400 font-black uppercase tracking-wide leading-none">Misi Utama Area</h4>
-                                <p id="npc-text" class="text-[1.2cqw] lg:text-[1.5cqw] text-slate-100 leading-relaxed font-semibold min-h-[4.5cqw] readable-text-glow overflow-y-auto">
+                                <p id="npc-text" class="text-[1.2cqw] lg:text-[1.5cqw] text-slate-100 leading-relaxed font-semibold min-h-[4.5cqw] readable-text-glow overflow-y-auto text-justify">
                                     Halo penjelajah! Kami sedang mengalami kerusakan sistem. Bisakah kamu membantu kami memperbaikinya?
                                 </p>
                             </div>
@@ -805,7 +806,7 @@
              &bull; <strong>GUI (Graphical User Interface):</strong> Menggunakan komponen grafis yang indah seperti ikon, kursor mouse, jendela program, dan menu drop-down yang ramah untuk semua kalangan pengguna (contoh: Windows, Android, macOS).`
         ];
 
-        // Deklarasi variabel pengetikan teks global (DIPISAHKAN DARI STRUKTUR LAIN AGAR BEBAS SYNTAX ERROR)
+        // Deklarasi variabel pengetikan teks global
         let processGameInterval = null;
         let typingInterval = null;
         let currentFullText = "";
@@ -852,7 +853,6 @@
                     } else {
                         el.innerHTML += currentToken.content;
                         tokenIndex++;
-                        // Efek suara mengetik dinonaktifkan sepenuhnya untuk misi/dialog utama agar hening
                     }
                 } else {
                     completeTyping();
@@ -1481,7 +1481,7 @@
             const container = document.getElementById('mini-game-container');
             if (container) {
                 container.innerHTML = `
-                    <div class="text-center p-[3cqw] max-w-[45cqw] w-full float-effect bg-slate-950/95 border-2 border-emerald-500 backdrop-blur-md rounded-2xl shadow-2xl shadow-emerald-500/30 animate-fadeIn mx-auto">
+                    <div class="text-center p-[3cqw] max-w-[45cqw] w-full float-effect bg-slate-955/95 border-2 border-emerald-500 backdrop-blur-md rounded-2xl shadow-2xl shadow-emerald-500/30 animate-fadeIn mx-auto">
                         <div class="text-[4cqw] text-emerald-400 mb-[1cqw] drop-shadow-[0_0_15px_rgba(16,185,129,0.6)]">
                             <i class="fa-solid fa-circle-check animate-pulse"></i>
                         </div>
@@ -1609,15 +1609,15 @@
                     </div>
 
                     <div class="flex justify-between text-[1.1cqw] text-slate-500">
-                        <span>Lumpuhkan 10 Proses Error!</span>
-                        <span id="proc-kill-count" class="font-bold text-slate-300">0/10 Terbunuh</span>
+                        <span>Lumpuhkan 20 Proses Error!</span>
+                        <span id="proc-kill-count" class="font-bold text-slate-300">0/20 Terbunuh</span>
                     </div>
                 </div>
             `;
 
             let cpuLoad = 0;
             let killedCount = 0;
-            const maxKills = 10;
+            const maxKills = 20;
             const slots = Array.from({length: 9}, (_, i) => document.getElementById(`proc-slot-${i}`));
             let activeSlots = {};
 
@@ -1714,7 +1714,7 @@
             let matchedIds = [];
 
             container.innerHTML = `
-                <div class="w-[94%] h-[92%] aspect-video text-center flex flex-col justify-between p-[2cqw] md:p-[3cqw] bg-slate-950/75 border border-slate-800/40 rounded-2xl shadow-2xl backdrop-blur-md animate-fadeIn">
+                <div class="w-[94%] h-[92%] aspect-video text-center flex flex-col justify-between p-[2cqw] md:p-[3cqw] bg-slate-955/75 border border-slate-800/40 rounded-2xl shadow-2xl backdrop-blur-md animate-fadeIn">
                     <div>
                         <h4 class="text-[1.8cqw] font-black text-purple-300 readable-text-glow tracking-wide">Manajemen Pengalamatan RAM</h4>
                         <p class="text-[1.2cqw] text-white font-semibold readable-text-glow mt-[0.2cqw]">Temukan pasangan kartu konsep manajemen memori yang sama!</p>
@@ -1999,15 +1999,15 @@
                 {
                     q: "Bagian Sistem Operasi yang bertanggung jawab langsung berinteraksi dengan hardware komputer disebut...",
                     options: [
-                        { text: "Shell", correct: false },
-                        { text: "Kernel", correct: true },
-                        { text: "User Interface", correct: false },
-                        { text: "Application", correct: false },
-                        { text: "Web Browser", correct: false }
+                        { text: "Shell (Antarmuka Luar)", correct: false },
+                        { text: "Kernel (Inti Sistem)", correct: true },
+                        { text: "User Interface (UI)", correct: false },
+                        { text: "Application (Aplikasi)", correct: false },
+                        { text: "Web Browser (Peramban)", correct: false }
                     ]
                 },
                 {
-                    q: "Sistem Operasi mengizinkan beberapa aplikasi berjalan bersamaan di layar, kemampuan ini disebut...",
+                    q: "Sistem Operasi mengizinkan beberapa aplikasi berjalan bersamaan di layar secara real-time, kemampuan ini disebut...",
                     options: [
                         { text: "Multi-threading", correct: false },
                         { text: "Multi-user", correct: false },
@@ -2017,13 +2017,83 @@
                     ]
                 },
                 {
-                    q: "Berikut ini yang merupakan sistem operasi open-source (kode sumber terbuka) gratis adalah...",
+                    q: "Berikut ini yang merupakan contoh sistem operasi komersial kode sumber terbuka (open-source) gratis adalah...",
                     options: [
                         { text: "Linux", correct: true },
                         { text: "Microsoft Windows", correct: false },
                         { text: "macOS", correct: false },
                         { text: "iOS", correct: false },
                         { text: "Windows Server", correct: false }
+                    ]
+                },
+                {
+                    q: "Manakah di bawah ini yang BUKAN merupakan fungsi utama dari sebuah Sistem Operasi komputer?",
+                    options: [
+                        { text: "Mengelola memori utama (RAM)", correct: false },
+                        { text: "Menyusun presentasi slide otomatis di komputer", correct: true },
+                        { text: "Menyediakan antarmuka pengguna (User Interface)", correct: false },
+                        { text: "Mengendalikan perangkat keras masukan/keluaran (I/O)", correct: false },
+                        { text: "Mengatur sistem file di dalam media penyimpanan", correct: false }
+                    ]
+                },
+                {
+                    q: "Metode di mana sistem operasi membagi memori fisik menjadi blok-blok kecil berukuran tetap disebut dengan...",
+                    options: [
+                        { text: "Segmentation (Segmentasi)", correct: false },
+                        { text: "Paging (Sistem Halaman)", correct: true },
+                        { text: "Virtualization (Virtualisasi)", correct: false },
+                        { text: "Partitioning (Partisi)", correct: false },
+                        { text: "Defragmentation (Defragmentasi)", correct: false }
+                    ]
+                },
+                {
+                    q: "Program penerjemah khusus yang menjembatani komunikasi antara sistem operasi dengan perangkat keras luar disebut...",
+                    options: [
+                        { text: "Web Browser", correct: false },
+                        { text: "Device Driver", correct: true },
+                        { text: "Compiler Code", correct: false },
+                        { text: "Linker System", correct: false },
+                        { text: "Database Manager", correct: false }
+                    ]
+                },
+                {
+                    q: "Sistem antarmuka pengguna yang mengharuskan kita mengetik perintah manual berupa baris teks teks disebut...",
+                    options: [
+                        { text: "GUI (Graphical User Interface)", correct: false },
+                        { text: "CLI (Command Line Interface)", correct: true },
+                        { text: "VUI (Voice User Interface)", correct: false },
+                        { text: "Touchscreen Interface", correct: false },
+                        { text: "API Interface", correct: false }
+                    ]
+                },
+                {
+                    q: "Manakah jenis sistem file yang paling umum dan menjadi standar bawaan (default) pada sistem operasi Windows modern?",
+                    options: [
+                        { text: "EXT4", correct: false },
+                        { text: "FAT16", correct: false },
+                        { text: "NTFS", correct: true },
+                        { text: "APFS", correct: false },
+                        { text: "HFS+", correct: false }
+                    ]
+                },
+                {
+                    q: "Apakah yang dimaksud dengan proses menyalakan komputer dari posisi benar-benar mati (Cold Booting)?",
+                    options: [
+                        { text: "Mereset komputer setelah crash tanpa mematikan listrik", correct: false },
+                        { text: "Menyalakan komputer dari posisi benar-benar mati", correct: true },
+                        { text: "Menyalakan komputer di dalam ruangan ber-AC dingin", correct: false },
+                        { text: "Mengaktifkan mode hemat daya baterai pada laptop", correct: false },
+                        { text: "Membersihkan debu kipas prosesor komputer", correct: false }
+                    ]
+                },
+                {
+                    q: "Komponen internal OS yang bertugas mengatur alokasi waktu pemrosesan di prosesor untuk aplikasi dalam antrean disebut...",
+                    options: [
+                        { text: "Memory Manager", correct: false },
+                        { text: "CPU Scheduler (Penjadwal CPU)", correct: true },
+                        { text: "I/O Manager", correct: false },
+                        { text: "File Explorer", correct: false },
+                        { text: "Device Driver Manager", correct: false }
                     ]
                 }
             ];
@@ -2085,15 +2155,18 @@
                         </div>
 
                         <div class="my-[0.5cqw] text-center" onclick="event.stopPropagation()">
-                            <span class="text-[1.1cqw] bg-rose-955/85 text-rose-100 border border-rose-400/50 px-[1.5cqw] py-[0.4cqw] rounded-full font-extrabold uppercase mb-[0.5cqw] inline-block tracking-wide shadow-md readable-text-glow">Serangan Pertanyaan Boss</span>
-                            <p id="boss-question-text" class="text-[1.4cqw] md:text-[1.8cqw] text-slate-200 leading-relaxed font-semibold max-w-[50cqw] mx-auto min-h-[4.5cqw]"></p>
+                            <span class="text-[1.1cqw] bg-rose-955/85 text-rose-100 border border-rose-400/50 px-[1.5cqw] py-[0.4cqw] rounded-full font-extrabold uppercase mb-[0.5cqw] inline-block tracking-wide shadow-md readable-text-glow">Serangan Pertanyaan Boss (${activeBossQIdx + 1}/10)</span>
+                            <!-- Latar belakang super kontras dan font diperbesar tebal agar mudah dibaca -->
+                            <div class="bg-slate-950/95 border-2 border-rose-500/40 p-[1.5cqw] rounded-xl max-w-[68cqw] mx-auto shadow-inner mt-[0.2cqw] min-h-[7cqh] flex items-center justify-center">
+                                <p id="boss-question-text" class="text-[1.5cqw] md:text-[1.8cqw] text-yellow-300 leading-relaxed font-black readable-text-glow text-center"></p>
+                            </div>
                         </div>
 
                         <div class="grid grid-cols-2 gap-[1cqw] max-w-[55cqw] mx-auto w-full" onclick="event.stopPropagation()">
                             ${currentQ.options.map((opt, oIdx) => `
-                                <button onclick="answerBoss(${oIdx})" class="w-full py-[0.8cqw] px-[1.2cqw] bg-slate-900/60 hover:bg-slate-800/80 text-left text-[1.1cqw] rounded-lg border border-slate-855 hover:border-rose-500/50 transition flex items-center gap-[0.8cqw] shadow-lg cursor-pointer ${oIdx === 4 ? 'col-span-2 justify-center' : ''}">
-                                    <span class="w-[2cqw] h-[2cqw] bg-slate-800 rounded-full flex items-center justify-center font-bold text-slate-400 text-[0.9cqw] flex-shrink-0">${String.fromCharCode(65 + oIdx)}</span>
-                                    <span class="text-slate-300 flex-1 leading-tight font-medium text-ellipsis overflow-hidden">${opt.text}</span>
+                                <button onclick="answerBoss(${oIdx})" class="w-full py-[0.8cqw] px-[1.2cqw] bg-slate-900/90 hover:bg-slate-800 text-left text-[1.15cqw] rounded-lg border-2 border-slate-700 hover:border-rose-400/80 transition flex items-center gap-[0.8cqw] shadow-lg cursor-pointer ${oIdx === 4 ? 'col-span-2 justify-center' : ''}">
+                                    <span class="w-[2cqw] h-[2cqw] bg-slate-800 rounded-full flex items-center justify-center font-bold text-slate-300 text-[1cqw] flex-shrink-0">${String.fromCharCode(65 + oIdx)}</span>
+                                    <span class="text-slate-150 flex-1 leading-tight font-bold text-ellipsis overflow-hidden">${opt.text}</span>
                                 </button>
                             `).join('')}
                         </div>
@@ -2109,12 +2182,12 @@
 
                 if (selected.correct) {
                     playSound('success');
-                    bossHealth -= 34;
+                    bossHealth -= 10; // Tiap jawaban benar mengurangi 10% darah boss (10 pertanyaan total)
                     if (bossHealth < 0) bossHealth = 0;
                     activeBossQIdx = (activeBossQIdx + 1) % bossQuestions.length;
                 } else {
                     playSound('fail');
-                    playerHealth -= 34;
+                    playerHealth -= 20; // Kesalahan mengurangi 20% darah pemain
                     if (playerHealth < 0) playerHealth = 0;
                     
                     const box = container.firstElementChild;
@@ -2147,7 +2220,10 @@
             if (answersContainer) {
                 answersContainer.innerHTML = '';
 
-                lvl.quiz.options.forEach((opt, oIdx) => {
+                // Melakukan pengacakan (shuffle) pilihan jawaban kuis verifikasi secara acak
+                const shuffledOptions = [...lvl.quiz.options].sort(() => Math.random() - 0.5);
+
+                shuffledOptions.forEach((opt, oIdx) => {
                     const btn = document.createElement('button');
                     btn.className = `quiz-option-btn w-full py-[0.8cqw] px-[1.2cqw] bg-slate-900 hover:bg-slate-800 text-left text-[1.1cqw] rounded-xl border border-slate-700/50 hover:border-yellow-500/50 transition-all duration-200 flex items-center gap-[0.8cqw] shadow-lg cursor-pointer ${oIdx === 4 ? 'col-span-2 justify-center' : ''}`;
                     btn.innerHTML = `
@@ -2249,9 +2325,8 @@
             
             const container = document.getElementById('mini-game-container');
             if (container) {
-                // Semua pop-up "Tugas Sukses!" menggunakan kontras bg tinggi (bg-slate-950/95) dengan readable text glow yang kontras agar mudah dibaca
                 container.innerHTML = `
-                    <div class="text-center p-[3cqw] max-w-[45cqw] w-full float-effect bg-slate-950/95 border-2 border-emerald-500 backdrop-blur-md rounded-2xl shadow-2xl shadow-emerald-500/30 animate-fadeIn mx-auto">
+                    <div class="text-center p-[3cqw] max-w-[45cqw] w-full float-effect bg-slate-955/95 border-2 border-emerald-500 backdrop-blur-md rounded-2xl shadow-2xl shadow-emerald-500/30 animate-fadeIn mx-auto">
                         <div class="text-[4cqw] text-emerald-400 mb-[1cqw] drop-shadow-[0_0_15px_rgba(16,185,129,0.6)]">
                             <i class="fa-solid fa-circle-check animate-pulse"></i>
                         </div>
@@ -2268,9 +2343,9 @@
         }
 
         function showVictoryScreen() {
-            playSound('level-up');
+            playSound('victory');
             const gameHud = document.getElementById('game-hud');
-            if (gameHud) gameHud.classList.add('hidden');
+            if (gameHud) gameHud.classList.remove('hidden');
             
             const finalScore = document.getElementById('final-score');
             if (finalScore) finalScore.textContent = state.score;
